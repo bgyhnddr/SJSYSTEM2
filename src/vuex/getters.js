@@ -3,7 +3,7 @@ export function getUser(state) {
     return state.auth.userInfo
   }
   else {
-    return undefined
+    return {"name":"","role":""}
   }
 }
 

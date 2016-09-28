@@ -1,0 +1,126 @@
+<template>
+    <div class="vue-strap-table">
+        <div class="table-responsive">
+            <div v-show="hasFilter">
+                <div class="col-sm-3">
+                    <bs-input @keyup.enter="getData" :value.sync="filterKey" pattern="" placeholder="輸入任意關鍵字進行搜索" clear-button></bs-input>
+                </div>
+                <button @click="getData" class="btn btn-default">搜索</button>
+            </div>
+            <table class="table table-hover table-condensed">
+                <thead>
+                    <tr>
+                        <th v-for="column of columns | filterBy undefiend in 'hide'">
+                            {{ column.header }}
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="row of data.list">
+                        <td v-for="column of columns | filterBy undefiend in 'hide'">
+                            <template v-if="column.type == undefined || column.type == 'string'">
+                                <template v-if="column.format">
+                                    {{ column.format(row[column.bind]) }}
+                                </template>
+                                <template v-else>
+                                    {{ row[column.bind] }}
+                                </template>
+                            </template>
+                            <template v-if="column.type == 'action'">
+                                <template v-for="item in column.items">
+                                    <template v-if="item.tag=='button'">
+                                        <button @click="action(item.eventName,row)" class="{{item.class}} btn btn-default">{{item.text}}</button>
+                                    </template>
+                                </template>
+                            </template>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <button type="button" v-if="!data.end" class="btn btn-default" @click="addData">更多...</button>
+        </div>
+    </div>
+</template>
+<script>
+import { input as bsInput }  from 'vue-strap'
+
+export default{
+    components:{
+        bsInput
+    },
+    props:{
+        pageNum:{
+            type:Number,
+            default:0
+        },
+        countPerPage:
+        {
+            type:Number,
+            default:5
+        },
+        hasFilter:{
+            type:Boolean,
+            default:true
+        },
+        filterKey:{
+            type:String,
+            default:""
+        },
+        columns:{
+            type:Array
+        },
+        getDataEvent:{
+            type:String,
+            default:'getData',
+            require:true
+        },
+        data:{
+            type:Object,
+            default:{
+                end:true,
+                list:[]
+            },
+            towWay:true
+        }
+    },
+    methods:
+    {
+        hideHeader(obj)
+        {
+            return !obj.hide
+        },
+        getData()
+        {
+            this.pageNum = 0
+            this.$dispatch(this.getDataEvent, this.pageNum,this.countPerPage,this.filterKey)
+        },
+        addData()
+        {
+            let that= this
+            this.pageNum++
+            this.$dispatch(this.getDataEvent, this.pageNum,this.countPerPage,this.filterKey,true)
+        },
+        action(event,row)
+        {
+            this.$dispatch(event, row)
+        }
+    },
+    computed:{
+
+    },
+    events:{
+        'refreshData':function(){
+            this.getData()
+        }
+    },
+    ready(){
+        this.getData()
+    }
+}
+</script>
+
+<style>
+    .vue-strap-table {
+        position: relative;
+    }
+</style>

@@ -99,13 +99,16 @@ export default {
     },
     methods:{
         submitLogin(){
+            var that = this
             if(this.valid.all)
             {
                 var vm = this;
                 authAPI.login(this.loginInfo).then(function(result){
                     vm.login(result)
                     vm.hideLoginModal()
-                });
+                },function(err){
+                    that.serverMsg=err
+                })
             }
         }
     }

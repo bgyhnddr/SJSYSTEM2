@@ -1,18 +1,30 @@
 <template>
     <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css">
-    <navbar placement="top" type="default">
+    <navbar type="default">
         <!-- Brand as slot -->
-        <a slot="brand" href="/" title="Home" class="navbar-brand">VueDemo</a>
-        <!-- You can use dropdown component -->
-        <dropdown text="Dropdown">
-            <li><a href="link">Option</a></li>
-        </dropdown>
+        <a slot="brand" href="/" title="Home" class="navbar-brand">
+        <img style="width: 200px;" src='../assets/img/logo.png'>
+        </a>
         <!-- For right positioning use slot -->
-
-        <dropdown slot="right" v-if="getUser" :text="getUser.name">
+        <li>
+            <a v-link="{ path: '/index/table' }">工程管理</a>
+        </li>
+        <li>
+            <a href="link">數據管理</a>
+        </li>
+        <li>
+            <a href="link">報表</a>
+        </li>
+        <li>
+            <a href="link">用戶管理</a>
+        </li>
+        <li>
+            <a href="link">設定</a>
+        </li>
+        <dropdown slot="right" v-if="getUser.name" :text="getUser.name">
             <li><a @click="submitLogout">登出</a></li>
         </dropdown>
-        <li v-if="!getUser" slot="right">
+        <li v-if="!getUser.name" slot="right">
             <a @click="showLoginModal">登录</a>
         </li>
     </navbar>
