@@ -7,6 +7,9 @@ export function configRouter(router) {
             {
                 'table': {
                     component: require('../components/table.vue')
+                },
+                'DataManagement':{
+                    component: require('../components/DataManagement.vue')
                 }
             }
         }
@@ -14,6 +17,4 @@ export function configRouter(router) {
     router.redirect({
         '/': '/index'
     })
-
-
 }

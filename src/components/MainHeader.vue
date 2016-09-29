@@ -10,7 +10,7 @@
             <a v-link="{ path: '/index/table' }">工程管理</a>
         </li>
         <li>
-            <a href="link">數據管理</a>
+            <a v-link="{ path: '/index/DataManagement' }">數據管理</a>
         </li>
         <li>
             <a href="link">報表</a>

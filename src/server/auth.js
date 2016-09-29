@@ -1,36 +1,32 @@
-var Sequelize = require('sequelize')
-var sequelize = new Sequelize('qdm137219120_db', 'qdm137219120', '709394qwe', {
-    host: 'qdm137219120.my3w.com',
-    dialect: 'mysql'
-})
-
-
 var login = function (req, res, next) {
     var account = req.body.account
     var password = req.body.password
 
-    var userTable = sequelize.define('User', {}, {
-        freezeTableName: true
-    })
+    var user = require('../db/models/user')
+    var role = require('../db/models/role')
 
-    var roleTable = sequelize.define('Role', {}, {
-        freezeTableName: true
-    })
+    role.belongsTo(user)
 
-    userTable.findOne({
-        attributes: ['Account', 'Password'],
-        where: {
-            Account: account
-        }
-    }).then(function (user) {
-        if (user == null) {
+    role.findAll({
+        attributes: ['code'],
+        include: [
+            {
+                model: user,
+                attributes: ['account', 'password'],
+                where: {
+                    account: account
+                }
+            }
+        ]
+    }).then(function (result) {
+        if (result.length == 0) {
             res.status(500).send({
                 "code": "error",
-                "msg": '賬號不存在密碼錯誤'
+                "msg": '賬號不存在'
             })
         }
         else {
-            if (user.Password != password) {
+            if (result[0].user.password != password) {
                 res.status(500).send({
                     "code": "error",
                     "msg": '密碼錯誤'
@@ -38,9 +34,8 @@ var login = function (req, res, next) {
             }
             else {
                 var userInfo = {}
-
                 userInfo.name = account
-                userInfo.role = "admin"
+                userInfo.role = result.map(o => o.code)
                 req.session.userInfo = userInfo
                 res.send(req.session.userInfo)
             }
@@ -57,6 +52,9 @@ var logout = function (req, res, next) {
 var getUser = function (req, res, next) {
     res.send(req.session.userInfo)
 }
+
+
+
 
 module.exports = (req, res, next) => {
     var action = req.params.action
