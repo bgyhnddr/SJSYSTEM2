@@ -38,4 +38,9 @@ module.exports = (app) => {
             list: list
         })
     })
+
+    app.use('/init', function (req, res, next) {
+        var init = require('../db/init')
+        init(req, res, next)
+    })
 }

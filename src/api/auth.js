@@ -10,11 +10,6 @@ export default {
         return new Promise(function (resolve, reject) {
             Vue.http.post('/service/auth/login', params, {
                 _timeout: 5000,
-                params: {
-                    page,
-                    count,
-                    filterKey
-                },
                 onTimeout: (request) => {
                     reject("timeout")
                 }
@@ -33,11 +28,6 @@ export default {
         return new Promise(function (resolve, reject) {
             Vue.http.get('/service/auth/logout', {
                 _timeout: 5000,
-                params: {
-                    page,
-                    count,
-                    filterKey
-                },
                 onTimeout: (request) => {
                     reject("timeout")
                 }
@@ -52,11 +42,6 @@ export default {
         return new Promise(function (resolve, reject) {
             Vue.http.get('/service/auth/getUser', {
                 _timeout: 5000,
-                params: {
-                    page,
-                    count,
-                    filterKey
-                },
                 onTimeout: (request) => {
                     reject("timeout")
                 }
