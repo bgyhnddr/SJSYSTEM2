@@ -3,8 +3,8 @@ var Sequelize = require('sequelize')
 //     host: 'qdm137219120.my3w.com',
 //     dialect: 'mysql'
 // })
-var sequelize = new Sequelize('sequelize_test', 'cypher_admin', 'Cypher2015', {
-    host: '192.168.10.20',
+var sequelize = new Sequelize('bdm241050686_db', 'bdm241050686', '709394qwe', {
+    host: 'bdm241050686.my3w.com',
     dialect: 'mysql',
     timezone: '+08:00'
 })

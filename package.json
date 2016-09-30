@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "babel-runtime": "^6.0.0",
+    "body-parser": "^1.15.2",
     "express-session": "^1.14.1",
     "mysql": "^2.11.1",
     "sequelize": "^3.24.3",
