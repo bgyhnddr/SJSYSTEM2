@@ -15,6 +15,9 @@ module.exports = (app) => {
             case "auth":
                 require('./auth')(req, res, next)
                 break
+            case "RBAC":
+                require('./RBAC')(req, res, next)
+                break
         }
     })
 

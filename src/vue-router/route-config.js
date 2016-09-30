@@ -10,6 +10,9 @@ export function configRouter(router) {
                 },
                 'DataManagement':{
                     component: require('../components/DataManagement.vue')
+                },
+                'RBACManagement':{
+                    component: require('../components/RBACManagement.vue')
                 }
             }
         }

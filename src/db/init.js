@@ -2,14 +2,25 @@ var Sequelize = require('sequelize')
 module.exports = function (req, res, next) {
     var user = require('./models/user')
     var role = require('./models/role')
-    
-    Promise.all([user.sync({ force: true }), 
-    role.sync({ force: true })]).then(function () {
-        return user.create({ account: 'admin' })
-    }).then(function () {
-        return role.bulkCreate([
-            { code: "admin", user_account: "admin" },
-            { code: "user", user_account: "admin" }
+    var permission = require('./models/permission')
+    var user_role = require('./models/user_role')
+    var role_permission = require('./models/role_permission')
+
+    Promise.all([
+        user.sync({ force: true }),
+        role.sync({ force: true }),
+        user_role.sync({ force: true }),
+        permission.sync({ force: true }),
+        role_permission.sync({ force: true })
+    ]).then(function () {
+        return Promise.all([
+            user.create({ account: 'admin', password: "admin" }),
+            role.create({ code: "admin", name: "admin" }),
+            user_role.create({ user_account: "admin", role_code: "admin" }),
+            permission.create({ code: "admin", name: "admin" }),
+            role_permission.create({ role_code: "admin", permission_code: "admin" })
         ])
+    }).then(function () {
+        res.send("success")
     })
 }
