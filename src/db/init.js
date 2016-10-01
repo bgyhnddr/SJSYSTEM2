@@ -21,6 +21,22 @@ module.exports = function (req, res, next) {
             role_permission.create({ role_code: "admin", permission_code: "admin" })
         ])
     }).then(function () {
+        // role_permission.belongsTo(user_role, {
+        //     foreignKey: 'role_code',
+        //     targetKey: 'role_code',
+        //     constraints: false
+        // });
+
+        // role_permission.findAll({
+        //     include: [{
+        //         model: user_role,
+        //         where: {
+        //             user_account: "admin"
+        //         }
+        //     }]
+        // }).then(function (result) {
+        //     res.send(result.map(o => o.permission_code))
+        // })
         res.send("success")
     })
 }
