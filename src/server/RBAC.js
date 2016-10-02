@@ -1,5 +1,4 @@
 var getUsers = function (req, res, next) {
-
     var user = require('../db/models/user')
 
     var filterKey = req.query.filterKey == undefined ? "" : req.query.filterKey
@@ -10,7 +9,10 @@ var getUsers = function (req, res, next) {
         user.findAll({
             where: {
                 account: {
-                    $like: "%" + filterKey + "%"
+                    $and: {
+                        $not: "admin",
+                        $like: "%" + filterKey + "%"
+                    }
                 }
             },
             offset: page * count,
@@ -19,7 +21,10 @@ var getUsers = function (req, res, next) {
         user.count({
             where: {
                 account: {
-                    $like: "%" + filterKey + "%"
+                    $and: {
+                        $not: "admin",
+                        $like: "%" + filterKey + "%"
+                    }
                 }
             }
         })
@@ -63,11 +68,44 @@ var addUser = function (req, res, next) {
     }
 }
 
+var resetPassword = function (req, res, next) {
+    var user = require('../db/models/user')
+    var account = req.body.account
+    if (account) {
+        user.findOne({
+            where: {
+                account: account
+            }
+        }).then(function (result) {
+            console.log(result)
+            if (result == null) {
+                res.status(500).send({
+                    "code": "error",
+                    "msg": '賬號不存在'
+                })
+            }
+            else {
+                result.password = "123"
+                return result.save()
+            }
+        }).then(function (result) {
+            res.end()
+        })
+    }
+    else {
+        res.status(500).send({
+            "code": "error",
+            "msg": '請輸入用戶'
+        })
+    }
+}
+
 var deleteUser = function (req, res, next) {
     var user = require('../db/models/user')
     var user_role = require('../db/models/user_role')
+    
     var account = req.body.account
-    if (account) {
+    if (account && account != "admin") {
         Promise.all([
             user_role.destroy({
                 where: {
@@ -79,7 +117,7 @@ var deleteUser = function (req, res, next) {
                     account: account
                 }
             })
-        ]).then(function(){
+        ]).then(function () {
             res.end()
         })
     }
@@ -88,9 +126,111 @@ var deleteUser = function (req, res, next) {
     }
 }
 
+var getRoles = function (req, res, next) {
+    var role = require('../db/models/role')
+
+    var filterKey = req.query.filterKey == undefined ? "" : req.query.filterKey
+    var count = req.query.count == undefined ? 5 : parseInt(req.query.count)
+    var page = req.query.page == undefined ? 0 : parseInt(req.query.page)
+
+    Promise.all([
+        role.findAll({
+            where: {
+                $and: {
+                    code: {
+                        $not: "admin"
+                    },
+                    $or: {
+                        code: {
+                            $like: "%" + filterKey + "%"
+                        },
+                        name: {
+                            $like: "%" + filterKey + "%"
+                        }
+                    }
+                }
+            },
+            offset: page * count,
+            limit: count
+        }),
+        role.count({
+            where: {
+                $and: {
+                    code: {
+                        $not: "admin"
+                    },
+                    $or: {
+                        code: {
+                            $like: "%" + filterKey + "%"
+                        },
+                        name: {
+                            $like: "%" + filterKey + "%"
+                        }
+                    }
+                }
+            }
+        })
+    ]).then(function (result) {
+        var roles = result[0]
+        var rowCount = result[1]
+        res.send({
+            end: (roles.length + page * count) >= rowCount,
+            list: roles
+        })
+    })
+}
+
+var submitRole = function (req, res, next) {
+    var code = req.body.code
+    var name = req.body.name ? req.body.name : ""
+    if (code) {
+        var role = require('../db/models/role')
+        role.upsert({ code: code, name: name }).then(function () {
+            res.end()
+        })
+    }
+    else {
+        res.status(500).send({
+            "code": "error",
+            "msg": '請輸入角色編碼'
+        })
+    }
+}
+
+var deleteRole = function (req, res, next) {
+    var role = require('../db/models/role')
+    var user_role = require('../db/models/user_role')
+    var role_permission = require('../db/models/role_permission')
+    var code = req.body.code
+    if (code && code != "admin") {
+        Promise.all([
+            user_role.destroy({
+                where: {
+                    role_code: code
+                }
+            }),
+            role.destroy({
+                where: {
+                    code: code
+                }
+            }),
+            role_permission.destroy({
+                where: {
+                    role_code: code
+                }
+            })
+        ]).then(function () {
+            res.end()
+        })
+    }
+    else {
+        res.end()
+    }
+}
 
 module.exports = (req, res, next) => {
     var action = req.params.action
+    console.log(action)
     switch (action) {
         case "getUsers":
             getUsers(req, res, next)
@@ -101,5 +241,15 @@ module.exports = (req, res, next) => {
         case "deleteUser":
             deleteUser(req, res, next)
             break
+        case "resetPassword":
+            resetPassword(req, res, next)
+            break
+        case "getRoles":
+            getRoles(req, res, next)
+            break
+        case "submitRole":
+            submitRole(req, res, next)
+        case "deleteRole":
+            deleteRole(req, res, next)
     }
 }

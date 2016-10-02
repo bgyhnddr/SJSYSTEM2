@@ -6,14 +6,12 @@
 <script>
 import MainHeader from './MainHeader'
 import { dropdown,navbar }  from 'vue-strap'
-import { login,logout } from '../vuex/actions'
 import authAPI from '../api/auth'
 
 export default {
-    vuex:{
-        actions:{
-            login,
-            logout
+    data(){
+        return {
+            state:window.state
         }
     },
     components:{
@@ -23,9 +21,12 @@ export default {
         var vm = this;
         authAPI.getUser()
         .then((userInfo)=>{ 
-            vm.login(userInfo)})
+            console.log(userInfo)
+            vm.state.userInfo = userInfo
+        })
         .catch((err)=>{
-            vm.logout()
+            window.actions.logout()
+            vm.state.showLoginModal=true
         })
     }
 }

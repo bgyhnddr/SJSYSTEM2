@@ -1,5 +1,5 @@
 <template>
-    <modal :show.sync="show" effect="fade" width="400">
+    <modal backdrop="false" :show.sync="state.showLoginModal" effect="fade" width="400">
         <div slot="modal-header" class="modal-header">
             <h4 class="modal-title">
                 用户登录
@@ -19,7 +19,6 @@
             </form-group>
         </div>
         <div slot="modal-footer" class="modal-footer">
-            <button type="button" class="btn btn-default" @click="hideLoginModal">关闭</button>
             <button type="button" class="btn btn-success" @click="submitLogin">登录</button>
         </div>
     </modal>
@@ -27,13 +26,12 @@
 
 <script>
 import { modal,formGroup,alert,input as bsInput }  from 'vue-strap'
-import { isShowLoginModal,getUser } from '../vuex/getters'
-import { hideLoginModal,login } from '../vuex/actions'
 import authAPI from '../api/auth'
 
 export default {
     data(){
         return {
+            state:window.state,
             valid:{},
             serverMsg:"",
             loginInfo:{
@@ -48,31 +46,7 @@ export default {
         bsInput,
         alert
     },
-    vuex:{
-        getters:{
-            isShowLoginModal,
-            getUser,
-            state:state=>state
-        },
-        actions:{
-            hideLoginModal,
-            login
-        }
-    },
     computed: { 
-        show: 
-        { 
-            get () 
-            { 
-                return this.isShowLoginModal 
-            }, 
-            set (val) { 
-                if(!val)
-                {
-                    this.hideLoginModal()
-                }
-            } 
-        },
         alertType(){
             return this.valid.all?"success":"warning"
         },
@@ -100,12 +74,11 @@ export default {
     methods:{
         submitLogin(){
             var that = this
-            if(this.valid.all)
+            if(that.valid.all)
             {
-                var vm = this;
-                authAPI.login(this.loginInfo).then(function(result){
-                    vm.login(result)
-                    vm.hideLoginModal()
+                authAPI.login(that.loginInfo).then(function(result){
+                    that.state.userInfo = result
+                    that.state.showLoginModal = false
                 },function(err){
                     that.serverMsg=err
                 })

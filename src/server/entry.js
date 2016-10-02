@@ -1,6 +1,8 @@
 var express = require('express')
 var session = require('express-session')
 var bodyParser = require('body-parser')
+
+
 module.exports = (app) => {
     // parse application/x-www-form-urlencoded
     app.use(bodyParser.urlencoded({ extended: false }))
@@ -10,14 +12,36 @@ module.exports = (app) => {
 
     app.use(session({ secret: '1234567890QWERTY' }))
 
-    app.use('/service/:type/:action', function (req, res, next) {
-        switch (req.params.type) {
-            case "auth":
-                require('./auth')(req, res, next)
-                break
-            case "RBAC":
-                require('./RBAC')(req, res, next)
-                break
+    app.use('/service/:permission/:type/:action', function (req, res, next) {
+        if (req.params.permission == "private") {
+            var checkPermission = require('../permission/check-permission')
+            checkPermission(req, res, next).then(function () {
+                switch (req.params.type) {
+                    case "RBAC":
+                        require('./RBAC')(req, res, next)
+                        break
+                }
+            }, function (error) {
+                if (error == "not_login") {
+                    res.status(404).send({
+                        "code": "not_login",
+                        "msg": '沒有登錄'
+                    })
+                }
+                else if (error == "no_authorization") {
+                    res.status(404).send({
+                        "code": "no_authorization",
+                        "msg": '沒有權限'
+                    })
+                }
+            })
+        }
+        else if (req.params.permission == "public") {
+            switch (req.params.type) {
+                case "auth":
+                    require('./auth')(req, res, next)
+                    break
+            }
         }
     })
 

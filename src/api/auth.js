@@ -1,14 +1,16 @@
 var Vue = require('vue')
 Vue.use(require('vue-resource'))
 import timei from '../extend/vue-resource-timeout'
+import authCallback from '../extend/auth-callback'
 
 Vue.http.interceptors.push(timei)
+Vue.http.interceptors.push(authCallback)
 
 
 export default {
     login(params) {
         return new Promise(function (resolve, reject) {
-            Vue.http.post('/service/auth/login', params, {
+            Vue.http.post('/service/public/auth/login', params, {
                 _timeout: 5000,
                 onTimeout: (request) => {
                     reject("timeout")
@@ -26,7 +28,7 @@ export default {
     },
     logout() {
         return new Promise(function (resolve, reject) {
-            Vue.http.get('/service/auth/logout', {
+            Vue.http.get('/service/public/auth/logout', {
                 _timeout: 5000,
                 onTimeout: (request) => {
                     reject("timeout")
@@ -40,7 +42,7 @@ export default {
     },
     getUser() {
         return new Promise(function (resolve, reject) {
-            Vue.http.get('/service/auth/getUser', {
+            Vue.http.get('/service/public/auth/getUser', {
                 _timeout: 5000,
                 onTimeout: (request) => {
                     reject("timeout")
