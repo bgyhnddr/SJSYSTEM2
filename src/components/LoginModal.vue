@@ -1,4 +1,5 @@
 <template>
+    <spinner size="md" text="loading..."></spinner>
     <modal backdrop="false" :show.sync="state.showLoginModal" effect="fade" width="400">
         <div slot="modal-header" class="modal-header">
             <h4 class="modal-title">
@@ -25,7 +26,7 @@
 </template>
 
 <script>
-import { modal,formGroup,alert,input as bsInput }  from 'vue-strap'
+import { modal,formGroup,alert,spinner,input as bsInput }  from 'vue-strap'
 import authAPI from '../api/auth'
 
 export default {
@@ -44,7 +45,8 @@ export default {
         modal,
         formGroup,
         bsInput,
-        alert
+        alert,
+        spinner
     },
     computed: { 
         alertType(){
@@ -76,11 +78,14 @@ export default {
             var that = this
             if(that.valid.all)
             {
+                that.$broadcast('show::spinner')
                 authAPI.login(that.loginInfo).then(function(result){
                     that.state.userInfo = result
                     that.state.showLoginModal = false
+                    that.$broadcast('hide::spinner')
                 },function(err){
                     that.serverMsg=err
+                    that.$broadcast('hide::spinner')
                 })
             }
         }

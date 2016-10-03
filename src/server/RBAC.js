@@ -103,7 +103,7 @@ var resetPassword = function (req, res, next) {
 var deleteUser = function (req, res, next) {
     var user = require('../db/models/user')
     var user_role = require('../db/models/user_role')
-    
+
     var account = req.body.account
     if (account && account != "admin") {
         Promise.all([
@@ -228,6 +228,102 @@ var deleteRole = function (req, res, next) {
     }
 }
 
+var getPermissions = function (req, res, next) {
+    var permission = require('../db/models/permission')
+
+    var filterKey = req.query.filterKey == undefined ? "" : req.query.filterKey
+    var count = req.query.count == undefined ? 5 : parseInt(req.query.count)
+    var page = req.query.page == undefined ? 0 : parseInt(req.query.page)
+
+    Promise.all([
+        permission.findAll({
+            where: {
+                $and: {
+                    code: {
+                        $not: "admin"
+                    },
+                    $or: {
+                        code: {
+                            $like: "%" + filterKey + "%"
+                        },
+                        name: {
+                            $like: "%" + filterKey + "%"
+                        }
+                    }
+                }
+            },
+            offset: page * count,
+            limit: count
+        }),
+        permission.count({
+            where: {
+                $and: {
+                    code: {
+                        $not: "admin"
+                    },
+                    $or: {
+                        code: {
+                            $like: "%" + filterKey + "%"
+                        },
+                        name: {
+                            $like: "%" + filterKey + "%"
+                        }
+                    }
+                }
+            }
+        })
+    ]).then(function (result) {
+        var permissions = result[0]
+        var rowCount = result[1]
+        res.send({
+            end: (permissions.length + page * count) >= rowCount,
+            list: permissions
+        })
+    })
+}
+
+var submitPermission = function (req, res, next) {
+    var code = req.body.code
+    var name = req.body.name ? req.body.name : ""
+    if (code) {
+        var permission = require('../db/models/permission')
+        permission.upsert({ code: code, name: name }).then(function () {
+            res.end()
+        })
+    }
+    else {
+        res.status(500).send({
+            "code": "error",
+            "msg": '請輸入權限編碼'
+        })
+    }
+}
+
+var deletePermission = function (req, res, next) {
+    var permission = require('../db/models/permission')
+    var role_permission = require('../db/models/role_permission')
+    var code = req.body.code
+    if (code && code != "admin") {
+        Promise.all([
+            permission.destroy({
+                where: {
+                    code: code
+                }
+            }),
+            role_permission.destroy({
+                where: {
+                    permission_code: code
+                }
+            })
+        ]).then(function () {
+            res.end()
+        })
+    }
+    else {
+        res.end()
+    }
+}
+
 module.exports = (req, res, next) => {
     var action = req.params.action
     console.log(action)
@@ -249,7 +345,18 @@ module.exports = (req, res, next) => {
             break
         case "submitRole":
             submitRole(req, res, next)
+            break
         case "deleteRole":
             deleteRole(req, res, next)
+            break
+        case "getPermissions":
+            getPermissions(req, res, next)
+            break
+        case "submitPermission":
+            submitPermission(req, res, next)
+            break
+        case "deletePermission":
+            deletePermission(req, res, next)
+            break
     }
 }

@@ -22,7 +22,7 @@
         </div>
         <div slot="modal-footer" class="modal-footer">
             <button type="button" class="btn btn-default" @click="showRoleModel=false">关闭</button>
-            <button type="button" class="btn btn-success" @click="submitRole">確認</button>
+            <button :disabled="submitting" type="button" class="btn btn-success" @click="submitRole">確認</button>
         </div>
     </modal>
 </template>
@@ -43,6 +43,7 @@ export default {
   },
   data () {
     return {
+      submitting:false,
       getData:"getData",
       valid:{},
       code:"",
@@ -117,13 +118,16 @@ export default {
           if(this.valid.all)
           {
               var that = this
+              that.submitting = true
               RBAC.submitRole({code:that.code,name:that.name}).then(function(result){
+                  that.submitting = false
                   that.$broadcast("refreshData")
                   that.showRoleModel = false
                   that.serverMsg = ""
                   that.code=""
                   that.name=""
               },function(err){
+                  that.submitting = false
                   that.serverMsg=err
               })
           }

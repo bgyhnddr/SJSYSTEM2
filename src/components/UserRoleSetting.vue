@@ -1,26 +1,28 @@
 <template>
-    <button @click="addUser" class="btn btn-default">添加用戶</button>
+    <button @click="addUserRole" class="btn btn-default">添加用戶角色</button>
     <div style="position:relative">
         <spinner size="md" text="loading..."></spinner>
         <vue-strap-table :data.sync="data" :get-data-event="getData" :columns.sync="columns"></vue-strap-table>
     </div>
-    <modal :show.sync="showUserModel" effect="fade" width="400">
+    <modal :show.sync="showUserRoleModel" effect="fade" width="400">
         <div slot="modal-header" class="modal-header">
             <h4 class="modal-title">
-                添加用戶
+                添加用戶角色
             </h4>
         </div>
         <div slot="modal-body" class="modal-body">
             <alert :type="alertType">
                 {{alertText}}
             </alert>
-            <form-group :valid.sync="valid.account">
-                <bs-input :value.sync="account" label="账号" required></bs-input>
+            <form-group :valid.sync="valid.all">
+                <bs-input v-if="!edit" :value.sync="code" label="編碼" required></bs-input>
+                <bs-input v-else :value.sync="code" label="編碼" readonly></bs-input>
+                <bs-input :value.sync="name" label="名稱" required></bs-input>
             </form-group>
         </div>
         <div slot="modal-footer" class="modal-footer">
-            <button type="button" class="btn btn-default" @click="showUserModel=false">关闭</button>
-            <button :disabled="submitting" type="button" class="btn btn-success" @click="submitAddAccount">創建</button>
+            <button type="button" class="btn btn-default" @click="showUserRoleModel=false">关闭</button>
+            <button :disabled="submitting" type="button" class="btn btn-success" @click="submitUserRole">確認</button>
         </div>
     </modal>
 </template>
@@ -44,18 +46,20 @@ export default {
       submitting:false,
       getData:"getData",
       valid:{},
-      account:"",
-      showUserModel:false,
+      code:"",
+      name:"",
+      edit:false,
+      showUserRoleModel:false,
       data:{},
       serverMsg:"",
       columns:[
           {
-              "header":"賬號",
-              "bind":"account"
+              "header":"編碼",
+              "bind":"code"
           },
           {
-              "header":"密碼",
-              "bind":"password"
+              "header":"名稱",
+              "bind":"name"
           },
           {
               "header":"創建日期",
@@ -70,10 +74,10 @@ export default {
               "type":"action",
               "items":[
                   {
-                      eventName:"reset",
+                      eventName:"edit",
                       tag:"button",
                       class:"btn-xs",
-                      text:"重置密碼"
+                      text:"修改"
                   },
                   {
                       eventName:"delete",
@@ -88,55 +92,56 @@ export default {
   },
   computed: {
         alertType(){
-            return this.valid.account?"success":"warning"
+            return this.valid.all?"success":"warning"
         },
         alertText(){
             if(this.serverMsg)
             {
                 return this.serverMsg;
             }
-            let returnText = "请输入创建账户";
-            if(!this.valid.account)
+            let returnText = "請輸入";
+            if(!this.valid.all)
             {
-                returnText= "请输入创建账户"
+                returnText= "請輸入"
             }
             return returnText
         }
   },
   methods:{
-      addUser(){
-          this.account = ""
-          this.showUserModel = true
+      addUserRole(){
+          this.code = ""
+          this.name = ""
+          this.edit = false
+          this.showUserRoleModel = true
       },
-      submitAddAccount(){
-          if(this.valid.account)
+      submitUserRole(){
+          if(this.valid.all)
           {
               var that = this
               that.submitting = true
-              RBAC.addUser({account:that.account}).then(function(result){
-                  that.$broadcast("refreshData")
-                  that.showUserModel = false
+              RBAC.submitUserRole({code:that.code,name:that.name}).then(function(result){
                   that.submitting = false
+                  that.$broadcast("refreshData")
+                  that.showUserRoleModel = false
+                  that.serverMsg = ""
+                  that.code=""
+                  that.name=""
               },function(err){
+                  that.submitting = false
                   that.serverMsg=err
-                  that.submitting = false
               })
           }
       },
-      resetPassword(account){
-          if(window.confirm("是否確認重置："+account+"的密碼?")){
-              var that = this
-              RBAC.resetPassword({account:account}).then(function(result){
-                  that.$broadcast("refreshData")
-              },function(err){
-                  window.alert(err)
-              })
-          }
+      editUserRole(code,name){
+          this.code = code
+          this.name = name
+          this.edit = true
+          this.showUserRoleModel = true
       },
-      deleteUser(account){
-          if(window.confirm("是否確認刪除："+account+"?")){
+      deleteUserRole(code){
+          if(window.confirm("是否確認刪除："+code+"?")){
               var that = this
-              RBAC.deleteUser({account:account}).then(function(result){
+              RBAC.deleteUserRole({code:code}).then(function(result){
                   that.$broadcast("refreshData")
               },function(err){
                   window.alert(err)
@@ -145,13 +150,16 @@ export default {
       }
   },
   events:{
+      "edit":function(row){
+          this.editUserRole(row.code,row.name)
+      },
       "delete":function(row){
-          this.deleteUser(row.account)
+          this.deleteUserRole(row.code)
       },
       "getData":function(pageNum,countPerPage,filterKey,append){
           let that = this
           that.$broadcast('show::spinner')
-          RBAC.getUsers(pageNum,countPerPage,filterKey).then(function(result){
+          RBAC.getUserRoles(pageNum,countPerPage,filterKey).then(function(result){
               that.$broadcast('hide::spinner')
               if(append){
                   that.data.end = result.end
@@ -165,9 +173,6 @@ export default {
           }).catch(function(){
               that.$broadcast('hide::spinner')
           })
-      },
-      'reset':function(row){
-          this.resetPassword(row.account)
       }
   }
 }

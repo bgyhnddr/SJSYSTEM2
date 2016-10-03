@@ -10,6 +10,7 @@
             <table class="table table-hover table-condensed">
                 <thead>
                     <tr>
+                        <th v-if="selectable"></th>
                         <th v-for="column of columns | filterBy undefiend in 'hide'">
                             {{ column.header }}
                         </th>
@@ -17,6 +18,9 @@
                 </thead>
                 <tbody>
                     <tr v-for="row of data.list">
+                        <td v-if="selectable">
+                            <button @click="action('select',row)" class="btn btn-default btn-xs">選擇</button>
+                        </td>
                         <td v-for="column of columns | filterBy undefiend in 'hide'">
                             <template v-if="column.type == undefined || column.type == 'string'">
                                 <template v-if="column.format">
@@ -49,6 +53,10 @@ export default{
         bsInput
     },
     props:{
+        selectable:{
+            type:Boolean,
+            default:false
+        },
         pageNum:{
             type:Number,
             default:0
