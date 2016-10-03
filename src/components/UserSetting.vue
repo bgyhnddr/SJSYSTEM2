@@ -1,34 +1,51 @@
 <template>
-    <button @click="addUser" class="btn btn-default">添加用戶</button>
-    <div style="position:relative">
-        <spinner size="md" text="loading..."></spinner>
-        <vue-strap-table :data.sync="data" :get-data-event="getData" :columns="columns"></vue-strap-table>
+    <div v-if="checkPermission()">
+        <button @click="addUser" class="btn btn-default">添加用戶</button>
+        <div style="position:relative">
+            <spinner size="md" text="loading..."></spinner>
+            <vue-strap-table :data.sync="data" :get-data-event="getData" :columns="columns"></vue-strap-table>
+        </div>
+        <modal :show.sync="showUserModel" effect="fade" width="400">
+            <div slot="modal-header" class="modal-header">
+                <h4 class="modal-title">
+                    添加用戶
+                </h4>
+            </div>
+            <div slot="modal-body" class="modal-body">
+                <alert :type="alertType">
+                    {{alertText}}
+                </alert>
+                <form-group :valid.sync="valid.account">
+                    <bs-input :value.sync="account" label="账号" required></bs-input>
+                </form-group>
+            </div>
+            <div slot="modal-footer" class="modal-footer">
+                <button type="button" class="btn btn-default" @click="showUserModel=false">关闭</button>
+                <button :disabled="submitting" type="button" class="btn btn-success" @click="submitAddAccount">創建</button>
+            </div>
+        </modal>
+        <modal width="100%" :show.sync="showUserRoleModel" effect="fade">
+            <div slot="modal-header" class="modal-header">
+                <h4 class="modal-title">
+                    用戶角色
+                </h4>
+            </div>
+            <div slot="modal-body" class="modal-body">
+                <user-role-setting :user="user"></user-role-setting>
+            </div>
+            <div slot="modal-footer" class="modal-footer">
+                <button type="button" class="btn btn-default" @click="showUserRoleModel=false">关闭</button>
+            </div>
+        </modal>
     </div>
-    <modal :show.sync="showUserModel" effect="fade" width="400">
-        <div slot="modal-header" class="modal-header">
-            <h4 class="modal-title">
-                添加用戶
-            </h4>
-        </div>
-        <div slot="modal-body" class="modal-body">
-            <alert :type="alertType">
-                {{alertText}}
-            </alert>
-            <form-group :valid.sync="valid.account">
-                <bs-input :value.sync="account" label="账号" required></bs-input>
-            </form-group>
-        </div>
-        <div slot="modal-footer" class="modal-footer">
-            <button type="button" class="btn btn-default" @click="showUserModel=false">关闭</button>
-            <button :disabled="submitting" type="button" class="btn btn-success" @click="submitAddAccount">創建</button>
-        </div>
-    </modal>
 </template>
 
 <script>
 import VueStrapTable from './extend/vue-strap-table'
 import { spinner,modal,formGroup,alert,input as bsInput }  from 'vue-strap'
 import RBAC from '../api/RBAC'
+import UserRoleSetting from './UserRoleSetting'
+import checkPermission from '../extend/check-permission'
 
 export default {
   props:{
@@ -47,7 +64,8 @@ export default {
     modal,
     formGroup,
     alert,
-    bsInput
+    bsInput,
+    UserRoleSetting
   },
   data () {
       let columns= [ 
@@ -56,6 +74,12 @@ export default {
                 { "header":"創建日期", "bind":"created_at"}, 
                 { "header":"修改時間", "bind":"updated_at" }, 
                 { "header":"操作", "type":"action", "items":[ 
+                    { 
+                        eventName:"editUserRole", 
+                        tag:"button", 
+                        class:"btn-xs", 
+                        text:"編輯角色" 
+                    },
                     { 
                         eventName:"reset", 
                         tag:"button",
@@ -88,6 +112,8 @@ export default {
       showUserModel:false,
       data:{},
       serverMsg:"",
+      showUserRoleModel:false,
+      user:"",
       columns:columns
     }
   },
@@ -109,6 +135,7 @@ export default {
         }
   },
   methods:{
+      checkPermission,
       addUser(){
           this.account = ""
           this.showUserModel = true
@@ -173,7 +200,14 @@ export default {
       },
       'reset':function(row){
           this.resetPassword(row.account)
+      },
+      'editUserRole':function(row){
+          this.showUserRoleModel = true
+          this.user = row.account
       }
+  },
+  ready(){
+      this.$broadcast("refreshData")
   }
 }
 </script>

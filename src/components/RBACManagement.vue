@@ -1,33 +1,27 @@
 <template>
-    <template v-if="checkPermission()">
-        <tabset>
-            <tab v-if="checkPermission()" header="用戶">
-                <user-setting></user-setting>
-            </tab>
-            <tab v-if="checkPermission()" header="角色">
-                <role-setting></role-setting>
-            </tab>
-            <tab v-if="checkPermission()" header="權限">
-                <permission-setting></permission-setting>
-            </tab>
-        </tabset>
-    </template>
+    <div v-if="checkPermission()">
+        <navbar type="default">
+            <li v-if="checkPermission()">
+                <a v-link="{ path: '/index/RBACManagement/User' }">用戶</a>
+            </li>
+            <li v-if="checkPermission()">
+                <a v-link="{ path: '/index/RBACManagement/Role' }">角色</a>
+            </li>
+            <li v-if="checkPermission()">
+                <a v-link="{ path: '/index/RBACManagement/Permission' }">權限</a>
+            </li>
+        </navbar>
+        <router-view></router-view>
+    </div>
 </template>
 
 <script>
-import {tab,tabset} from 'vue-strap'
-import UserSetting from './UserSetting'
-import RoleSetting from './RoleSetting'
-import PermissionSetting from './PermissionSetting'
+import {navbar} from 'vue-strap'
 import checkPermission from '../extend/check-permission'
 
 export default {
     components: {
-        tabset,
-        tab,
-        UserSetting,
-        RoleSetting,
-        PermissionSetting
+        navbar
     },
     methods:{
         checkPermission

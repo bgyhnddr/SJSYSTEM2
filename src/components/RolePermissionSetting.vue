@@ -1,44 +1,44 @@
 <template>
     <div v-if="checkPermission()">
-        <button @click="addUserRole" class="btn btn-default">添加用戶角色</button>
+        <button @click="addRolePermission" class="btn btn-default">添加角色權限</button>
         <div style="position:relative">
             <spinner size="md" text="loading..."></spinner>
             <vue-strap-table :data.sync="data" :get-data-event="getData" :columns.sync="columns"></vue-strap-table>
         </div>
-        <div :class="{'in':showUserRoleModel}" class="modal fade" style="display:block;{{showUserRoleModel?'':'z-index:-1'}}">
+        <div :class="{'in':showRolePermissionModel}" class="modal fade" style="display:block;{{showRolePermissionModel?'':'z-index:-1'}}">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h4 class="modal-title">
-                            添加用戶角色
+                            添加角色權限
                         </h4>
                     </div>
                     <div class="modal-body">
-                        <label>{{role_name}}</label>
-                        <button type="button" class="btn btn-default" @click="showRoleModel=true">選擇角色</button>
+                        <label>{{permission_name}}</label>
+                        <button type="button" class="btn btn-default" @click="showPermissionModel=true">選擇權限</button>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-default" @click="showUserRoleModel=false">关闭</button>
-                        <button :disabled="submitting" type="button" class="btn btn-success" @click="submitUserRole">確認</button>
+                        <button type="button" class="btn btn-default" @click="showRolePermissionModel=false">关闭</button>
+                        <button :disabled="submitting" type="button" class="btn btn-success" @click="submitRolePermission">確認</button>
                     </div>
                 </div>
                 <!-- /.modal-content -->
             </div>
             <!-- /.modal-dialog -->
         </div>
-        <div :class="{'in':showRoleModel}" class="modal fade" style="display:block;{{showRoleModel?'':'z-index:-1'}}">
+        <div :class="{'in':showPermissionModel}" class="modal fade" style="display:block;{{showPermissionModel?'':'z-index:-1'}}">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h4 class="modal-title">
-                            選擇角色
+                            選擇權限
                         </h4>
                     </div>
                     <div class="modal-body">
-                        <role-setting :selectable="selectable"></role-setting>
+                        <permission-setting :selectable="selectable"></permission-setting>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-default" @click="showRoleModel=false">关闭</button>
+                        <button type="button" class="btn btn-default" @click="showPermissionModel=false">关闭</button>
                     </div>
                 </div>
                 <!-- /.modal-content -->
@@ -52,18 +52,18 @@
 import VueStrapTable from './extend/vue-strap-table'
 import { spinner,modal,formGroup,alert,input as bsInput }  from 'vue-strap'
 import RBAC from '../api/RBAC'
-import RoleSetting from './RoleSetting'
+import PermissionSetting from './PermissionSetting'
 import checkPermission from '../extend/check-permission'
 
 export default {
   props:{
-      user:{
+      role:{
           type:String,
           require:true
       }
   },
   watch:{
-      'user':function(val){
+      'role':function(val){
           this.$broadcast("refreshData")
       }
   },
@@ -74,28 +74,28 @@ export default {
     formGroup,
     alert,
     bsInput,
-    RoleSetting
+    PermissionSetting
   },
   data () {
     return {
       selectable:true,
       submitting:false,
       getData:"getData",
-      role_code:"",
-      role_name:"",
+      permission_code:"",
+      permission_name:"",
       id:"",
-      showUserRoleModel:false,
-      showRoleModel:false,
+      showRolePermissionModel:false,
+      showPermissionModel:false,
       data:{},
       serverMsg:"",
       columns:[
           {
-              "header":"账号",
-              "bind":"user_account"
-          },
-          {
               "header":"角色",
               "bind":"role_name"
+          },
+          {
+              "header":"權限",
+              "bind":"permission_name"
           },
           {
               "header":"創建日期",
@@ -128,38 +128,38 @@ export default {
   },
   methods:{
       checkPermission,
-      addUserRole(){
+      addRolePermission(){
           this.id=""
-          this.role_code = ""
-          this.role_name = ""
-          this.showUserRoleModel = true
+          this.permission_code = ""
+          this.permission_name = ""
+          this.showRolePermissionModel = true
       },
-      submitUserRole(){
+      submitRolePermission(){
               var that = this
               that.submitting = true
-              RBAC.submitUserRole({id:that.id,role_code:that.role_code,user_account:that.user}).then(function(result){
+              RBAC.submitRolePermission({id:that.id,permission_code:that.permission_code,role_code:that.role}).then(function(result){
                   that.submitting = false
                   that.$broadcast("refreshData")
-                  that.showUserRoleModel = false
+                  that.showRolePermissionModel = false
                   that.serverMsg = ""
                   that.id=""
-                  that.role_code = ""
-                  that.role_name = ""
+                  that.permission_code = ""
+                  that.permission_name = ""
               },function(err){
                   that.submitting = false
                   that.serverMsg=err
               })
       },
-      editUserRole(row){
+      editRolePermission(row){
           this.id = row.id
-          this.role_code = row.role_code
-          this.role_name = row.role_name
-          this.showUserRoleModel = true
+          this.permission_code = row.permission_code
+          this.permission_name = row.permission_name
+          this.showRolePermissionModel = true
       },
-      deleteUserRole(row){
-          if(window.confirm("是否確認刪除："+row.role_name+"?")){
+      deleteRolePermission(row){
+          if(window.confirm("是否確認刪除："+row.permission_name+"?")){
               var that = this
-              RBAC.deleteUserRole({id:row.id}).then(function(result){
+              RBAC.deleteRolePermission({id:row.id}).then(function(result){
                   that.$broadcast("refreshData")
               },function(err){
                   window.alert(err)
@@ -169,26 +169,26 @@ export default {
   },
   events:{
       "edit":function(row){
-          this.editUserRole(row)
+          this.editRolePermission(row)
       },
       "delete":function(row){
-          this.deleteUserRole(row)
+          this.deleteRolePermission(row)
       },
       "getData":function(pageNum,countPerPage,filterKey,append){
           let that = this
           that.$broadcast('show::spinner')
-          RBAC.getUserRoles(that.user,pageNum,countPerPage,filterKey).then(function(result){
+          RBAC.getRolePermissions(that.role,pageNum,countPerPage,filterKey).then(function(result){
               that.$broadcast('hide::spinner')
               var list = result.list.map((o)=>{
+                  if(o.permission)
+                  {
+                      o.permission_name = o.permission.name
+                  }
                   if(o.role)
                   {
-                      o.role_name = o.role.name
-                      return o
+                      o.role_name=o.role.name
                   }
-                  else
-                  {
-                      return o
-                  }
+                  return o
               })
 
               if(append){
@@ -206,9 +206,9 @@ export default {
       },
       "select":function(row){
           console.log(row)
-          this.role_code = row.code
-          this.role_name = row.name
-          this.showRoleModel = false
+          this.permission_code = row.code
+          this.permission_name = row.name
+          this.showPermissionModel = false
       }
   },
   ready(){

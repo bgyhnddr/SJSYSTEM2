@@ -105,16 +105,10 @@ export default{
             this.$dispatch(event, row)
         }
     },
-    computed:{
-
-    },
     events:{
         'refreshData':function(){
             this.getData()
         }
-    },
-    ready(){
-        this.getData()
     }
 }
 </script>

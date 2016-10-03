@@ -209,5 +209,131 @@ export default {
                 }
             })
         })
+    },
+    getUserRoles(user, page, count, filterKey) {
+        return new Promise(function (resolve, reject) {
+            Vue.http.get('/service/private/RBAC/getUserRoles', {
+                _timeout: 5000,
+                params: {
+                    user,
+                    page,
+                    count,
+                    filterKey
+                },
+                onTimeout: (request) => {
+                    reject("timeout")
+                }
+            }).then(function (res) {
+                if (res.ok) {
+                    if (res.body) {
+                        resolve(res.body)
+                    }
+                    else {
+                        reject("error")
+                    }
+                }
+            }, function (e) {
+                reject("error")
+            }).catch(e => window.alert(e))
+        })
+    },
+    submitUserRole(params) {
+        return new Promise(function (resolve, reject) {
+            Vue.http.post('/service/private/RBAC/submitUserRole', params, {
+                _timeout: 5000,
+                onTimeout: (request) => {
+                    reject("timeout")
+                }
+            }).then(function (res) {
+                if (res.ok) {
+                    resolve(res.body)
+                }
+            }).catch(function (e) {
+                if (e.body.code == "error") {
+                    reject(e.body.msg)
+                }
+            })
+        })
+    },
+    deleteUserRole(params) {
+        return new Promise(function (resolve, reject) {
+            Vue.http.post('/service/private/RBAC/deleteUserRole', params, {
+                _timeout: 5000,
+                onTimeout: (request) => {
+                    reject("timeout")
+                }
+            }).then(function (res) {
+                if (res.ok) {
+                    resolve(res.body)
+                }
+            }).catch(function (e) {
+                if (e.body.code == "error") {
+                    reject(e.body.msg)
+                }
+            })
+        })
+    },
+    getRolePermissions(role, page, count, filterKey) {
+        return new Promise(function (resolve, reject) {
+            Vue.http.get('/service/private/RBAC/getRolePermissions', {
+                _timeout: 5000,
+                params: {
+                    role,
+                    page,
+                    count,
+                    filterKey
+                },
+                onTimeout: (request) => {
+                    reject("timeout")
+                }
+            }).then(function (res) {
+                if (res.ok) {
+                    if (res.body) {
+                        resolve(res.body)
+                    }
+                    else {
+                        reject("error")
+                    }
+                }
+            }, function (e) {
+                reject("error")
+            }).catch(e => window.alert(e))
+        })
+    },
+    submitRolePermission(params) {
+        return new Promise(function (resolve, reject) {
+            Vue.http.post('/service/private/RBAC/submitRolePermission', params, {
+                _timeout: 5000,
+                onTimeout: (request) => {
+                    reject("timeout")
+                }
+            }).then(function (res) {
+                if (res.ok) {
+                    resolve(res.body)
+                }
+            }).catch(function (e) {
+                if (e.body.code == "error") {
+                    reject(e.body.msg)
+                }
+            })
+        })
+    },
+    deleteRolePermission(params) {
+        return new Promise(function (resolve, reject) {
+            Vue.http.post('/service/private/RBAC/deleteRolePermission', params, {
+                _timeout: 5000,
+                onTimeout: (request) => {
+                    reject("timeout")
+                }
+            }).then(function (res) {
+                if (res.ok) {
+                    resolve(res.body)
+                }
+            }).catch(function (e) {
+                if (e.body.code == "error") {
+                    reject(e.body.msg)
+                }
+            })
+        })
     }
 }

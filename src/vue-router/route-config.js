@@ -8,11 +8,23 @@ export function configRouter(router) {
                 'table': {
                     component: require('../components/table.vue')
                 },
-                'DataManagement':{
+                'DataManagement': {
                     component: require('../components/DataManagement.vue')
                 },
-                'RBACManagement':{
-                    component: require('../components/RBACManagement.vue')
+                'RBACManagement': {
+                    component: require('../components/RBACManagement.vue'),
+                    subRoutes:
+                    {
+                        'User': {
+                            component: require('../components/UserSetting.vue')
+                        },
+                        'Role': {
+                            component: require('../components/RoleSetting.vue')
+                        },
+                        'Permission': {
+                            component: require('../components/PermissionSetting.vue')
+                        }
+                    }
                 }
             }
         }

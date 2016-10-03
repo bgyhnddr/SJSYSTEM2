@@ -1,36 +1,39 @@
 <template>
-    <button @click="addPermission" class="btn btn-default">添加權限</button>
-    <div style="position:relative">
-        <spinner size="md" text="loading..."></spinner>
-        <vue-strap-table :data.sync="data" :get-data-event="getData" :columns.sync="columns"></vue-strap-table>
+    <div v-if="checkPermission()">
+        <button @click="addPermission" class="btn btn-default">添加權限</button>
+        <div style="position:relative">
+            <spinner size="md" text="loading..."></spinner>
+            <vue-strap-table :data.sync="data" :get-data-event="getData" :columns.sync="columns"></vue-strap-table>
+        </div>
+        <modal :show.sync="showPermissionModel" effect="fade" width="400">
+            <div slot="modal-header" class="modal-header">
+                <h4 class="modal-title">
+                    添加權限
+                </h4>
+            </div>
+            <div slot="modal-body" class="modal-body">
+                <alert :type="alertType">
+                    {{alertText}}
+                </alert>
+                <form-group :valid.sync="valid.all">
+                    <bs-input v-if="!edit" :value.sync="code" label="編碼" required></bs-input>
+                    <bs-input v-else :value.sync="code" label="編碼" readonly></bs-input>
+                    <bs-input :value.sync="name" label="名稱" required></bs-input>
+                </form-group>
+            </div>
+            <div slot="modal-footer" class="modal-footer">
+                <button type="button" class="btn btn-default" @click="showPermissionModel=false">关闭</button>
+                <button :disabled="submitting" type="button" class="btn btn-success" @click="submitPermission">確認</button>
+            </div>
+        </modal>
     </div>
-    <modal :show.sync="showPermissionModel" effect="fade" width="400">
-        <div slot="modal-header" class="modal-header">
-            <h4 class="modal-title">
-                添加權限
-            </h4>
-        </div>
-        <div slot="modal-body" class="modal-body">
-            <alert :type="alertType">
-                {{alertText}}
-            </alert>
-            <form-group :valid.sync="valid.all">
-                <bs-input v-if="!edit" :value.sync="code" label="編碼" required></bs-input>
-                <bs-input v-else :value.sync="code" label="編碼" readonly></bs-input>
-                <bs-input :value.sync="name" label="名稱" required></bs-input>
-            </form-group>
-        </div>
-        <div slot="modal-footer" class="modal-footer">
-            <button type="button" class="btn btn-default" @click="showPermissionModel=false">关闭</button>
-            <button :disabled="submitting" type="button" class="btn btn-success" @click="submitPermission">確認</button>
-        </div>
-    </modal>
 </template>
 
 <script>
 import VueStrapTable from './extend/vue-strap-table'
 import { spinner,modal,formGroup,alert,input as bsInput }  from 'vue-strap'
 import RBAC from '../api/RBAC'
+import checkPermission from '../extend/check-permission'
 
 export default {
   props:{
@@ -129,6 +132,7 @@ export default {
         }
   },
   methods:{
+      checkPermission,
       addPermission(){
           this.code = ""
           this.name = ""
@@ -195,6 +199,9 @@ export default {
               that.$broadcast('hide::spinner')
           })
       }
+  },
+  ready(){
+      this.$broadcast("refreshData")
   }
 }
 </script>

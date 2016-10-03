@@ -1,6 +1,6 @@
 <template>
-    <spinner size="md" text="loading..."></spinner>
-    <modal backdrop="false" :show.sync="state.showLoginModal" effect="fade" width="400">
+    <spinner class="login_loading_zindex" size="md" text="loading..."></spinner>
+    <modal class="login_zindex" backdrop="false" :show.sync="state.showLoginModal" effect="fade" width="400">
         <div slot="modal-header" class="modal-header">
             <h4 class="modal-title">
                 用户登录
@@ -92,3 +92,11 @@ export default {
     }
 }
 </script>
+<style>
+    .login_zindex {
+        z-index: 10000000 !important;
+    }
+    .login_loading_zindex{
+        z-index: 10000001 !important;
+    }
+</style>
