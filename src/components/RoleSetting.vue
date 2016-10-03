@@ -33,6 +33,16 @@ import { spinner,modal,formGroup,alert,input as bsInput }  from 'vue-strap'
 import RBAC from '../api/RBAC'
 
 export default {
+  props:{
+      selectable:{
+          type:Boolean,
+          default:false
+      },
+      selectEvent:{
+          type:String,
+          default:'select'
+      }
+  },
   components: {
     VueStrapTable,
     spinner,
@@ -42,17 +52,7 @@ export default {
     bsInput
   },
   data () {
-    return {
-      submitting:false,
-      getData:"getData",
-      valid:{},
-      code:"",
-      name:"",
-      edit:false,
-      showRoleModel:false,
-      data:{},
-      serverMsg:"",
-      columns:[
+    let columns= [
           {
               "header":"編碼",
               "bind":"code"
@@ -88,6 +88,27 @@ export default {
               ]
           }
       ]
+            if(this.selectable){ 
+                columns.unshift({ "header":"", "type":"action", "items":[ 
+                    { 
+                        eventName:this.selectEvent, 
+                        tag:"button",
+                        class:"btn-xs", 
+                        text:"選擇" 
+                    }] 
+                }) 
+            }
+    return {
+      submitting:false,
+      getData:"getData",
+      valid:{},
+      code:"",
+      name:"",
+      edit:false,
+      showRoleModel:false,
+      data:{},
+      serverMsg:"",
+      columns:columns
     }
   },
   computed: {

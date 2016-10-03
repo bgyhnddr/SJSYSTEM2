@@ -14,11 +14,6 @@
             <alert :type="alertType">
                 {{alertText}}
             </alert>
-            <form-group :valid.sync="valid.all">
-                <bs-input v-if="!edit" :value.sync="code" label="編碼" required></bs-input>
-                <bs-input v-else :value.sync="code" label="編碼" readonly></bs-input>
-                <bs-input :value.sync="name" label="名稱" required></bs-input>
-            </form-group>
         </div>
         <div slot="modal-footer" class="modal-footer">
             <button type="button" class="btn btn-default" @click="showUserRoleModel=false">关闭</button>
@@ -33,6 +28,12 @@ import { spinner,modal,formGroup,alert,input as bsInput }  from 'vue-strap'
 import RBAC from '../api/RBAC'
 
 export default {
+  props:{
+      user:{
+          type:String,
+          require:true
+      }
+  },
   components: {
     VueStrapTable,
     spinner,
@@ -46,8 +47,7 @@ export default {
       submitting:false,
       getData:"getData",
       valid:{},
-      code:"",
-      name:"",
+      role_code:"",
       edit:false,
       showUserRoleModel:false,
       data:{},
@@ -55,11 +55,11 @@ export default {
       columns:[
           {
               "header":"編碼",
-              "bind":"code"
+              "bind":"user_account"
           },
           {
               "header":"名稱",
-              "bind":"name"
+              "bind":"role_code"
           },
           {
               "header":"創建日期",

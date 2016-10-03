@@ -2,7 +2,7 @@
     <button @click="addUser" class="btn btn-default">添加用戶</button>
     <div style="position:relative">
         <spinner size="md" text="loading..."></spinner>
-        <vue-strap-table :data.sync="data" :get-data-event="getData" :columns.sync="columns"></vue-strap-table>
+        <vue-strap-table :data.sync="data" :get-data-event="getData" :columns="columns"></vue-strap-table>
     </div>
     <modal :show.sync="showUserModel" effect="fade" width="400">
         <div slot="modal-header" class="modal-header">
@@ -31,6 +31,16 @@ import { spinner,modal,formGroup,alert,input as bsInput }  from 'vue-strap'
 import RBAC from '../api/RBAC'
 
 export default {
+  props:{
+      selectable:{
+          type:Boolean,
+          default:false
+      },
+      selectEvent:{
+          type:String,
+          default:'select'
+      }
+  },
   components: {
     VueStrapTable,
     spinner,
@@ -40,7 +50,37 @@ export default {
     bsInput
   },
   data () {
-    return {
+      let columns= [ 
+                { "header":"賬號", "bind":"account" }, 
+                { "header":"密碼", "bind":"password" }, 
+                { "header":"創建日期", "bind":"created_at"}, 
+                { "header":"修改時間", "bind":"updated_at" }, 
+                { "header":"操作", "type":"action", "items":[ 
+                    { 
+                        eventName:"reset", 
+                        tag:"button",
+                        class:"btn-xs", 
+                        text:"重置密碼" 
+                    }, 
+                    { 
+                        eventName:"delete", 
+                        tag:"button", 
+                        class:"btn-xs", 
+                        text:"刪除" 
+                    }
+                ]}
+            ]
+            if(this.selectable){ 
+                columns.unshift({ "header":"", "type":"action", "items":[ 
+                    { 
+                        eventName:this.selectEvent, 
+                        tag:"button",
+                        class:"btn-xs", 
+                        text:"選擇" 
+                    }] 
+                }) 
+            }
+      return {
       submitting:false,
       getData:"getData",
       valid:{},
@@ -48,42 +88,7 @@ export default {
       showUserModel:false,
       data:{},
       serverMsg:"",
-      columns:[
-          {
-              "header":"賬號",
-              "bind":"account"
-          },
-          {
-              "header":"密碼",
-              "bind":"password"
-          },
-          {
-              "header":"創建日期",
-              "bind":"created_at"
-          },
-          {
-              "header":"修改時間",
-              "bind":"updated_at"
-          },
-          {
-              "header":"操作",
-              "type":"action",
-              "items":[
-                  {
-                      eventName:"reset",
-                      tag:"button",
-                      class:"btn-xs",
-                      text:"重置密碼"
-                  },
-                  {
-                      eventName:"delete",
-                      tag:"button",
-                      class:"btn-xs",
-                      text:"刪除"
-                  }
-              ]
-          }
-      ]
+      columns:columns
     }
   },
   computed: {
