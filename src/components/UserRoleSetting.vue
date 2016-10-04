@@ -145,7 +145,7 @@ export default {
                   that.id=""
                   that.role_code = ""
                   that.role_name = ""
-              },function(err){
+              }).catch(function(err){
                   that.submitting = false
                   that.serverMsg=err
               })
@@ -161,7 +161,7 @@ export default {
               var that = this
               RBAC.deleteUserRole({id:row.id}).then(function(result){
                   that.$broadcast("refreshData")
-              },function(err){
+              }).catch(function(err){
                   window.alert(err)
               })
           }
@@ -198,8 +198,6 @@ export default {
               else{
                   that.data = result
               }
-          },function(){
-              that.$broadcast('hide::spinner')
           }).catch(function(){
               that.$broadcast('hide::spinner')
           })

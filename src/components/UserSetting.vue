@@ -149,7 +149,7 @@ export default {
                   that.$broadcast("refreshData")
                   that.showUserModel = false
                   that.submitting = false
-              },function(err){
+              }).catch(function(err){
                   that.serverMsg=err
                   that.submitting = false
               })
@@ -160,7 +160,7 @@ export default {
               var that = this
               RBAC.resetPassword({account:account}).then(function(result){
                   that.$broadcast("refreshData")
-              },function(err){
+              }).catch(function(err){
                   window.alert(err)
               })
           }
@@ -170,7 +170,7 @@ export default {
               var that = this
               RBAC.deleteUser({account:account}).then(function(result){
                   that.$broadcast("refreshData")
-              },function(err){
+              }).catch(function(err){
                   window.alert(err)
               })
           }
@@ -192,8 +192,6 @@ export default {
               else{
                   that.data = result
               }
-          },function(){
-              that.$broadcast('hide::spinner')
           }).catch(function(){
               that.$broadcast('hide::spinner')
           })

@@ -83,7 +83,7 @@ export default {
                     that.state.userInfo = result
                     that.state.showLoginModal = false
                     that.$broadcast('hide::spinner')
-                },function(err){
+                }).catch(function(err){
                     that.serverMsg=err
                     that.$broadcast('hide::spinner')
                 })

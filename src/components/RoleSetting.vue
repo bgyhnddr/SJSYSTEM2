@@ -174,7 +174,7 @@ export default {
                   that.serverMsg = ""
                   that.code=""
                   that.name=""
-              },function(err){
+              }).catch(function(err){
                   that.submitting = false
                   that.serverMsg=err
               })
@@ -191,7 +191,7 @@ export default {
               var that = this
               RBAC.deleteRole({code:code}).then(function(result){
                   that.$broadcast("refreshData")
-              },function(err){
+              }).catch(function(err){
                   window.alert(err)
               })
           }
@@ -216,8 +216,6 @@ export default {
               else{
                   that.data = result
               }
-          },function(){
-              that.$broadcast('hide::spinner')
           }).catch(function(){
               that.$broadcast('hide::spinner')
           })
