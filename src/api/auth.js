@@ -23,6 +23,10 @@ export default {
                 if (e.body.code == "error") {
                     reject(e.body.msg)
                 }
+                else
+                {
+                    reject(e.body)
+                }
             })
         })
     },
@@ -36,6 +40,14 @@ export default {
             }).then(function (res) {
                 if (res.ok) {
                     resolve()
+                }
+            }).catch(function (e) {
+                if (e.body.code == "error") {
+                    reject(e.body.msg)
+                }
+                else
+                {
+                    reject(e.body)
                 }
             })
         })
@@ -55,6 +67,14 @@ export default {
                     else {
                         reject("error")
                     }
+                }
+            }).catch(function (e) {
+                if (e.body.code == "error") {
+                    reject(e.body.msg)
+                }
+                else
+                {
+                    reject(e.body)
                 }
             })
         })

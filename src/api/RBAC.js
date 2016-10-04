@@ -27,9 +27,15 @@ export default {
                         reject("error")
                     }
                 }
-            }, function (e) {
-                reject("error")
-            }).catch(e => window.alert(e))
+            }).catch(function (e) {
+                if (e.body.code == "error") {
+                    reject(e.body.msg)
+                }
+                else
+                {
+                    reject(e.body)
+                }
+            })
         })
     },
     addUser(params) {
@@ -46,6 +52,10 @@ export default {
             }).catch(function (e) {
                 if (e.body.code == "error") {
                     reject(e.body.msg)
+                }
+                else
+                {
+                    reject(e.body)
                 }
             })
         })
@@ -65,6 +75,10 @@ export default {
                 if (e.body.code == "error") {
                     reject(e.body.msg)
                 }
+                else
+                {
+                    reject(e.body)
+                }
             })
         })
     },
@@ -82,6 +96,10 @@ export default {
             }).catch(function (e) {
                 if (e.body.code == "error") {
                     reject(e.body.msg)
+                }
+                else
+                {
+                    reject(e.body)
                 }
             })
         })
@@ -107,9 +125,15 @@ export default {
                         reject("error")
                     }
                 }
-            }, function (e) {
-                reject("error")
-            }).catch(e => window.alert(e))
+            }).catch(function (e) {
+                if (e.body.code == "error") {
+                    reject(e.body.msg)
+                }
+                else
+                {
+                    reject(e.body)
+                }
+            })
         })
     },
     submitRole(params) {
@@ -126,6 +150,10 @@ export default {
             }).catch(function (e) {
                 if (e.body.code == "error") {
                     reject(e.body.msg)
+                }
+                else
+                {
+                    reject(e.body)
                 }
             })
         })
@@ -144,6 +172,10 @@ export default {
             }).catch(function (e) {
                 if (e.body.code == "error") {
                     reject(e.body.msg)
+                }
+                else
+                {
+                    reject(e.body)
                 }
             })
         })
@@ -169,9 +201,15 @@ export default {
                         reject("error")
                     }
                 }
-            }, function (e) {
-                reject("error")
-            }).catch(e => window.alert(e))
+            }).catch(function (e) {
+                if (e.body.code == "error") {
+                    reject(e.body.msg)
+                }
+                else
+                {
+                    reject(e.body)
+                }
+            })
         })
     },
     submitPermission(params) {
@@ -188,6 +226,10 @@ export default {
             }).catch(function (e) {
                 if (e.body.code == "error") {
                     reject(e.body.msg)
+                }
+                else
+                {
+                    reject(e.body)
                 }
             })
         })
@@ -206,6 +248,10 @@ export default {
             }).catch(function (e) {
                 if (e.body.code == "error") {
                     reject(e.body.msg)
+                }
+                else
+                {
+                    reject(e.body)
                 }
             })
         })
@@ -232,9 +278,15 @@ export default {
                         reject("error")
                     }
                 }
-            }, function (e) {
-                reject("error")
-            }).catch(e => window.alert(e))
+            }).catch(function (e) {
+                if (e.body.code == "error") {
+                    reject(e.body.msg)
+                }
+                else
+                {
+                    reject(e.body)
+                }
+            })
         })
     },
     submitUserRole(params) {
@@ -251,6 +303,10 @@ export default {
             }).catch(function (e) {
                 if (e.body.code == "error") {
                     reject(e.body.msg)
+                }
+                else
+                {
+                    reject(e.body)
                 }
             })
         })
@@ -269,6 +325,10 @@ export default {
             }).catch(function (e) {
                 if (e.body.code == "error") {
                     reject(e.body.msg)
+                }
+                else
+                {
+                    reject(e.body)
                 }
             })
         })
@@ -295,9 +355,15 @@ export default {
                         reject("error")
                     }
                 }
-            }, function (e) {
-                reject("error")
-            }).catch(e => window.alert(e))
+            }).catch(function (e) {
+                if (e.body.code == "error") {
+                    reject(e.body.msg)
+                }
+                else
+                {
+                    reject(e.body)
+                }
+            })
         })
     },
     submitRolePermission(params) {
@@ -314,6 +380,10 @@ export default {
             }).catch(function (e) {
                 if (e.body.code == "error") {
                     reject(e.body.msg)
+                }
+                else
+                {
+                    reject(e.body)
                 }
             })
         })
@@ -332,6 +402,10 @@ export default {
             }).catch(function (e) {
                 if (e.body.code == "error") {
                     reject(e.body.msg)
+                }
+                else
+                {
+                    reject(e.body)
                 }
             })
         })

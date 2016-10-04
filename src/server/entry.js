@@ -13,6 +13,7 @@ module.exports = (app) => {
     app.use(session({ secret: '1234567890QWERTY' }))
 
     app.use('/service/:permission/:type/:action', function (req, res, next) {
+        console.log("request:" + req.originalUrl)
         if (req.params.permission == "private") {
             var checkPermission = require('../permission/check-permission')
             checkPermission(req, res, next).then(function () {

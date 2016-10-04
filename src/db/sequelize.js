@@ -6,7 +6,8 @@ var Sequelize = require('sequelize')
 var sequelize = new Sequelize('bdm241050686_db', 'bdm241050686', '709394qwe', {
     host: 'bdm241050686.my3w.com',
     dialect: 'mysql',
-    timezone: '+08:00'
+    timezone: '+08:00',
+    logging: false
 })
 
 module.exports = sequelize

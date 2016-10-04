@@ -4,21 +4,21 @@ var login = function (req, res, next) {
 
     var user = require('../db/models/user')
 
-    user.findOne({
+    return user.findOne({
         attributes: ['account', 'password'],
         where: {
             account: account
         }
     }).then(function (result) {
         if (result == null) {
-            res.status(500).send({
+            return Promise.reject({
                 "code": "error",
                 "msg": '賬號不存在'
             })
         }
         else {
             if (result.password != password) {
-                res.status(500).send({
+                return Promise.reject({
                     "code": "error",
                     "msg": '密碼錯誤'
                 })
@@ -48,19 +48,17 @@ var login = function (req, res, next) {
             userInfo.name = account
             userInfo.permissions = result.map(o => o.permission_code)
             req.session.userInfo = userInfo
-            res.send(req.session.userInfo)
+            return req.session.userInfo
         }
     })
-
 }
 
 var logout = function (req, res, next) {
     req.session.userInfo = undefined
-    res.end()
 }
 
 var getUser = function (req, res, next) {
-    res.send(req.session.userInfo)
+    return req.session.userInfo
 }
 
 
@@ -68,15 +66,18 @@ var getUser = function (req, res, next) {
 
 module.exports = (req, res, next) => {
     var action = req.params.action
-    switch (action) {
-        case "login":
-            login(req, res, next)
-            break
-        case "logout":
-            logout(req, res, next)
-            break
-        case "getUser":
-            getUser(req, res, next)
-            break
-    }
+    Promise.resolve(action).then(function (result) {
+        switch (result) {
+            case "login":
+                return login(req, res, next)
+            case "logout":
+                return logout(req, res, next)
+            case "getUser":
+                return getUser(req, res, next)
+        }
+    }).then(function (result) {
+        res.send(result)
+    }).catch(function (error) {
+        res.status(500).send(error)
+    })
 }

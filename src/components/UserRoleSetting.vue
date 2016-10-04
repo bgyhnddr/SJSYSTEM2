@@ -5,7 +5,7 @@
             <spinner size="md" text="loading..."></spinner>
             <vue-strap-table :data.sync="data" :get-data-event="getData" :columns.sync="columns"></vue-strap-table>
         </div>
-        <div :class="{'in':showUserRoleModel}" class="modal fade" style="display:block;{{showUserRoleModel?'':'z-index:-1'}}">
+        <div :class="{'in':showUserRoleModel}" class="modal fade" :style="{zIndex:(showUserRoleModel?undefined:-1)}" style="display:block;overflow-y:auto;">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -26,7 +26,7 @@
             </div>
             <!-- /.modal-dialog -->
         </div>
-        <div :class="{'in':showRoleModel}" class="modal fade" style="display:block;{{showRoleModel?'':'z-index:-1'}}">
+        <div :class="{'in':showRoleModel}" class="modal fade" :style="{zIndex:(showRoleModel?undefined:-1)}" style="display:block;overflow-y:auto;">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
