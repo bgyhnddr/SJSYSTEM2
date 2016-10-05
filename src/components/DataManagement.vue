@@ -28,16 +28,19 @@
 </template>
 
 <script>
-import {tab,tabset} from 'vue-strap'
-import checkPermission from '../extend/check-permission'
+    import {
+        tab,
+        tabset
+    } from 'vue-strap'
+    import checkPermission from '../extend/check-permission'
 
-export default {
-    components: {
-        tabset,
-        tab
-    },
-    methods:{
-        checkPermission
+    export default {
+        components: {
+            tabset,
+            tab
+        },
+        methods: {
+            checkPermission
+        }
     }
-}
 </script>

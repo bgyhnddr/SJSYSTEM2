@@ -26,77 +26,77 @@
 </template>
 
 <script>
-import { modal,formGroup,alert,spinner,input as bsInput }  from 'vue-strap'
-import authAPI from '../api/auth'
-
-export default {
-    data(){
-        return {
-            state:window.state,
-            valid:{},
-            serverMsg:"",
-            loginInfo:{
-                account:"",
-                password:""
-            }
-        }
-    },
-    components:{
+    import {
         modal,
         formGroup,
-        bsInput,
         alert,
-        spinner
-    },
-    computed: { 
-        alertType(){
-            return this.valid.all?"success":"warning"
+        spinner,
+        input as bsInput
+    } from 'vue-strap'
+    import authAPI from '../api/auth'
+
+    export default {
+        data() {
+            return {
+                state: window.state,
+                valid: {},
+                serverMsg: "",
+                loginInfo: {
+                    account: "",
+                    password: ""
+                }
+            }
         },
-        alertText(){
-            if(this.serverMsg)
-            {
-                return this.serverMsg;
+        components: {
+            modal,
+            formGroup,
+            bsInput,
+            alert,
+            spinner
+        },
+        computed: {
+            alertType() {
+                return this.valid.all ? "success" : "warning"
+            },
+            alertText() {
+                if (this.serverMsg) {
+                    return this.serverMsg;
+                }
+                let returnText = "请登录";
+                if (!this.valid.account && !this.valid.password) {
+                    returnText = "请填写账号密码"
+                } else if (!this.valid.account) {
+                    returnText = "请填写正确的账号"
+                } else if (!this.valid.password) {
+                    returnText = "请填写正确的密码"
+                }
+                return returnText
             }
-            let returnText = "请登录";
-            if(!this.valid.account && !this.valid.password)
-            {
-                returnText= "请填写账号密码"
-            }
-            else if(!this.valid.account)
-            {
-                returnText= "请填写正确的账号"
-            }
-            else if(!this.valid.password)
-            {
-                returnText="请填写正确的密码"
-            }
-            return returnText
-        }
-    },
-    methods:{
-        submitLogin(){
-            var that = this
-            if(that.valid.all)
-            {
-                that.$broadcast('show::spinner')
-                authAPI.login(that.loginInfo).then(function(result){
-                    that.state.userInfo = result
-                    that.state.showLoginModal = false
-                    that.$broadcast('hide::spinner')
-                }).catch(function(err){
-                    that.serverMsg=err
-                    that.$broadcast('hide::spinner')
-                })
+        },
+        methods: {
+            submitLogin() {
+                var that = this
+                if (that.valid.all) {
+                    that.$broadcast('show::spinner')
+                    authAPI.login(that.loginInfo).then(function(result) {
+                        that.state.userInfo = result
+                        that.state.showLoginModal = false
+                        that.$broadcast('hide::spinner')
+                    }).catch(function(err) {
+                        that.serverMsg = err
+                        that.$broadcast('hide::spinner')
+                    })
+                }
             }
         }
     }
-}
 </script>
 <style>
     .login_zindex {
         z-index: 10000000 !important;
     }
-    .login_loading_zindex{
+    
+    .login_loading_zindex {
         z-index: 10000001 !important;
     }
 </style>

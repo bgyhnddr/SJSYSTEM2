@@ -32,33 +32,36 @@
 </template>
 
 <script>
-import { dropdown,navbar }  from 'vue-strap'
-import LoginModal from './LoginModal'
-import authAPI from '../api/auth'
-import checkPermission from '../extend/check-permission'
-
-export default { 
-    data(){
-        return {
-            state:window.state
-        }
-    },
-    components:{
-        navbar,
+    import {
         dropdown,
-        LoginModal
-    },
-    methods:{
-        showModal(){
-            this.state.showLoginModal=true
+        navbar
+    } from 'vue-strap'
+    import LoginModal from './LoginModal'
+    import authAPI from '../api/auth'
+    import checkPermission from '../extend/check-permission'
+
+    export default {
+        data() {
+            return {
+                state: window.state
+            }
         },
-        checkPermission,
-        submitLogout(){
-            var vm = this;
-            authAPI.logout().then(function(){
-                window.actions.logout()
-            });
+        components: {
+            navbar,
+            dropdown,
+            LoginModal
+        },
+        methods: {
+            showModal() {
+                this.state.showLoginModal = true
+            },
+            checkPermission,
+            submitLogout() {
+                var vm = this;
+                authAPI.logout().then(function() {
+                    window.actions.logout()
+                });
+            }
         }
     }
-}
 </script>

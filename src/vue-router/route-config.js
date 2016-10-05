@@ -1,10 +1,8 @@
 export function configRouter(router) {
     router.map({
-        '/index':
-        {
+        '/index': {
             component: require('../components/Master.vue'),
-            subRoutes:
-            {
+            subRoutes: {
                 'table': {
                     component: require('../components/table.vue')
                 },
@@ -13,8 +11,7 @@ export function configRouter(router) {
                 },
                 'RBACManagement': {
                     component: require('../components/RBACManagement.vue'),
-                    subRoutes:
-                    {
+                    subRoutes: {
                         'User': {
                             component: require('../components/UserSetting.vue')
                         },

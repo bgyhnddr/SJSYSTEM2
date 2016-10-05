@@ -43,190 +43,189 @@
 </template>
 
 <script>
-import VueStrapTable from './extend/vue-strap-table'
-import { spinner,modal,formGroup,alert,input as bsInput }  from 'vue-strap'
-import RBAC from '../api/RBAC'
-import RolePermissionSetting from './RolePermissionSetting'
-import checkPermission from '../extend/check-permission'
+    import VueStrapTable from './extend/vue-strap-table'
+    import {
+        spinner,
+        modal,
+        formGroup,
+        alert,
+        input as bsInput
+    } from 'vue-strap'
+    import RBAC from '../api/RBAC'
+    import RolePermissionSetting from './RolePermissionSetting'
+    import checkPermission from '../extend/check-permission'
 
-export default {
-  props:{
-      selectable:{
-          type:Boolean,
-          default:false
-      },
-      selectEvent:{
-          type:String,
-          default:'select'
-      }
-  },
-  components: {
-    VueStrapTable,
-    spinner,
-    modal,
-    formGroup,
-    alert,
-    bsInput,
-    RolePermissionSetting
-  },
-  data () {
-    let columns= [
-          {
-              "header":"編碼",
-              "bind":"code"
-          },
-          {
-              "header":"名稱",
-              "bind":"name"
-          },
-          {
-              "header":"創建日期",
-              "bind":"created_at"
-          },
-          {
-              "header":"修改時間",
-              "bind":"updated_at"
-          },
-          {
-              "header":"操作",
-              "type":"action",
-              "items":[
-                  { 
-                      eventName:"editRolePermission", 
-                      tag:"button", 
-                      class:"btn-xs", 
-                      text:"編輯權限" 
-                  },
-                  {
-                      eventName:"edit",
-                      tag:"button",
-                      class:"btn-xs",
-                      text:"修改"
-                  },
-                  {
-                      eventName:"delete",
-                      tag:"button",
-                      class:"btn-xs",
-                      text:"刪除"
-                  }
-              ]
-          }
-      ]
-            if(this.selectable){ 
-                columns.unshift({ "header":"", "type":"action", "items":[ 
-                    { 
-                        eventName:this.selectEvent, 
-                        tag:"button",
-                        class:"btn-xs", 
-                        text:"選擇" 
-                    }] 
-                }) 
+    export default {
+        props: {
+            selectable: {
+                type: Boolean,
+                default: false
+            },
+            selectEvent: {
+                type: String,
+                default: 'select'
             }
-    return {
-      submitting:false,
-      getData:"getData",
-      valid:{},
-      code:"",
-      name:"",
-      edit:false,
-      showRoleModel:false,
-      showRolePermissionModel:false,
-      data:{},
-      role:"",
-      serverMsg:"",
-      columns:columns
-    }
-  },
-  computed: {
-        alertType(){
-            return this.valid.all?"success":"warning"
         },
-        alertText(){
-            if(this.serverMsg)
-            {
-                return this.serverMsg;
+        components: {
+            VueStrapTable,
+            spinner,
+            modal,
+            formGroup,
+            alert,
+            bsInput,
+            RolePermissionSetting
+        },
+        data() {
+            let columns = [{
+                "header": "編碼",
+                "bind": "code"
+            }, {
+                "header": "名稱",
+                "bind": "name"
+            }, {
+                "header": "創建日期",
+                "bind": "created_at"
+            }, {
+                "header": "修改時間",
+                "bind": "updated_at"
+            }, {
+                "header": "操作",
+                "type": "action",
+                "items": [{
+                    eventName: "editRolePermission",
+                    tag: "button",
+                    class: "btn-xs",
+                    text: "編輯權限"
+                }, {
+                    eventName: "edit",
+                    tag: "button",
+                    class: "btn-xs",
+                    text: "修改"
+                }, {
+                    eventName: "delete",
+                    tag: "button",
+                    class: "btn-xs",
+                    text: "刪除"
+                }]
+            }]
+            if (this.selectable) {
+                columns.unshift({
+                    "header": "",
+                    "type": "action",
+                    "items": [{
+                        eventName: this.selectEvent,
+                        tag: "button",
+                        class: "btn-xs",
+                        text: "選擇"
+                    }]
+                })
             }
-            let returnText = "請輸入";
-            if(!this.valid.all)
-            {
-                returnText= "請輸入"
+            return {
+                submitting: false,
+                getData: "getData",
+                valid: {},
+                code: "",
+                name: "",
+                edit: false,
+                showRoleModel: false,
+                showRolePermissionModel: false,
+                data: {},
+                role: "",
+                serverMsg: "",
+                columns: columns
             }
-            return returnText
+        },
+        computed: {
+            alertType() {
+                return this.valid.all ? "success" : "warning"
+            },
+            alertText() {
+                if (this.serverMsg) {
+                    return this.serverMsg;
+                }
+                let returnText = "請輸入";
+                if (!this.valid.all) {
+                    returnText = "請輸入"
+                }
+                return returnText
+            }
+        },
+        methods: {
+            checkPermission,
+            addRole() {
+                this.code = ""
+                this.name = ""
+                this.edit = false
+                this.showRoleModel = true
+            },
+            submitRole() {
+                if (this.valid.all) {
+                    var that = this
+                    that.submitting = true
+                    RBAC.submitRole({
+                        code: that.code,
+                        name: that.name
+                    }).then(function(result) {
+                        that.submitting = false
+                        that.$broadcast("refreshData")
+                        that.showRoleModel = false
+                        that.serverMsg = ""
+                        that.code = ""
+                        that.name = ""
+                    }).catch(function(err) {
+                        that.submitting = false
+                        that.serverMsg = err
+                    })
+                }
+            },
+            editRole(code, name) {
+                this.code = code
+                this.name = name
+                this.edit = true
+                this.showRoleModel = true
+            },
+            deleteRole(code) {
+                if (window.confirm("是否確認刪除：" + code + "?")) {
+                    var that = this
+                    RBAC.deleteRole({
+                        code: code
+                    }).then(function(result) {
+                        that.$broadcast("refreshData")
+                    }).catch(function(err) {
+                        window.alert(err)
+                    })
+                }
+            }
+        },
+        events: {
+            "edit": function(row) {
+                this.editRole(row.code, row.name)
+            },
+            "delete": function(row) {
+                this.deleteRole(row.code)
+            },
+            "getData": function(pageNum, countPerPage, filterKey, append) {
+                let that = this
+                that.$broadcast('show::spinner')
+                RBAC.getRoles(pageNum, countPerPage, filterKey).then(function(result) {
+                    that.$broadcast('hide::spinner')
+                    if (append) {
+                        that.data.end = result.end
+                        that.data.list = that.data.list.concat(result.list)
+                    } else {
+                        that.data = result
+                    }
+                }).catch(function() {
+                    that.$broadcast('hide::spinner')
+                })
+            },
+            'editRolePermission': function(row) {
+                this.showRolePermissionModel = true
+                this.role = row.code
+            }
+        },
+        ready() {
+            this.$broadcast("refreshData")
         }
-  },
-  methods:{
-      checkPermission,
-      addRole(){
-          this.code = ""
-          this.name = ""
-          this.edit = false
-          this.showRoleModel = true
-      },
-      submitRole(){
-          if(this.valid.all)
-          {
-              var that = this
-              that.submitting = true
-              RBAC.submitRole({code:that.code,name:that.name}).then(function(result){
-                  that.submitting = false
-                  that.$broadcast("refreshData")
-                  that.showRoleModel = false
-                  that.serverMsg = ""
-                  that.code=""
-                  that.name=""
-              }).catch(function(err){
-                  that.submitting = false
-                  that.serverMsg=err
-              })
-          }
-      },
-      editRole(code,name){
-          this.code = code
-          this.name = name
-          this.edit = true
-          this.showRoleModel = true
-      },
-      deleteRole(code){
-          if(window.confirm("是否確認刪除："+code+"?")){
-              var that = this
-              RBAC.deleteRole({code:code}).then(function(result){
-                  that.$broadcast("refreshData")
-              }).catch(function(err){
-                  window.alert(err)
-              })
-          }
-      }
-  },
-  events:{
-      "edit":function(row){
-          this.editRole(row.code,row.name)
-      },
-      "delete":function(row){
-          this.deleteRole(row.code)
-      },
-      "getData":function(pageNum,countPerPage,filterKey,append){
-          let that = this
-          that.$broadcast('show::spinner')
-          RBAC.getRoles(pageNum,countPerPage,filterKey).then(function(result){
-              that.$broadcast('hide::spinner')
-              if(append){
-                  that.data.end = result.end
-                  that.data.list=that.data.list.concat(result.list)
-              }
-              else{
-                  that.data = result
-              }
-          }).catch(function(){
-              that.$broadcast('hide::spinner')
-          })
-      },
-      'editRolePermission':function(row){
-          this.showRolePermissionModel = true
-          this.role = row.code
-      }
-  },
-  ready(){
-      this.$broadcast("refreshData")
-  }
-}
+    }
 </script>

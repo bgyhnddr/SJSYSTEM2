@@ -22,95 +22,91 @@
                                 <template v-if="column.format">
                                     {{ column.format(row[column.bind]) }}
                                 </template>
-                                <template v-else>
+<template v-else>
                                     {{ row[column.bind] }}
                                 </template>
-                            </template>
-                            <template v-if="column.type == 'action'">
+</template>
+<template v-if="column.type == 'action'">
                                 <template v-for="item in column.items">
                                     <template v-if="item.tag=='button'">
                                         <button @click="action(item.eventName,row)" class="{{item.class}} btn btn-default">{{item.text}}</button>
                                     </template>
-                                </template>
-                            </template>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            <button type="button" v-if="!data.end" class="btn btn-default" @click="addData">更多...</button>
-        </div>
-    </div>
+</template>
+</template>
+</td>
+</tr>
+</tbody>
+</table>
+<button type="button" v-if="!data.end" class="btn btn-default" @click="addData">更多...</button>
+</div>
+</div>
 </template>
 <script>
-import { input as bsInput }  from 'vue-strap'
+    import {
+        input as bsInput
+    } from 'vue-strap'
 
-export default{
-    components:{
-        bsInput
-    },
-    props:{
-        pageNum:{
-            type:Number,
-            default:0
+    export default {
+        components: {
+            bsInput
         },
-        countPerPage:
-        {
-            type:Number,
-            default:5
-        },
-        hasFilter:{
-            type:Boolean,
-            default:true
-        },
-        filterKey:{
-            type:String,
-            default:""
-        },
-        columns:{
-            type:Array
-        },
-        getDataEvent:{
-            type:String,
-            default:'getData',
-            require:true
-        },
-        data:{
-            type:Object,
-            default:{
-                end:true,
-                list:[]
+        props: {
+            pageNum: {
+                type: Number,
+                default: 0
             },
-            towWay:true
-        }
-    },
-    methods:
-    {
-        hideHeader(obj)
-        {
-            return !obj.hide
+            countPerPage: {
+                type: Number,
+                default: 5
+            },
+            hasFilter: {
+                type: Boolean,
+                default: true
+            },
+            filterKey: {
+                type: String,
+                default: ""
+            },
+            columns: {
+                type: Array
+            },
+            getDataEvent: {
+                type: String,
+                default: 'getData',
+                require: true
+            },
+            data: {
+                type: Object,
+                default: {
+                    end: true,
+                    list: []
+                },
+                towWay: true
+            }
         },
-        getData()
-        {
-            this.pageNum = 0
-            this.$dispatch(this.getDataEvent, this.pageNum,this.countPerPage,this.filterKey)
+        methods: {
+            hideHeader(obj) {
+                return !obj.hide
+            },
+            getData() {
+                this.pageNum = 0
+                this.$dispatch(this.getDataEvent, this.pageNum, this.countPerPage, this.filterKey)
+            },
+            addData() {
+                let that = this
+                this.pageNum++
+                    this.$dispatch(this.getDataEvent, this.pageNum, this.countPerPage, this.filterKey, true)
+            },
+            action(event, row) {
+                this.$dispatch(event, row)
+            }
         },
-        addData()
-        {
-            let that= this
-            this.pageNum++
-            this.$dispatch(this.getDataEvent, this.pageNum,this.countPerPage,this.filterKey,true)
-        },
-        action(event,row)
-        {
-            this.$dispatch(event, row)
-        }
-    },
-    events:{
-        'refreshData':function(){
-            this.getData()
+        events: {
+            'refreshData': function() {
+                this.getData()
+            }
         }
     }
-}
 </script>
 
 <style>

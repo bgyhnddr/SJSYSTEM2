@@ -16,15 +16,17 @@
 </template>
 
 <script>
-import {navbar} from 'vue-strap'
-import checkPermission from '../extend/check-permission'
-
-export default {
-    components: {
+    import {
         navbar
-    },
-    methods:{
-        checkPermission
+    } from 'vue-strap'
+    import checkPermission from '../extend/check-permission'
+
+    export default {
+        components: {
+            navbar
+        },
+        methods: {
+            checkPermission
+        }
     }
-}
 </script>
