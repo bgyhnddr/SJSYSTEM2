@@ -22,24 +22,24 @@
                                 <template v-if="column.format">
                                     {{ column.format(row[column.bind]) }}
                                 </template>
-<template v-else>
+                                <template v-else>
                                     {{ row[column.bind] }}
                                 </template>
-</template>
-<template v-if="column.type == 'action'">
+                            </template>
+                            <template v-if="column.type == 'action'">
                                 <template v-for="item in column.items">
                                     <template v-if="item.tag=='button'">
                                         <button @click="action(item.eventName,row)" class="{{item.class}} btn btn-default">{{item.text}}</button>
                                     </template>
-</template>
-</template>
-</td>
-</tr>
-</tbody>
-</table>
-<button type="button" v-if="!data.end" class="btn btn-default" @click="addData">更多...</button>
-</div>
-</div>
+                                </template>
+                            </template>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <button type="button" v-if="!data.end" class="btn btn-default" @click="addData">更多...</button>
+        </div>
+    </div>
 </template>
 <script>
     import {

@@ -5,7 +5,8 @@
             <spinner size="md" text="loading..."></spinner>
             <vue-strap-table :data.sync="data" :get-data-event="getData" :columns.sync="columns"></vue-strap-table>
         </div>
-        <div :class="{'in':showRolePermissionModel}" class="modal fade" :style="{zIndex:(showRolePermissionModel?undefined:-1)}" style="display:block;overflow-y:auto;">
+        <div :class="{'in':showRolePermissionModel}" class="modal fade" :style="{zIndex:(showRolePermissionModel?undefined:-1)}"
+            style="display:block;overflow-y:auto;">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">

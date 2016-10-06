@@ -3,9 +3,6 @@ export function configRouter(router) {
         '/index': {
             component: require('../components/Master.vue'),
             subRoutes: {
-                'table': {
-                    component: require('../components/table.vue')
-                },
                 'DataManagement': {
                     component: require('../components/DataManagement.vue')
                 },
@@ -24,6 +21,9 @@ export function configRouter(router) {
                     }
                 }
             }
+        },
+        '/uploadtest': {
+            component: require('../components/uploadTest.vue')
         }
     })
     router.redirect({
