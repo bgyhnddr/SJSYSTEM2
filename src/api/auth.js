@@ -1,11 +1,4 @@
 var Vue = require('vue')
-Vue.use(require('vue-resource'))
-import timei from '../extend/vue-resource-timeout'
-import authCallback from '../extend/auth-callback'
-
-Vue.http.interceptors.push(timei)
-Vue.http.interceptors.push(authCallback)
-
 
 export default {
     login(params) {
@@ -22,9 +15,7 @@ export default {
             }).catch(function (e) {
                 if (e.body.code == "error") {
                     reject(e.body.msg)
-                }
-                else
-                {
+                } else {
                     reject(e.body)
                 }
             })
@@ -44,9 +35,7 @@ export default {
             }).catch(function (e) {
                 if (e.body.code == "error") {
                     reject(e.body.msg)
-                }
-                else
-                {
+                } else {
                     reject(e.body)
                 }
             })
@@ -63,17 +52,14 @@ export default {
                 if (res.ok) {
                     if (res.body.name) {
                         resolve(res.body)
-                    }
-                    else {
+                    } else {
                         reject("error")
                     }
                 }
             }).catch(function (e) {
                 if (e.body.code == "error") {
                     reject(e.body.msg)
-                }
-                else
-                {
+                } else {
                     reject(e.body)
                 }
             })
