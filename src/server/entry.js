@@ -24,6 +24,9 @@ module.exports = (app) => {
                     case "upload":
                         require('./upload')(req, res, next)
                         break
+                    case "datasource":
+                        require('./datasource')(req, res, next)
+                        break
                 }
             }, function(error) {
                 if (error == "not_login") {

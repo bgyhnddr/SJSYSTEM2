@@ -428,6 +428,8 @@ var deleteUserRole = function (req, res, next) {
             where: {
                 id: id
             }
+        }).then(function(){
+            return "success"
         })
     }
     else {
@@ -554,6 +556,8 @@ var deleteRolePermission = function (req, res, next) {
             where: {
                 id: id
             }
+        }).then(function(){
+            return "success"
         })
     }
     else {

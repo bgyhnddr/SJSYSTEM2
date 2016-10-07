@@ -4,7 +4,12 @@ export function configRouter(router) {
             component: require('../components/Master.vue'),
             subRoutes: {
                 'DataManagement': {
-                    component: require('../components/DataManagement.vue')
+                    component: require('../components/DataManagement.vue'),
+                    subRoutes: {
+                        'PropertyManagementCo': {
+                            component: require('../components/PropertyManagementCoSetting.vue')
+                        }
+                    }
                 },
                 'RBACManagement': {
                     component: require('../components/RBACManagement.vue'),

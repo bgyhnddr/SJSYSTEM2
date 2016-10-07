@@ -1,29 +1,29 @@
 <template>
     <div v-if="checkPermission()">
-        <button @click="addPermission" class="btn btn-default">添加權限</button>
+        <button @click="addPropertyManagementCo" class="btn btn-default">添加物業公司</button>
         <div style="position:relative">
             <spinner size="md" text="loading..."></spinner>
             <vue-strap-table :err-msg.sync="errMsg" :data.sync="data" :get-data-event="getData" :columns.sync="columns"></vue-strap-table>
         </div>
-        <modal :show.sync="showPermissionModel" effect="fade" width="400">
+        <modal :show.sync="showPropertyManagementCoModel" effect="fade" width="400">
             <div slot="modal-header" class="modal-header">
                 <h4 class="modal-title">
-            添加權限
-        </h4>
+                添加物業公司
+                </h4>
             </div>
             <div slot="modal-body" class="modal-body">
                 <alert :type="alertType">
                     {{alertText}}
                 </alert>
                 <form-group :valid.sync="valid.all">
-                    <bs-input v-if="!edit" :value.sync="code" label="編碼" required></bs-input>
-                    <bs-input v-else :value.sync="code" label="編碼" readonly></bs-input>
-                    <bs-input :value.sync="name" label="名稱" required></bs-input>
+                    <bs-input :value.sync="submitData.code" label="代號" required></bs-input>
+                    <bs-input :value.sync="submitData.name" label="名稱" required></bs-input>
+                    <bs-input :value.sync="submitData.name_en" label="英文名" required></bs-input>
                 </form-group>
             </div>
             <div slot="modal-footer" class="modal-footer">
-                <button type="button" class="btn btn-default" @click="showPermissionModel=false">关闭</button>
-                <button :disabled="submitting" type="button" class="btn btn-success" @click="submitPermission">確認</button>
+                <button type="button" class="btn btn-default" @click="showPropertyManagementCoModel=false">关闭</button>
+                <button :disabled="submitting" type="button" class="btn btn-success" @click="submitPropertyManagementCo">確認</button>
             </div>
         </modal>
     </div>
@@ -37,7 +37,7 @@ import {
     alert,
     input as bsInput
 } from 'vue-strap'
-import RBAC from '../api/RBAC'
+import datasource from '../api/datasource'
 import checkPermission from '../extend/check-permission'
 
 export default {
@@ -61,11 +61,14 @@ export default {
     },
     data() {
         let columns = [{
-            "header": "編碼",
+            "header": "代號",
             "bind": "code"
         }, {
             "header": "名稱",
             "bind": "name"
+        }, {
+            "header": "英文名",
+            "bind": "name_en"
         }, {
             "header": "創建日期",
             "bind": "created_at"
@@ -103,10 +106,13 @@ export default {
             submitting: false,
             getData: "getData",
             valid: {},
-            code: "",
-            name: "",
-            edit: false,
-            showPermissionModel: false,
+            submitData: {
+                id: "",
+                code: "",
+                name: "",
+                name_en: ""
+            },
+            showPropertyManagementCoModel: false,
             data: {},
             serverMsg: "",
             columns: columns,
@@ -130,43 +136,38 @@ export default {
     },
     methods: {
         checkPermission,
-        addPermission() {
-            this.code = ""
-            this.name = ""
-            this.edit = false
-            this.showPermissionModel = true
+        addPropertyManagementCo() {
+            this.submitData = {}
+            this.showPropertyManagementCoModel = true
         },
-        submitPermission() {
+        submitPropertyManagementCo() {
             if (this.valid.all) {
                 var that = this
                 that.submitting = true
-                RBAC.submitPermission({
-                    code: that.code,
-                    name: that.name
-                }).then(function(result) {
+                datasource.submitPropertyManagementCo(that.submitData).then(function(result) {
                     that.submitting = false
                     that.$broadcast("refreshData")
-                    that.showPermissionModel = false
+                    that.showPropertyManagementCoModel = false
                     that.serverMsg = ""
-                    that.code = ""
-                    that.name = ""
+                    that.submitData = {}
                 }).catch(function(err) {
                     that.submitting = false
                     that.serverMsg = err
                 })
             }
         },
-        editPermission(code, name) {
-            this.code = code
-            this.name = name
-            this.edit = true
-            this.showPermissionModel = true
+        editPropertyManagementCo(row) {
+            this.submitData.id = row.id
+            this.submitData.code = row.code
+            this.submitData.name = row.name
+            this.submitData.name_en = row.name_en
+            this.showPropertyManagementCoModel = true
         },
-        deletePermission(code) {
-            if (window.confirm("是否確認刪除：" + code + "?")) {
+        deletePropertyManagementCo(row) {
+            if (window.confirm("是否確認刪除：" + row.code + "?")) {
                 var that = this
-                RBAC.deletePermission({
-                    code: code
+                datasource.deletePropertyManagementCo({
+                    id: row.id
                 }).then(function(result) {
                     that.$broadcast("refreshData")
                 }).catch(function(err) {
@@ -177,15 +178,15 @@ export default {
     },
     events: {
         "edit": function(row) {
-            this.editPermission(row.code, row.name)
+            this.editPropertyManagementCo(row)
         },
         "delete": function(row) {
-            this.deletePermission(row.code)
+            this.deletePropertyManagementCo(row)
         },
         "getData": function(pageNum, countPerPage, filterKey, append) {
             let that = this
             that.$broadcast('show::spinner')
-            RBAC.getPermissions(pageNum, countPerPage, filterKey).then(function(result) {
+            datasource.getPropertyManagementCos(pageNum, countPerPage, filterKey).then(function(result) {
                 that.$broadcast('hide::spinner')
                 if (append) {
                     that.data.end = result.end

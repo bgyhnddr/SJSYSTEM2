@@ -1,6 +1,5 @@
 var Sequelize = require('sequelize')
 var sequelize = require('../sequelize')
-
 var job_content_template = sequelize.define(
     'job_content_template', {
         id: { type: Sequelize.INTEGER, autoIncrement: true, primaryKey: true },
@@ -10,6 +9,4 @@ var job_content_template = sequelize.define(
     }, {
         underscored: true
     })
-
-
 module.exports = job_content_template
