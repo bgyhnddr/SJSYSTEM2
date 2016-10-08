@@ -8,6 +8,12 @@ export function configRouter(router) {
                     subRoutes: {
                         'PropertyManagementCo': {
                             component: require('../components/PropertyManagementCoSetting.vue')
+                        },
+                        'Staff': {
+                            component: require('../components/StaffSetting.vue')
+                        },
+                        'Building': {
+                            component: require('../components/BuildingSetting.vue')
                         }
                     }
                 },

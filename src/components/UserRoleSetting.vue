@@ -100,12 +100,6 @@ export default {
                 "header": "角色",
                 "bind": "role_name"
             }, {
-                "header": "創建日期",
-                "bind": "created_at"
-            }, {
-                "header": "修改時間",
-                "bind": "updated_at"
-            }, {
                 "header": "操作",
                 "type": "action",
                 "items": [{

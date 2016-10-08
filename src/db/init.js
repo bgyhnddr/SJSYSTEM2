@@ -12,7 +12,7 @@ module.exports = function(req, res, next) {
     var project_item = require('./models/project_item')
     var job_content_template = require('./models/job_content_template')
     var upload_content_template = require('./models/upload_content_template')
-    var buliding = require('./models/buliding')
+    var building = require('./models/building')
 
     Promise.all([
         user.sync({ force: true }),
@@ -27,7 +27,7 @@ module.exports = function(req, res, next) {
         project_item.sync({ force: true }),
         job_content_template.sync({ force: true }),
         upload_content_template.sync({ force: true }),
-        buliding.sync({ force: true })
+        building.sync({ force: true })
     ]).then(function() {
         return Promise.all([
             user.create({ account: 'admin', password: "admin" }),

@@ -85,6 +85,216 @@ var deletePropertyManagementCo = function(req, res, next) {
     })
 }
 
+var getStaffs = function(req, res, next) {
+    var staff = require('../db/models/staff')
+
+    var filterKey = req.query.filterKey == undefined ? "" : req.query.filterKey
+    var count = req.query.count == undefined ? 5 : parseInt(req.query.count)
+    var page = req.query.page == undefined ? 0 : parseInt(req.query.page)
+
+    return Promise.all([
+        staff.findAll({
+            where: {
+                $or: {
+                    name: {
+                        $like: "%" + filterKey + "%"
+                    }
+                }
+            },
+            offset: page * count,
+            limit: count
+        }),
+        staff.count({
+            where: {
+                $or: {
+                    name: {
+                        $like: "%" + filterKey + "%"
+                    }
+                }
+            }
+        })
+    ]).then(function(result) {
+        var staffs = result[0]
+        var rowCount = result[1]
+        return {
+            end: (staffs.length + page * count) >= rowCount,
+            list: staffs
+        }
+    })
+}
+
+var submitStaff = function(req, res, next) {
+    var staff = require('../db/models/staff')
+    if (req.body.id) {
+        return staff.findOne({
+            where: {
+                id: req.body.id
+            }
+        }).then(function(result) {
+            return result.update(req.body)
+        }).catch(function(error) {
+            if (error.name == "SequelizeUniqueConstraintError") {
+                return Promise.reject("數據不能重複")
+            }
+            return Promise.reject(error.name)
+        })
+    } else {
+        return staff.create(req.body).catch(function(error) {
+            if (error.name == "SequelizeUniqueConstraintError") {
+                return Promise.reject("數據不能重複")
+            }
+            return Promise.reject(error.name)
+        })
+    }
+}
+
+var deleteStaff = function(req, res, next) {
+    var staff = require('../db/models/staff')
+    console.log(req.body)
+    return staff.destroy({
+        where: {
+            id: req.body.id
+        }
+    }).then(function() {
+        return "success"
+    })
+}
+
+var getBuildings = function(req, res, next) {
+    var building = require('../db/models/building')
+
+    var filterKey = req.query.filterKey == undefined ? "" : req.query.filterKey
+    var count = req.query.count == undefined ? 5 : parseInt(req.query.count)
+    var page = req.query.page == undefined ? 0 : parseInt(req.query.page)
+
+    return Promise.all([
+        building.findAll({
+            where: {
+                $or: {
+                    name: {
+                        $like: "%" + filterKey + "%"
+                    },
+                    name_en: {
+                        $like: "%" + filterKey + "%"
+                    },
+                    address: {
+                        $like: "%" + filterKey + "%"
+                    },
+                    address_en: {
+                        $like: "%" + filterKey + "%"
+                    },
+                    bill_address: {
+                        $like: "%" + filterKey + "%"
+                    },
+                    bill_address_en: {
+                        $like: "%" + filterKey + "%"
+                    },
+                    attn: {
+                        $like: "%" + filterKey + "%"
+                    },
+                    attn_en: {
+                        $like: "%" + filterKey + "%"
+                    },
+                    tel: {
+                        $like: "%" + filterKey + "%"
+                    },
+                    fax: {
+                        $like: "%" + filterKey + "%"
+                    },
+                    email: {
+                        $like: "%" + filterKey + "%"
+                    }
+                }
+            },
+            offset: page * count,
+            limit: count
+        }),
+        building.count({
+            where: {
+                $or: {
+                    name: {
+                        $like: "%" + filterKey + "%"
+                    },
+                    name_en: {
+                        $like: "%" + filterKey + "%"
+                    },
+                    address: {
+                        $like: "%" + filterKey + "%"
+                    },
+                    address_en: {
+                        $like: "%" + filterKey + "%"
+                    },
+                    bill_address: {
+                        $like: "%" + filterKey + "%"
+                    },
+                    bill_address_en: {
+                        $like: "%" + filterKey + "%"
+                    },
+                    attn: {
+                        $like: "%" + filterKey + "%"
+                    },
+                    attn_en: {
+                        $like: "%" + filterKey + "%"
+                    },
+                    tel: {
+                        $like: "%" + filterKey + "%"
+                    },
+                    fax: {
+                        $like: "%" + filterKey + "%"
+                    },
+                    email: {
+                        $like: "%" + filterKey + "%"
+                    }
+                }
+            }
+        })
+    ]).then(function(result) {
+        var buildings = result[0]
+        var rowCount = result[1]
+        return {
+            end: (buildings.length + page * count) >= rowCount,
+            list: buildings
+        }
+    })
+}
+
+var submitBuilding = function(req, res, next) {
+    var building = require('../db/models/building')
+    if (req.body.id) {
+        return building.findOne({
+            where: {
+                id: req.body.id
+            }
+        }).then(function(result) {
+            return result.update(req.body)
+        }).catch(function(error) {
+            if (error.name == "SequelizeUniqueConstraintError") {
+                return Promise.reject("數據不能重複")
+            }
+            return Promise.reject(error.name)
+        })
+    } else {
+        return building.create(req.body).catch(function(error) {
+            if (error.name == "SequelizeUniqueConstraintError") {
+                return Promise.reject("數據不能重複")
+            }
+            return Promise.reject(error.name)
+        })
+    }
+}
+
+var deleteBuilding = function(req, res, next) {
+    var building = require('../db/models/building')
+    console.log(req.body)
+    return building.destroy({
+        where: {
+            id: req.body.id
+        }
+    }).then(function() {
+        return "success"
+    })
+}
+
 module.exports = (req, res, next) => {
     var action = req.params.action
     Promise.resolve(action).then(function(result) {
@@ -95,6 +305,18 @@ module.exports = (req, res, next) => {
                 return submitPropertyManagementCo(req, res, next)
             case "deletePropertyManagementCo":
                 return deletePropertyManagementCo(req, res, next)
+            case "getStaffs":
+                return getStaffs(req, res, next)
+            case "submitStaff":
+                return submitStaff(req, res, next)
+            case "deleteStaff":
+                return deleteStaff(req, res, next)
+            case "getBuildings":
+                return getBuildings(req, res, next)
+            case "submitBuilding":
+                return submitBuilding(req, res, next)
+            case "deleteBuilding":
+                return deleteBuilding(req, res, next)
         }
     }).then(function(result) {
         res.send(result)

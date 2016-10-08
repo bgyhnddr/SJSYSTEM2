@@ -1,8 +1,8 @@
 var Sequelize = require('sequelize')
 var sequelize = require('../sequelize')
 
-var buliding = sequelize.define(
-    'buliding', {
+var building = sequelize.define(
+    'building', {
         id: { type: Sequelize.INTEGER, autoIncrement: true, primaryKey: true },
         name: { type: Sequelize.STRING, unique: true },
         name_en: { type: Sequelize.STRING, unique: true },
@@ -20,4 +20,4 @@ var buliding = sequelize.define(
     })
 
 
-module.exports = buliding
+module.exports = building

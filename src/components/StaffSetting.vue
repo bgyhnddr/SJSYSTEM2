@@ -1,14 +1,14 @@
 <template>
     <div v-if="checkPermission()">
-        <button @click="addPropertyManagementCo" class="btn btn-default">添加物業公司</button>
+        <button @click="addStaff" class="btn btn-default">添加開工員工</button>
         <div style="position:relative">
             <spinner size="md" text="loading..."></spinner>
             <vue-strap-table :err-msg.sync="errMsg" :data.sync="data" :get-data-event="getData" :columns.sync="columns"></vue-strap-table>
         </div>
-        <modal :show.sync="showPropertyManagementCoModel" effect="fade" width="400">
+        <modal :show.sync="showStaffModel" effect="fade" width="400">
             <div slot="modal-header" class="modal-header">
                 <h4 class="modal-title">
-                添加物業公司
+                    開工員工
                 </h4>
             </div>
             <div slot="modal-body" class="modal-body">
@@ -16,14 +16,12 @@
                     {{alertText}}
                 </alert>
                 <form-group :valid.sync="valid.all">
-                    <bs-input :value.sync="submitData.code" label="代號" required></bs-input>
                     <bs-input :value.sync="submitData.name" label="名稱" required></bs-input>
-                    <bs-input :value.sync="submitData.name_en" label="英文名" pattern=""></bs-input>
                 </form-group>
             </div>
             <div slot="modal-footer" class="modal-footer">
-                <button type="button" class="btn btn-default" @click="showPropertyManagementCoModel=false">关闭</button>
-                <button :disabled="submitting" type="button" class="btn btn-success" @click="submitPropertyManagementCo">確認</button>
+                <button type="button" class="btn btn-default" @click="showStaffModel=false">关闭</button>
+                <button :disabled="submitting" type="button" class="btn btn-success" @click="submitStaff">確認</button>
             </div>
         </modal>
     </div>
@@ -61,14 +59,8 @@
         },
         data() {
             let columns = [{
-                "header": "代號",
-                "bind": "code"
-            }, {
                 "header": "名稱",
                 "bind": "name"
-            }, {
-                "header": "英文名",
-                "bind": "name_en"
             }, {
                 "header": "操作",
                 "type": "action",
@@ -102,11 +94,9 @@
                 valid: {},
                 submitData: {
                     id: "",
-                    code: "",
-                    name: "",
-                    name_en: ""
+                    name: ""
                 },
-                showPropertyManagementCoModel: false,
+                showStaffModel: false,
                 data: {},
                 serverMsg: "",
                 columns: columns,
@@ -130,18 +120,19 @@
         },
         methods: {
             checkPermission,
-            addPropertyManagementCo() {
+            addStaff() {
                 this.submitData = {}
-                this.showPropertyManagementCoModel = true
+                this.showStaffModel = true
             },
-            submitPropertyManagementCo() {
+            submitStaff() {
+                console.log(this.valid.all)
                 if (this.valid.all) {
                     var that = this
                     that.submitting = true
-                    datasource.submitPropertyManagementCo(that.submitData).then(function(result) {
+                    datasource.submitStaff(that.submitData).then(function(result) {
                         that.submitting = false
                         that.$broadcast("refreshData")
-                        that.showPropertyManagementCoModel = false
+                        that.showStaffModel = false
                         that.serverMsg = ""
                         that.submitData = {}
                     }).catch(function(err) {
@@ -150,17 +141,15 @@
                     })
                 }
             },
-            editPropertyManagementCo(row) {
+            editStaff(row) {
                 this.submitData.id = row.id
-                this.submitData.code = row.code
                 this.submitData.name = row.name
-                this.submitData.name_en = row.name_en
-                this.showPropertyManagementCoModel = true
+                this.showStaffModel = true
             },
-            deletePropertyManagementCo(row) {
-                if (window.confirm("是否確認刪除：" + row.code + "?")) {
+            deleteStaff(row) {
+                if (window.confirm("是否確認刪除：" + row.name + "?")) {
                     var that = this
-                    datasource.deletePropertyManagementCo({
+                    datasource.deleteStaff({
                         id: row.id
                     }).then(function(result) {
                         that.$broadcast("refreshData")
@@ -172,15 +161,15 @@
         },
         events: {
             "edit": function(row) {
-                this.editPropertyManagementCo(row)
+                this.editStaff(row)
             },
             "delete": function(row) {
-                this.deletePropertyManagementCo(row)
+                this.deleteStaff(row)
             },
             "getData": function(pageNum, countPerPage, filterKey, append) {
                 let that = this
                 that.$broadcast('show::spinner')
-                datasource.getPropertyManagementCos(pageNum, countPerPage, filterKey).then(function(result) {
+                datasource.getStaffs(pageNum, countPerPage, filterKey).then(function(result) {
                     that.$broadcast('hide::spinner')
                     if (append) {
                         that.data.end = result.end

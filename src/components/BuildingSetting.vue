@@ -1,14 +1,14 @@
 <template>
     <div v-if="checkPermission()">
-        <button @click="addPropertyManagementCo" class="btn btn-default">添加物業公司</button>
+        <button @click="addBuilding" class="btn btn-default">添加盤</button>
         <div style="position:relative">
             <spinner size="md" text="loading..."></spinner>
             <vue-strap-table :err-msg.sync="errMsg" :data.sync="data" :get-data-event="getData" :columns.sync="columns"></vue-strap-table>
         </div>
-        <modal :show.sync="showPropertyManagementCoModel" effect="fade" width="400">
+        <modal :show.sync="showBuildingModel" effect="fade" width="400">
             <div slot="modal-header" class="modal-header">
                 <h4 class="modal-title">
-                添加物業公司
+                    添加盤
                 </h4>
             </div>
             <div slot="modal-body" class="modal-body">
@@ -16,14 +16,22 @@
                     {{alertText}}
                 </alert>
                 <form-group :valid.sync="valid.all">
-                    <bs-input :value.sync="submitData.code" label="代號" required></bs-input>
                     <bs-input :value.sync="submitData.name" label="名稱" required></bs-input>
-                    <bs-input :value.sync="submitData.name_en" label="英文名" pattern=""></bs-input>
+                    <bs-input :value.sync="submitData.name_en" label="名稱(英文)" pattern=""></bs-input>
+                    <bs-input :value.sync="submitData.address" label="地址" pattern=""></bs-input>
+                    <bs-input :value.sync="submitData.address_en" label="地址（英文）" pattern=""></bs-input>
+                    <bs-input :value.sync="submitData.bill_address" label="賬單地址" pattern=""></bs-input>
+                    <bs-input :value.sync="submitData.bill_address_en" label="賬單地址（英文）" pattern=""></bs-input>
+                    <bs-input :value.sync="submitData.attn" label="聯繫人" pattern=""></bs-input>
+                    <bs-input :value.sync="submitData.attn_en" label="聯繫人（英文）" pattern=""></bs-input>
+                    <bs-input :value.sync="submitData.tel" label="電話" pattern=""></bs-input>
+                    <bs-input :value.sync="submitData.fax" label="傳真" pattern=""></bs-input>
+                    <bs-input :value.sync="submitData.email" label="電郵" pattern=""></bs-input>
                 </form-group>
             </div>
             <div slot="modal-footer" class="modal-footer">
-                <button type="button" class="btn btn-default" @click="showPropertyManagementCoModel=false">关闭</button>
-                <button :disabled="submitting" type="button" class="btn btn-success" @click="submitPropertyManagementCo">確認</button>
+                <button type="button" class="btn btn-default" @click="showBuildingModel=false">关闭</button>
+                <button :disabled="submitting" type="button" class="btn btn-success" @click="submitBuilding">確認</button>
             </div>
         </modal>
     </div>
@@ -61,14 +69,38 @@
         },
         data() {
             let columns = [{
-                "header": "代號",
-                "bind": "code"
-            }, {
                 "header": "名稱",
                 "bind": "name"
             }, {
-                "header": "英文名",
+                "header": "名稱(英文)",
                 "bind": "name_en"
+            }, {
+                "header": "地址",
+                "bind": "address"
+            }, {
+                "header": "地址（英文）",
+                "bind": "address_en"
+            }, {
+                "header": "賬單地址",
+                "bind": "bill_address"
+            }, {
+                "header": "賬單地址（英文）",
+                "bind": "bill_address_en"
+            }, {
+                "header": "聯繫人",
+                "bind": "attn"
+            }, {
+                "header": "聯繫人（英文）",
+                "bind": "attn_en"
+            }, {
+                "header": "電話",
+                "bind": "tel"
+            }, {
+                "header": "傳真",
+                "bind": "fax"
+            }, {
+                "header": "電郵",
+                "bind": "email"
             }, {
                 "header": "操作",
                 "type": "action",
@@ -102,11 +134,19 @@
                 valid: {},
                 submitData: {
                     id: "",
-                    code: "",
                     name: "",
-                    name_en: ""
+                    name_en: "",
+                    address: "",
+                    address_en: "",
+                    bill_address: "",
+                    bill_address_en: "",
+                    attn: "",
+                    attn_en: "",
+                    tel: "",
+                    fax: "",
+                    email: ""
                 },
-                showPropertyManagementCoModel: false,
+                showBuildingModel: false,
                 data: {},
                 serverMsg: "",
                 columns: columns,
@@ -130,18 +170,18 @@
         },
         methods: {
             checkPermission,
-            addPropertyManagementCo() {
+            addBuilding() {
                 this.submitData = {}
-                this.showPropertyManagementCoModel = true
+                this.showBuildingModel = true
             },
-            submitPropertyManagementCo() {
+            submitBuilding() {
                 if (this.valid.all) {
                     var that = this
                     that.submitting = true
-                    datasource.submitPropertyManagementCo(that.submitData).then(function(result) {
+                    datasource.submitBuilding(that.submitData).then(function(result) {
                         that.submitting = false
                         that.$broadcast("refreshData")
-                        that.showPropertyManagementCoModel = false
+                        that.showBuildingModel = false
                         that.serverMsg = ""
                         that.submitData = {}
                     }).catch(function(err) {
@@ -150,17 +190,16 @@
                     })
                 }
             },
-            editPropertyManagementCo(row) {
-                this.submitData.id = row.id
-                this.submitData.code = row.code
-                this.submitData.name = row.name
-                this.submitData.name_en = row.name_en
-                this.showPropertyManagementCoModel = true
+            editBuilding(row) {
+                for (var i in this.submitData) {
+                    this.submitData[i] = row[i]
+                }
+                this.showBuildingModel = true
             },
-            deletePropertyManagementCo(row) {
+            deleteBuilding(row) {
                 if (window.confirm("是否確認刪除：" + row.code + "?")) {
                     var that = this
-                    datasource.deletePropertyManagementCo({
+                    datasource.deleteBuilding({
                         id: row.id
                     }).then(function(result) {
                         that.$broadcast("refreshData")
@@ -172,15 +211,15 @@
         },
         events: {
             "edit": function(row) {
-                this.editPropertyManagementCo(row)
+                this.editBuilding(row)
             },
             "delete": function(row) {
-                this.deletePropertyManagementCo(row)
+                this.deleteBuilding(row)
             },
             "getData": function(pageNum, countPerPage, filterKey, append) {
                 let that = this
                 that.$broadcast('show::spinner')
-                datasource.getPropertyManagementCos(pageNum, countPerPage, filterKey).then(function(result) {
+                datasource.getBuildings(pageNum, countPerPage, filterKey).then(function(result) {
                     that.$broadcast('hide::spinner')
                     if (append) {
                         that.data.end = result.end
