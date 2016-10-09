@@ -14,6 +14,9 @@ export function configRouter(router) {
                         },
                         'Building': {
                             component: require('../components/BuildingSetting.vue')
+                        },
+                        'ProjectManager': {
+                            component: require('../components/ProjectManagerSetting.vue')
                         }
                     }
                 },

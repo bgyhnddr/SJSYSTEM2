@@ -52,7 +52,6 @@
     import {
         spinner,
         modal,
-        formGroup,
         alert,
         input as bsInput
     } from 'vue-strap'
@@ -76,7 +75,6 @@
             VueStrapTable,
             spinner,
             modal,
-            formGroup,
             alert,
             bsInput,
             RoleSetting

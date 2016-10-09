@@ -295,6 +295,77 @@ var deleteBuilding = function(req, res, next) {
     })
 }
 
+var getProjectManagers = function(req, res, next) {
+    var project_manager = require('../db/models/project_manager')
+
+    var filterKey = req.query.filterKey == undefined ? "" : req.query.filterKey
+    var count = req.query.count == undefined ? 5 : parseInt(req.query.count)
+    var page = req.query.page == undefined ? 0 : parseInt(req.query.page)
+
+    return Promise.all([
+        project_manager.findAll({
+            where: {
+                user_account: {
+                    $like: "%" + filterKey + "%"
+                }
+            },
+            offset: page * count,
+            limit: count
+        }),
+        project_manager.count({
+            where: {
+                user_account: {
+                    $like: "%" + filterKey + "%"
+                }
+            }
+        })
+    ]).then(function(result) {
+        var project_managers = result[0]
+        var rowCount = result[1]
+        return {
+            end: (project_managers.length + page * count) >= rowCount,
+            list: project_managers
+        }
+    })
+}
+
+var submitProjectManager = function(req, res, next) {
+    var project_manager = require('../db/models/project_manager')
+    if (req.body.id) {
+        return project_manager.findOne({
+            where: {
+                id: req.body.id
+            }
+        }).then(function(result) {
+            return result.update(req.body)
+        }).catch(function(error) {
+            if (error.name == "SequelizeUniqueConstraintError") {
+                return Promise.reject("數據不能重複")
+            }
+            return Promise.reject(error.name)
+        })
+    } else {
+        return project_manager.create(req.body).catch(function(error) {
+            if (error.name == "SequelizeUniqueConstraintError") {
+                return Promise.reject("數據不能重複")
+            }
+            return Promise.reject(error.name)
+        })
+    }
+}
+
+var deleteProjectManager = function(req, res, next) {
+    var project_manager = require('../db/models/project_manager')
+    console.log(req.body)
+    return project_manager.destroy({
+        where: {
+            id: req.body.id
+        }
+    }).then(function() {
+        return "success"
+    })
+}
+
 module.exports = (req, res, next) => {
     var action = req.params.action
     Promise.resolve(action).then(function(result) {
@@ -317,6 +388,12 @@ module.exports = (req, res, next) => {
                 return submitBuilding(req, res, next)
             case "deleteBuilding":
                 return deleteBuilding(req, res, next)
+            case "getProjectManagers":
+                return getProjectManagers(req, res, next)
+            case "submitProjectManager":
+                return submitProjectManager(req, res, next)
+            case "deleteProjectManager":
+                return deleteProjectManager(req, res, next)
         }
     }).then(function(result) {
         res.send(result)

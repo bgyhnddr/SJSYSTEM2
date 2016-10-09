@@ -2,7 +2,7 @@
     <div class="vue-strap-table">
         <div class="table-responsive">
             <div v-show="hasFilter">
-                <div class="col-sm-3">
+                <div class="col-sm-6">
                     <bs-input :value.sync="filterKey" @keyup.enter="getData" placeholder="輸入任意關鍵字進行搜索" type="text">
                         <span slot="after" class="input-group-btn">
                             <button type="button" @click="getData" class="btn btn-primary">搜索</button>

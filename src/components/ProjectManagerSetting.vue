@@ -1,45 +1,45 @@
 <template>
     <div v-if="checkPermission()">
-        <button @click="addRolePermission" class="btn btn-default">添加角色權限</button>
+        <button @click="addProjectManager" class="btn btn-default">添加工程負責人</button>
         <div style="position:relative">
             <spinner size="md" text="loading..."></spinner>
             <vue-strap-table :err-msg.sync="errMsg" :data.sync="data" :get-data-event="getData" :columns.sync="columns"></vue-strap-table>
         </div>
-        <div :class="{'in':showRolePermissionModel}" class="modal fade" :style="{zIndex:(showRolePermissionModel?undefined:-1)}"
-            style="display:block;overflow-y:auto;">
+        <div :class="{'in':showProjectManagerModel}" class="modal fade" :style="{zIndex:(showProjectManagerModel?undefined:-1)}" style="display:block;overflow-y:auto;">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h4 class="modal-title">
-                            角色權限
+                            工程負責人
                         </h4>
                     </div>
                     <div class="modal-body">
-                        <label>{{submitData.permission_name}}</label>
-                        <button type="button" class="btn btn-default" @click="showPermissionModel=true">選擇權限</button>
+                        <label>{{account}}</label>
+                        <button type="button" class="btn btn-default" @click="showUserModel=true">選擇用戶</button>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-default" @click="showRolePermissionModel=false">关闭</button>
-                        <button :disabled="submitting" type="button" class="btn btn-success" @click="submitRolePermission">確認</button>
+                        <label>{{serverMsg}}<label>
+                        <button type="button" class="btn btn-default" @click="showProjectManagerModel=false">关闭</button>
+                        <button :disabled="submitting" type="button" class="btn btn-success" @click="submitProjectManager">確認</button>
                     </div>
                 </div>
                 <!-- /.modal-content -->
             </div>
             <!-- /.modal-dialog -->
         </div>
-        <div :class="{'in':showPermissionModel}" class="modal fade" :style="{zIndex:(showPermissionModel?undefined:-1)}" style="display:block;overflow-y:auto;">
+        <div :class="{'in':showUserModel}" class="modal fade" :style="{zIndex:(showUserModel?undefined:-1)}" style="display:block;overflow-y:auto;">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h4 class="modal-title">
-                            選擇權限
+                            選擇用户
                         </h4>
                     </div>
                     <div class="modal-body">
-                        <permission-setting :selectable="selectable"></permission-setting>
+                        <user-setting :selectable="selectable"></user-setting>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-default" @click="showPermissionModel=false">关闭</button>
+                        <button type="button" class="btn btn-default" @click="showUserModel=false">关闭</button>
                     </div>
                 </div>
                 <!-- /.modal-content -->
@@ -56,19 +56,19 @@
         alert,
         input as bsInput
     } from 'vue-strap'
-    import RBAC from '../api/RBAC'
-    import PermissionSetting from './PermissionSetting'
+    import datasource from '../api/datasource'
+    import UserSetting from './UserSetting'
     import checkPermission from '../extend/check-permission'
 
     export default {
         props: {
-            role: {
+            user: {
                 type: String,
                 require: true
             }
         },
         watch: {
-            'role': function(val) {
+            'user': function(val) {
                 this.$broadcast("refreshData")
             }
         },
@@ -78,28 +78,22 @@
             modal,
             alert,
             bsInput,
-            PermissionSetting
+            UserSetting
         },
         data() {
             return {
                 selectable: true,
                 submitting: false,
                 getData: "getData",
-                submitData: {
-                    id: "",
-                    permission_code: "",
-                    permission_name: ""
-                },
-                showRolePermissionModel: false,
-                showPermissionModel: false,
+                account: "",
+                id: "",
+                showProjectManagerModel: false,
+                showUserModel: false,
                 data: {},
                 serverMsg: "",
                 columns: [{
-                    "header": "角色",
-                    "bind": "role_name"
-                }, {
-                    "header": "權限",
-                    "bind": "permission_name"
+                    "header": "账号",
+                    "bind": "user_account"
                 }, {
                     "header": "操作",
                     "type": "action",
@@ -120,38 +114,38 @@
         },
         methods: {
             checkPermission,
-            addRolePermission() {
-                this.submitData = {}
-                this.showRolePermissionModel = true
+            addProjectManager() {
+                this.id = ""
+                this.account = ""
+                this.showProjectManagerModel = true
             },
-            submitRolePermission() {
+            submitProjectManager() {
                 var that = this
                 that.submitting = true
-                RBAC.submitRolePermission({
-                    role_code: that.role,
-                    permission_code: that.submitData.permission_code,
-                    id: that.submitData.id
+                datasource.submitProjectManager({
+                    id: that.id,
+                    user_account: that.account
                 }).then(function(result) {
                     that.submitting = false
                     that.$broadcast("refreshData")
-                    that.showRolePermissionModel = false
+                    that.showProjectManagerModel = false
                     that.serverMsg = ""
-                    that.submitData = {}
+                    that.id = ""
+                    that.account = ""
                 }).catch(function(err) {
                     that.submitting = false
                     that.serverMsg = err
                 })
             },
-            editRolePermission(row) {
-                this.submitData.id = row.id
-                this.submitData.permission_code = row.permission_code
-                this.submitData.permission_name = row.permission_name
-                this.showRolePermissionModel = true
+            editProjectManager(row) {
+                this.id = row.id
+                this.account = row.user_account
+                this.showProjectManagerModel = true
             },
-            deleteRolePermission(row) {
-                if (window.confirm("是否確認刪除：" + row.permission_name + "?")) {
+            deleteProjectManager(row) {
+                if (window.confirm("是否確認刪除：" + row.user_account + "?")) {
                     var that = this
-                    RBAC.deleteRolePermission({
+                    datasource.deleteUserRole({
                         id: row.id
                     }).then(function(result) {
                         that.$broadcast("refreshData")
@@ -163,26 +157,16 @@
         },
         events: {
             "edit": function(row) {
-                this.editRolePermission(row)
+                this.editProjectManager(row)
             },
             "delete": function(row) {
-                this.deleteRolePermission(row)
+                this.deleteProjectManager(row)
             },
             "getData": function(pageNum, countPerPage, filterKey, append) {
                 let that = this
                 that.$broadcast('show::spinner')
-                RBAC.getRolePermissions(that.role, pageNum, countPerPage, filterKey).then(function(result) {
+                datasource.getProjectManagers(pageNum, countPerPage, filterKey).then(function(result) {
                     that.$broadcast('hide::spinner')
-                    var list = result.list.map((o) => {
-                        if (o.permission) {
-                            o.permission_name = o.permission.name
-                        }
-                        if (o.role) {
-                            o.role_name = o.role.name
-                        }
-                        return o
-                    })
-
                     if (append) {
                         that.data.end = result.end
                         that.data.list = that.data.list.concat(result.list)
@@ -195,11 +179,8 @@
                 })
             },
             "select": function(row) {
-                this.submitData = {
-                    permission_code: row.code,
-                    permission_name: row.name
-                }
-                this.showPermissionModel = false
+                this.account = row.account
+                this.showUserModel = false
             }
         },
         ready() {

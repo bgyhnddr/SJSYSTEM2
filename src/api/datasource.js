@@ -208,5 +208,74 @@ export default {
                 }
             })
         })
+    },
+    getProjectManagers(page, count, filterKey) {
+        return new Promise(function(resolve, reject) {
+            Vue.http.get('/service/private/datasource/getProjectManagers', {
+                _timeout: 5000,
+                params: {
+                    page,
+                    count,
+                    filterKey
+                },
+                onTimeout: (request) => {
+                    reject("timeout")
+                }
+            }).then(function(res) {
+                if (res.ok) {
+                    if (res.body) {
+                        resolve(res.body)
+                    } else {
+                        reject("error")
+                    }
+                }
+            }).catch(function(e) {
+                if (e.body.code == "error") {
+                    reject(e.body.msg)
+                } else {
+                    reject(e.body)
+                }
+            })
+        })
+    },
+    submitProjectManager(params) {
+        return new Promise(function(resolve, reject) {
+            Vue.http.post('/service/private/datasource/submitProjectManager', params, {
+                _timeout: 5000,
+                onTimeout: (request) => {
+                    reject("timeout")
+                }
+            }).then(function(res) {
+                if (res.ok) {
+                    resolve(res.body)
+                }
+            }).catch(function(e) {
+                if (e.body.code == "error") {
+                    reject(e.body.msg)
+                } else {
+                    reject(e.body)
+                }
+            })
+        })
+    },
+    deleteProjectManager(params) {
+        return new Promise(function(resolve, reject) {
+            Vue.http.post('/service/private/datasource/deleteProjectManager', params, {
+                _timeout: 5000,
+                onTimeout: (request) => {
+                    reject("timeout")
+                }
+            }).then(function(res) {
+                if (res.ok) {
+                    resolve(res.body)
+                }
+            }).catch(function(e) {
+                if (e.body.code == "error") {
+                    reject(e.body.msg)
+                } else {
+                    reject(e.body)
+                }
+            })
+        })
     }
 }
