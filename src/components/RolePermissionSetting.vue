@@ -11,7 +11,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h4 class="modal-title">
-                            添加角色權限
+                            角色權限
                         </h4>
                     </div>
                     <div class="modal-body">

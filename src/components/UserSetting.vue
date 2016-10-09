@@ -8,7 +8,7 @@
         <modal :show.sync="showUserModel" effect="fade" width="400">
             <div slot="modal-header" class="modal-header">
                 <h4 class="modal-title">
-                    添加用戶
+                    用戶
                 </h4>
             </div>
             <div slot="modal-body" class="modal-body">

@@ -8,7 +8,7 @@
         <modal :show.sync="showPermissionModel" effect="fade" width="400">
             <div slot="modal-header" class="modal-header">
                 <h4 class="modal-title">
-                    添加權限
+                    權限
                 </h4>
             </div>
             <div slot="modal-body" class="modal-body">

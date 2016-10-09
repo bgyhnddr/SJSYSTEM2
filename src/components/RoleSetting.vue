@@ -8,7 +8,7 @@
         <modal :show.sync="showRoleModel" effect="fade" width="400">
             <div slot="modal-header" class="modal-header">
                 <h4 class="modal-title">
-                    添加角色
+                    角色
                 </h4>
             </div>
             <div slot="modal-body" class="modal-body">

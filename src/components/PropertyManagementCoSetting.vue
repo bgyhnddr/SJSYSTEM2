@@ -8,7 +8,7 @@
         <modal :show.sync="showPropertyManagementCoModel" effect="fade" width="400">
             <div slot="modal-header" class="modal-header">
                 <h4 class="modal-title">
-                    添加物業公司
+                    物業公司
                 </h4>
             </div>
             <div slot="modal-body" class="modal-body">
