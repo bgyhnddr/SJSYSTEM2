@@ -1,51 +1,36 @@
 <template>
     <div v-if="checkPermission()">
-        <button @click="addRolePermission" class="btn btn-default">添加角色權限</button>
+        <button @click="addBuilding" class="btn btn-default">添加盤</button>
         <div style="position:relative">
             <spinner size="md" text="loading..."></spinner>
             <vue-strap-table :err-msg.sync="errMsg" :data.sync="data" :get-data-event="getData" :columns.sync="columns"></vue-strap-table>
         </div>
-        <div :class="{'in':showRolePermissionModel}" class="modal fade" :style="{zIndex:(showRolePermissionModel?undefined:-1)}"
-            style="display:block;overflow-y:auto;">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 class="modal-title">
-                            角色權限
-                        </h4>
-                    </div>
-                    <div class="modal-body">
-                        <label>{{submitData.permission_name}}</label>
-                        <button type="button" class="btn btn-default" @click="showPermissionModel=true">選擇權限</button>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" @click="showRolePermissionModel=false">关闭</button>
-                        <button :disabled="submitting" type="button" class="btn btn-success" @click="submitRolePermission">確認</button>
-                    </div>
-                </div>
-                <!-- /.modal-content -->
+        <modal :show.sync="showBuildingModel" effect="fade" width="400">
+            <div slot="modal-header" class="modal-header">
+                <h4 class="modal-title">
+                    添加盤
+                </h4>
             </div>
-            <!-- /.modal-dialog -->
-        </div>
-        <div :class="{'in':showPermissionModel}" class="modal fade" :style="{zIndex:(showPermissionModel?undefined:-1)}" style="display:block;overflow-y:auto;">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 class="modal-title">
-                            選擇權限
-                        </h4>
-                    </div>
-                    <div class="modal-body">
-                        <permission-setting :selectable="selectable"></permission-setting>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" @click="showPermissionModel=false">关闭</button>
-                    </div>
-                </div>
-                <!-- /.modal-content -->
+            <div slot="modal-body" class="modal-body">
+                <alert :type="alertType">{{alertText}}</alert>
+                <bs-input v-show="false" :value.sync="submitData.id"></bs-input>
+                <bs-input :value.sync="submitData.name" label="名稱"></bs-input>
+                <bs-input :value.sync="submitData.name_en" label="名稱(英文)"></bs-input>
+                <bs-input :value.sync="submitData.address" label="地址" pattern=""></bs-input>
+                <bs-input :value.sync="submitData.address_en" label="地址（英文）" pattern=""></bs-input>
+                <bs-input :value.sync="submitData.bill_address" label="賬單地址" pattern=""></bs-input>
+                <bs-input :value.sync="submitData.bill_address_en" label="賬單地址（英文）" pattern=""></bs-input>
+                <bs-input :value.sync="submitData.attn" label="聯繫人" pattern=""></bs-input>
+                <bs-input :value.sync="submitData.attn_en" label="聯繫人（英文）" pattern=""></bs-input>
+                <bs-input :value.sync="submitData.tel" label="電話" pattern=""></bs-input>
+                <bs-input :value.sync="submitData.fax" label="傳真" pattern=""></bs-input>
+                <bs-input :value.sync="submitData.email" label="電郵" pattern=""></bs-input>
             </div>
-            <!-- /.modal-dialog -->
-        </div>
+            <div slot="modal-footer" class="modal-footer">
+                <button type="button" class="btn btn-default" @click="showBuildingModel=false">关闭</button>
+                <button :disabled="submitting" type="button" class="btn btn-success" @click="submitBuilding">確認</button>
+            </div>
+        </modal>
     </div>
 </template>
 <script>
@@ -53,108 +38,165 @@
     import {
         spinner,
         modal,
-        formGroup,
         alert,
         input as bsInput
     } from 'vue-strap'
-    import RBAC from '../api/RBAC'
-    import PermissionSetting from './PermissionSetting'
+    import datasource from '../api/datasource'
     import checkPermission from '../extend/check-permission'
-
     export default {
         props: {
-            role: {
+            selectable: {
+                type: Boolean,
+                default: false
+            },
+            selectEvent: {
                 type: String,
-                require: true
-            }
-        },
-        watch: {
-            'role': function(val) {
-                this.$broadcast("refreshData")
+                default: 'select'
             }
         },
         components: {
             VueStrapTable,
             spinner,
             modal,
-            formGroup,
             alert,
-            bsInput,
-            PermissionSetting
+            bsInput
         },
         data() {
+            let columns = [{
+                "header": "名稱",
+                "bind": "name"
+            }, {
+                "header": "名稱(英文)",
+                "bind": "name_en"
+            }, {
+                "header": "地址",
+                "bind": "address"
+            }, {
+                "header": "地址（英文）",
+                "bind": "address_en"
+            }, {
+                "header": "賬單地址",
+                "bind": "bill_address"
+            }, {
+                "header": "賬單地址（英文）",
+                "bind": "bill_address_en"
+            }, {
+                "header": "聯繫人",
+                "bind": "attn"
+            }, {
+                "header": "聯繫人（英文）",
+                "bind": "attn_en"
+            }, {
+                "header": "電話",
+                "bind": "tel"
+            }, {
+                "header": "傳真",
+                "bind": "fax"
+            }, {
+                "header": "電郵",
+                "bind": "email"
+            }, {
+                "header": "操作",
+                "type": "action",
+                "items": [{
+                    eventName: "edit",
+                    tag: "button",
+                    class: "btn-xs",
+                    text: "修改"
+                }, {
+                    eventName: "delete",
+                    tag: "button",
+                    class: "btn-xs",
+                    text: "刪除"
+                }]
+            }]
+            if (this.selectable) {
+                columns.unshift({
+                    "header": "",
+                    "type": "action",
+                    "items": [{
+                        eventName: this.selectEvent,
+                        tag: "button",
+                        class: "btn-xs",
+                        text: "選擇"
+                    }]
+                })
+            }
             return {
-                selectable: true,
                 submitting: false,
                 getData: "getData",
                 submitData: {
                     id: "",
-                    permission_code: "",
-                    permission_name: ""
+                    name: "",
+                    name_en: "",
+                    address: "",
+                    address_en: "",
+                    bill_address: "",
+                    bill_address_en: "",
+                    attn: "",
+                    attn_en: "",
+                    tel: "",
+                    fax: "",
+                    email: ""
                 },
-                showRolePermissionModel: false,
-                showPermissionModel: false,
+                showBuildingModel: false,
                 data: {},
                 serverMsg: "",
-                columns: [{
-                    "header": "角色",
-                    "bind": "role_name"
-                }, {
-                    "header": "權限",
-                    "bind": "permission_name"
-                }, {
-                    "header": "操作",
-                    "type": "action",
-                    "items": [{
-                        eventName: "edit",
-                        tag: "button",
-                        class: "btn-xs",
-                        text: "修改"
-                    }, {
-                        eventName: "delete",
-                        tag: "button",
-                        class: "btn-xs",
-                        text: "刪除"
-                    }]
-                }],
+                columns: columns,
                 errMsg: ""
+            }
+        },
+        computed: {
+            alertType() {
+                return this.valid() ? "success" : "warning"
+            },
+            alertText() {
+                if (this.serverMsg) {
+                    return this.serverMsg;
+                }
+                let returnText = "請輸入";
+                if (!this.valid()) {
+                    returnText = "請輸入"
+                }
+                return returnText
             }
         },
         methods: {
             checkPermission,
-            addRolePermission() {
+            valid() {
+                return this.submitData.name
+            },
+            addBuilding() {
                 this.submitData = {}
-                this.showRolePermissionModel = true
+                this.showBuildingModel = true
             },
-            submitRolePermission() {
-                var that = this
-                that.submitting = true
-                RBAC.submitRolePermission({
-                    role_code: that.role,
-                    permission_code: that.submitData.permission_code,
-                    permission_name: that.submitData.permission_name,
-                    id: that.submitData.id
-                }).then(function(result) {
-                    that.submitting = false
-                    that.$broadcast("refreshData")
-                    that.showRolePermissionModel = false
-                    that.serverMsg = ""
-                    that.submitData = {}
-                }).catch(function(err) {
-                    that.submitting = false
-                    that.serverMsg = err
-                })
-            },
-            editRolePermission(row) {
-                this.submitData.id = row.id
-                this.submitData.permission_code = row.permission_code
-                this.submitData.permission_name = row.permission_name
-                this.showRolePermissionModel = true
-            },
-            deleteRolePermission(row) {
-                if (window.confirm("是否確認刪除：" + row.permission_name + "?")) {
+            submitBuilding() {
+                if (this.valid()) {
                     var that = this
-                    RBAC.deleteRolePermission({
+                    that.submitting = true
+                    datasource.submitBuilding(that.submitData).then(function(result) {
+                        that.submitting = false
+                        that.$broadcast("refreshData")
+                        that.showBuildingModel = false
+                        that.serverMsg = ""
+                        that.submitData = {}
+                    }).catch(function(err) {
+                        that.submitting = false
+                        that.serverMsg = err
+                    })
+                }
+            },
+            editBuilding(row) {
+                for (var i in this.submitData) {
+                    this.submitData[i] = row[i]
+                }
+                console.log(this.submitData.name)
+                this.showBuildingModel = true
+            },
+            deleteBuilding(row) {
+                if (window.confirm("是否確認刪除：" + row.name + "?")) {
+                    var that = this
+                    datasource.deleteBuilding({
                         id: row.id
                     }).then(function(result) {
                         that.$broadcast("refreshData")
@@ -166,26 +208,16 @@
         },
         events: {
             "edit": function(row) {
-                this.editRolePermission(row)
+                this.editBuilding(row)
             },
             "delete": function(row) {
-                this.deleteRolePermission(row)
+                this.deleteBuilding(row)
             },
             "getData": function(pageNum, countPerPage, filterKey, append) {
                 let that = this
                 that.$broadcast('show::spinner')
-                RBAC.getRolePermissions(that.role, pageNum, countPerPage, filterKey).then(function(result) {
+                datasource.getBuildings(pageNum, countPerPage, filterKey).then(function(result) {
                     that.$broadcast('hide::spinner')
-                    var list = result.list.map((o) => {
-                        if (o.permission) {
-                            o.permission_name = o.permission.name
-                        }
-                        if (o.role) {
-                            o.role_name = o.role.name
-                        }
-                        return o
-                    })
-
                     if (append) {
                         that.data.end = result.end
                         that.data.list = that.data.list.concat(result.list)
@@ -196,20 +228,10 @@
                     that.errMsg = err
                     that.$broadcast('hide::spinner')
                 })
-            },
-            "select": function(row) {
-                this.submitData = {
-                    permission_code: row.code,
-                    permission_name: row.name
-                }
-                this.showPermissionModel = false
             }
         },
         ready() {
             this.$broadcast("refreshData")
         }
     }
-</script> this.editBuilding(row) }, "delete": function(row) { this.deleteBuilding(row) }, "getData": function(pageNum, countPerPage, filterKey, append) { let that = this that.$broadcast('show::spinner') datasource.getBuildings(pageNum, countPerPage, filterKey).then(function(result)
-{ that.$broadcast('hide::spinner') if (append) { that.data.end = result.end that.data.list = that.data.list.concat(result.list) } else { that.data = result } }).catch(function(err) { that.errMsg = err that.$broadcast('hide::spinner') }) } }, ready() {
-this.$broadcast("refreshData") } }
 </script>
