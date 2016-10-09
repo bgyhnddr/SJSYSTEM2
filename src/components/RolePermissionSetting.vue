@@ -5,7 +5,8 @@
             <spinner size="md" text="loading..."></spinner>
             <vue-strap-table :err-msg.sync="errMsg" :data.sync="data" :get-data-event="getData" :columns.sync="columns"></vue-strap-table>
         </div>
-        <div :class="{'in':showRolePermissionModel}" class="modal fade" :style="{zIndex:(showRolePermissionModel?undefined:-1)}" style="display:block;overflow-y:auto;">
+        <div :class="{'in':showRolePermissionModel}" class="modal fade" :style="{zIndex:(showRolePermissionModel?undefined:-1)}"
+            style="display:block;overflow-y:auto;">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -14,7 +15,7 @@
                         </h4>
                     </div>
                     <div class="modal-body">
-                        <label>{{permission_name}}</label>
+                        <label>{{submitData.permission_name}}</label>
                         <button type="button" class="btn btn-default" @click="showPermissionModel=true">選擇權限</button>
                     </div>
                     <div class="modal-footer">
@@ -48,164 +49,164 @@
     </div>
 </template>
 <script>
-import VueStrapTable from './extend/vue-strap-table'
-import {
-    spinner,
-    modal,
-    formGroup,
-    alert,
-    input as bsInput
-} from 'vue-strap'
-import RBAC from '../api/RBAC'
-import PermissionSetting from './PermissionSetting'
-import checkPermission from '../extend/check-permission'
-
-export default {
-    props: {
-        role: {
-            type: String,
-            require: true
-        }
-    },
-    watch: {
-        'role': function(val) {
-            this.$broadcast("refreshData")
-        }
-    },
-    components: {
-        VueStrapTable,
+    import VueStrapTable from './extend/vue-strap-table'
+    import {
         spinner,
         modal,
         formGroup,
         alert,
-        bsInput,
-        PermissionSetting
-    },
-    data() {
-        return {
-            selectable: true,
-            submitting: false,
-            getData: "getData",
-            permission_code: "",
-            permission_name: "",
-            id: "",
-            showRolePermissionModel: false,
-            showPermissionModel: false,
-            data: {},
-            serverMsg: "",
-            columns: [{
-                "header": "角色",
-                "bind": "role_name"
-            }, {
-                "header": "權限",
-                "bind": "permission_name"
-            }, {
-                "header": "操作",
-                "type": "action",
-                "items": [{
-                    eventName: "edit",
-                    tag: "button",
-                    class: "btn-xs",
-                    text: "修改"
-                }, {
-                    eventName: "delete",
-                    tag: "button",
-                    class: "btn-xs",
-                    text: "刪除"
-                }]
-            }],
-            errMsg: ""
-        }
-    },
-    methods: {
-        checkPermission,
-        addRolePermission() {
-            this.id = ""
-            this.permission_code = ""
-            this.permission_name = ""
-            this.showRolePermissionModel = true
-        },
-        submitRolePermission() {
-            var that = this
-            that.submitting = true
-            RBAC.submitRolePermission({
-                id: that.id,
-                permission_code: that.permission_code,
-                role_code: that.role
-            }).then(function(result) {
-                that.submitting = false
-                that.$broadcast("refreshData")
-                that.showRolePermissionModel = false
-                that.serverMsg = ""
-                that.id = ""
-                that.permission_code = ""
-                that.permission_name = ""
-            }).catch(function(err) {
-                that.submitting = false
-                that.serverMsg = err
-            })
-        },
-        editRolePermission(row) {
-            this.id = row.id
-            this.permission_code = row.permission_code
-            this.permission_name = row.permission_name
-            this.showRolePermissionModel = true
-        },
-        deleteRolePermission(row) {
-            if (window.confirm("是否確認刪除：" + row.permission_name + "?")) {
-                var that = this
-                RBAC.deleteRolePermission({
-                    id: row.id
-                }).then(function(result) {
-                    that.$broadcast("refreshData")
-                }).catch(function(err) {
-                    window.alert(err)
-                })
-            }
-        }
-    },
-    events: {
-        "edit": function(row) {
-            this.editRolePermission(row)
-        },
-        "delete": function(row) {
-            this.deleteRolePermission(row)
-        },
-        "getData": function(pageNum, countPerPage, filterKey, append) {
-            let that = this
-            that.$broadcast('show::spinner')
-            RBAC.getRolePermissions(that.role, pageNum, countPerPage, filterKey).then(function(result) {
-                that.$broadcast('hide::spinner')
-                var list = result.list.map((o) => {
-                    if (o.permission) {
-                        o.permission_name = o.permission.name
-                    }
-                    if (o.role) {
-                        o.role_name = o.role.name
-                    }
-                    return o
-                })
+        input as bsInput
+    } from 'vue-strap'
+    import RBAC from '../api/RBAC'
+    import PermissionSetting from './PermissionSetting'
+    import checkPermission from '../extend/check-permission'
 
-                if (append) {
-                    that.data.end = result.end
-                    that.data.list = that.data.list.concat(result.list)
-                } else {
-                    that.data = result
-                }
-            }).catch(function(err) {
-                that.errMsg = err
-                that.$broadcast('hide::spinner')
-            })
+    export default {
+        props: {
+            role: {
+                type: String,
+                require: true
+            }
         },
-        "select": function(row) {
-            console.log(row)
-            this.permission_code = row.code
-            this.permission_name = row.name
-            this.showPermissionModel = false
+        watch: {
+            'role': function(val) {
+                this.$broadcast("refreshData")
+            }
+        },
+        components: {
+            VueStrapTable,
+            spinner,
+            modal,
+            formGroup,
+            alert,
+            bsInput,
+            PermissionSetting
+        },
+        data() {
+            return {
+                selectable: true,
+                submitting: false,
+                getData: "getData",
+                submitData: {
+                    id: "",
+                    permission_code: "",
+                    permission_name: ""
+                },
+                showRolePermissionModel: false,
+                showPermissionModel: false,
+                data: {},
+                serverMsg: "",
+                columns: [{
+                    "header": "角色",
+                    "bind": "role_name"
+                }, {
+                    "header": "權限",
+                    "bind": "permission_name"
+                }, {
+                    "header": "操作",
+                    "type": "action",
+                    "items": [{
+                        eventName: "edit",
+                        tag: "button",
+                        class: "btn-xs",
+                        text: "修改"
+                    }, {
+                        eventName: "delete",
+                        tag: "button",
+                        class: "btn-xs",
+                        text: "刪除"
+                    }]
+                }],
+                errMsg: ""
+            }
+        },
+        methods: {
+            checkPermission,
+            addRolePermission() {
+                this.submitData = {}
+                this.showRolePermissionModel = true
+            },
+            submitRolePermission() {
+                var that = this
+                that.submitting = true
+                RBAC.submitRolePermission({
+                    role_code: that.role,
+                    permission_code: that.submitData.permission_code,
+                    permission_name: that.submitData.permission_name,
+                    id: that.submitData.id
+                }).then(function(result) {
+                    that.submitting = false
+                    that.$broadcast("refreshData")
+                    that.showRolePermissionModel = false
+                    that.serverMsg = ""
+                    that.submitData = {}
+                }).catch(function(err) {
+                    that.submitting = false
+                    that.serverMsg = err
+                })
+            },
+            editRolePermission(row) {
+                this.submitData.id = row.id
+                this.submitData.permission_code = row.permission_code
+                this.submitData.permission_name = row.permission_name
+                this.showRolePermissionModel = true
+            },
+            deleteRolePermission(row) {
+                if (window.confirm("是否確認刪除：" + row.permission_name + "?")) {
+                    var that = this
+                    RBAC.deleteRolePermission({
+                        id: row.id
+                    }).then(function(result) {
+                        that.$broadcast("refreshData")
+                    }).catch(function(err) {
+                        window.alert(err)
+                    })
+                }
+            }
+        },
+        events: {
+            "edit": function(row) {
+                this.editRolePermission(row)
+            },
+            "delete": function(row) {
+                this.deleteRolePermission(row)
+            },
+            "getData": function(pageNum, countPerPage, filterKey, append) {
+                let that = this
+                that.$broadcast('show::spinner')
+                RBAC.getRolePermissions(that.role, pageNum, countPerPage, filterKey).then(function(result) {
+                    that.$broadcast('hide::spinner')
+                    var list = result.list.map((o) => {
+                        if (o.permission) {
+                            o.permission_name = o.permission.name
+                        }
+                        if (o.role) {
+                            o.role_name = o.role.name
+                        }
+                        return o
+                    })
+
+                    if (append) {
+                        that.data.end = result.end
+                        that.data.list = that.data.list.concat(result.list)
+                    } else {
+                        that.data = result
+                    }
+                }).catch(function(err) {
+                    that.errMsg = err
+                    that.$broadcast('hide::spinner')
+                })
+            },
+            "select": function(row) {
+                this.submitData = {
+                    permission_code: row.code,
+                    permission_name: row.name
+                }
+                this.showPermissionModel = false
+            }
+        },
+        ready() {
+            this.$broadcast("refreshData")
         }
-    },
-    ready() {
-        this.$broadcast("refreshData")
     }
-}
 </script>

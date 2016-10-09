@@ -10,14 +10,8 @@
             <alert :type="alertType">
                 {{alertText}}
             </alert>
-            <form-group :valid.sync="valid.all">
-                <form-group :valid.sync="valid.account">
-                    <bs-input :value.sync="loginInfo.account" label="账号" required></bs-input>
-                </form-group>
-                <form-group :valid.sync="valid.password">
-                    <bs-input :value.sync="loginInfo.password" label="密码" type="password" required></bs-input>
-                </form-group>
-            </form-group>
+            <bs-input :value.sync="loginInfo.account" label="账号"></bs-input>
+            <bs-input :value.sync="loginInfo.password" label="密码" type="password"></bs-input>
         </div>
         <div slot="modal-footer" class="modal-footer">
             <button type="button" class="btn btn-success" @click="submitLogin">登录</button>
@@ -28,7 +22,6 @@
 <script>
     import {
         modal,
-        formGroup,
         alert,
         spinner,
         input as bsInput
@@ -39,7 +32,6 @@
         data() {
             return {
                 state: window.state,
-                valid: {},
                 serverMsg: "",
                 loginInfo: {
                     account: "",
@@ -49,34 +41,36 @@
         },
         components: {
             modal,
-            formGroup,
             bsInput,
             alert,
             spinner
         },
         computed: {
             alertType() {
-                return this.valid.all ? "success" : "warning"
+                return this.valid() ? "success" : "warning"
             },
             alertText() {
                 if (this.serverMsg) {
                     return this.serverMsg;
                 }
                 let returnText = "请登录";
-                if (!this.valid.account && !this.valid.password) {
+                if (!this.loginInfo.account && !this.loginInfo.password) {
                     returnText = "请填写账号密码"
-                } else if (!this.valid.account) {
+                } else if (!this.loginInfo.account) {
                     returnText = "请填写正确的账号"
-                } else if (!this.valid.password) {
+                } else if (!this.loginInfo.password) {
                     returnText = "请填写正确的密码"
                 }
                 return returnText
             }
         },
         methods: {
+            valid() {
+                return this.loginInfo.account && this.loginInfo.password
+            },
             submitLogin() {
                 var that = this
-                if (that.valid.all) {
+                if (that.valid()) {
                     that.$broadcast('show::spinner')
                     authAPI.login(that.loginInfo).then(function(result) {
                         that.state.userInfo = result

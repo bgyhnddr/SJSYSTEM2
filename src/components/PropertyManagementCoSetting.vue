@@ -8,18 +8,16 @@
         <modal :show.sync="showPropertyManagementCoModel" effect="fade" width="400">
             <div slot="modal-header" class="modal-header">
                 <h4 class="modal-title">
-                添加物業公司
+                    添加物業公司
                 </h4>
             </div>
             <div slot="modal-body" class="modal-body">
                 <alert :type="alertType">
                     {{alertText}}
                 </alert>
-                <form-group :valid.sync="valid.all">
-                    <bs-input :value.sync="submitData.code" label="代號" required></bs-input>
-                    <bs-input :value.sync="submitData.name" label="名稱" required></bs-input>
-                    <bs-input :value.sync="submitData.name_en" label="英文名" pattern=""></bs-input>
-                </form-group>
+                <bs-input :value.sync="submitData.code" label="代號" required></bs-input>
+                <bs-input :value.sync="submitData.name" label="名稱" required></bs-input>
+                <bs-input :value.sync="submitData.name_en" label="英文名" pattern=""></bs-input>
             </div>
             <div slot="modal-footer" class="modal-footer">
                 <button type="button" class="btn btn-default" @click="showPropertyManagementCoModel=false">关闭</button>
@@ -33,7 +31,6 @@
     import {
         spinner,
         modal,
-        formGroup,
         alert,
         input as bsInput
     } from 'vue-strap'
@@ -55,7 +52,6 @@
             VueStrapTable,
             spinner,
             modal,
-            formGroup,
             alert,
             bsInput
         },
@@ -99,7 +95,6 @@
             return {
                 submitting: false,
                 getData: "getData",
-                valid: {},
                 submitData: {
                     id: "",
                     code: "",
@@ -115,14 +110,14 @@
         },
         computed: {
             alertType() {
-                return this.valid.all ? "success" : "warning"
+                return this.valid() ? "success" : "warning"
             },
             alertText() {
                 if (this.serverMsg) {
                     return this.serverMsg;
                 }
                 let returnText = "請輸入";
-                if (!this.valid.all) {
+                if (!this.valid()) {
                     returnText = "請輸入"
                 }
                 return returnText
@@ -130,12 +125,15 @@
         },
         methods: {
             checkPermission,
+            valid() {
+                return this.submitData.code && this.submitData.name
+            },
             addPropertyManagementCo() {
                 this.submitData = {}
                 this.showPropertyManagementCoModel = true
             },
             submitPropertyManagementCo() {
-                if (this.valid.all) {
+                if (this.valid()) {
                     var that = this
                     that.submitting = true
                     datasource.submitPropertyManagementCo(that.submitData).then(function(result) {

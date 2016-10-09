@@ -15,9 +15,7 @@
                 <alert :type="alertType">
                     {{alertText}}
                 </alert>
-                <form-group :valid.sync="valid.all">
-                    <bs-input :value.sync="submitData.name" label="名稱" required></bs-input>
-                </form-group>
+                <bs-input :value.sync="submitData.name" label="名稱"></bs-input>
             </div>
             <div slot="modal-footer" class="modal-footer">
                 <button type="button" class="btn btn-default" @click="showStaffModel=false">关闭</button>
@@ -31,7 +29,6 @@
     import {
         spinner,
         modal,
-        formGroup,
         alert,
         input as bsInput
     } from 'vue-strap'
@@ -53,7 +50,6 @@
             VueStrapTable,
             spinner,
             modal,
-            formGroup,
             alert,
             bsInput
         },
@@ -91,7 +87,6 @@
             return {
                 submitting: false,
                 getData: "getData",
-                valid: {},
                 submitData: {
                     id: "",
                     name: ""
@@ -105,14 +100,14 @@
         },
         computed: {
             alertType() {
-                return this.valid.all ? "success" : "warning"
+                return this.submitData.name ? "success" : "warning"
             },
             alertText() {
                 if (this.serverMsg) {
                     return this.serverMsg;
                 }
                 let returnText = "請輸入";
-                if (!this.valid.all) {
+                if (!this.submitData.name) {
                     returnText = "請輸入"
                 }
                 return returnText
@@ -125,8 +120,8 @@
                 this.showStaffModel = true
             },
             submitStaff() {
-                console.log(this.valid.all)
-                if (this.valid.all) {
+                console.log(this.submitData.name)
+                if (this.submitData.name) {
                     var that = this
                     that.submitting = true
                     datasource.submitStaff(that.submitData).then(function(result) {

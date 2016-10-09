@@ -23,12 +23,8 @@
                     <tr v-for="row of data.list">
                         <td v-for="column of columns | filterBy undefiend in 'hide'">
                             <template v-if="column.type == undefined || column.type == 'string'">
-                                <template v-if="column.format">
-                                    {{ column.format(row[column.bind]) }}
-                                </template>
-                                <template v-else>
-                                    {{ row[column.bind] }}
-                                </template>
+                                <template v-if="column.format">{{ column.format(row[column.bind]) }}</template>
+                                <template v-else>{{ row[column.bind] }}</template>
                             </template>
                             <template v-if="column.type == 'action'">
                                 <template v-for="item in column.items">
@@ -40,11 +36,11 @@
                         </td>
                     </tr>
                 </tbody>
-             </table>
-             <button type="button" v-if="!data.end" class="btn btn-default" @click="addData">更多...</button>
-             <div v-if="errMsg">
-                 {{errMsg}}
-             </div>
+            </table>
+            <button type="button" v-if="!data.end" class="btn btn-default" @click="addData">更多...</button>
+            <div v-if="errMsg">
+                {{errMsg}}
+            </div>
         </div>
     </div>
 </template>

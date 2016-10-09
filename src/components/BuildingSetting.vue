@@ -12,22 +12,19 @@
                 </h4>
             </div>
             <div slot="modal-body" class="modal-body">
-                <alert :type="alertType">
-                    {{alertText}}
-                </alert>
-                <form-group :valid.sync="valid.all">
-                    <bs-input :value.sync="submitData.name" label="名稱" required></bs-input>
-                    <bs-input :value.sync="submitData.name_en" label="名稱(英文)" pattern=""></bs-input>
-                    <bs-input :value.sync="submitData.address" label="地址" pattern=""></bs-input>
-                    <bs-input :value.sync="submitData.address_en" label="地址（英文）" pattern=""></bs-input>
-                    <bs-input :value.sync="submitData.bill_address" label="賬單地址" pattern=""></bs-input>
-                    <bs-input :value.sync="submitData.bill_address_en" label="賬單地址（英文）" pattern=""></bs-input>
-                    <bs-input :value.sync="submitData.attn" label="聯繫人" pattern=""></bs-input>
-                    <bs-input :value.sync="submitData.attn_en" label="聯繫人（英文）" pattern=""></bs-input>
-                    <bs-input :value.sync="submitData.tel" label="電話" pattern=""></bs-input>
-                    <bs-input :value.sync="submitData.fax" label="傳真" pattern=""></bs-input>
-                    <bs-input :value.sync="submitData.email" label="電郵" pattern=""></bs-input>
-                </form-group>
+                <alert :type="alertType">{{alertText}}</alert>
+                <bs-input v-show="false" :value.sync="submitData.id"></bs-input>
+                <bs-input :value.sync="submitData.name" label="名稱"></bs-input>
+                <bs-input :value.sync="submitData.name_en" label="名稱(英文)"></bs-input>
+                <bs-input :value.sync="submitData.address" label="地址" pattern=""></bs-input>
+                <bs-input :value.sync="submitData.address_en" label="地址（英文）" pattern=""></bs-input>
+                <bs-input :value.sync="submitData.bill_address" label="賬單地址" pattern=""></bs-input>
+                <bs-input :value.sync="submitData.bill_address_en" label="賬單地址（英文）" pattern=""></bs-input>
+                <bs-input :value.sync="submitData.attn" label="聯繫人" pattern=""></bs-input>
+                <bs-input :value.sync="submitData.attn_en" label="聯繫人（英文）" pattern=""></bs-input>
+                <bs-input :value.sync="submitData.tel" label="電話" pattern=""></bs-input>
+                <bs-input :value.sync="submitData.fax" label="傳真" pattern=""></bs-input>
+                <bs-input :value.sync="submitData.email" label="電郵" pattern=""></bs-input>
             </div>
             <div slot="modal-footer" class="modal-footer">
                 <button type="button" class="btn btn-default" @click="showBuildingModel=false">关闭</button>
@@ -41,7 +38,6 @@
     import {
         spinner,
         modal,
-        formGroup,
         alert,
         input as bsInput
     } from 'vue-strap'
@@ -63,7 +59,6 @@
             VueStrapTable,
             spinner,
             modal,
-            formGroup,
             alert,
             bsInput
         },
@@ -131,7 +126,6 @@
             return {
                 submitting: false,
                 getData: "getData",
-                valid: {},
                 submitData: {
                     id: "",
                     name: "",
@@ -155,14 +149,14 @@
         },
         computed: {
             alertType() {
-                return this.valid.all ? "success" : "warning"
+                return this.valid() ? "success" : "warning"
             },
             alertText() {
                 if (this.serverMsg) {
                     return this.serverMsg;
                 }
                 let returnText = "請輸入";
-                if (!this.valid.all) {
+                if (!this.valid()) {
                     returnText = "請輸入"
                 }
                 return returnText
@@ -170,12 +164,15 @@
         },
         methods: {
             checkPermission,
+            valid() {
+                return this.submitData.name
+            },
             addBuilding() {
                 this.submitData = {}
                 this.showBuildingModel = true
             },
             submitBuilding() {
-                if (this.valid.all) {
+                if (this.valid()) {
                     var that = this
                     that.submitting = true
                     datasource.submitBuilding(that.submitData).then(function(result) {
@@ -194,10 +191,11 @@
                 for (var i in this.submitData) {
                     this.submitData[i] = row[i]
                 }
+                console.log(this.submitData.name)
                 this.showBuildingModel = true
             },
             deleteBuilding(row) {
-                if (window.confirm("是否確認刪除：" + row.code + "?")) {
+                if (window.confirm("是否確認刪除：" + row.name + "?")) {
                     var that = this
                     datasource.deleteBuilding({
                         id: row.id

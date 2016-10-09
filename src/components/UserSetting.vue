@@ -15,9 +15,7 @@
                 <alert :type="alertType">
                     {{alertText}}
                 </alert>
-                <form-group :valid.sync="valid.all">
-                    <bs-input :value.sync="account" label="账号" required></bs-input>
-                </form-group>
+                <bs-input :value.sync="account" label="账号"></bs-input>
             </div>
             <div slot="modal-footer" class="modal-footer">
                 <button type="button" class="btn btn-default" @click="showUserModel=false">关闭</button>
@@ -44,7 +42,6 @@
     import {
         spinner,
         modal,
-        formGroup,
         alert,
         input as bsInput
     } from 'vue-strap'
@@ -67,7 +64,6 @@
             VueStrapTable,
             spinner,
             modal,
-            formGroup,
             alert,
             bsInput,
             UserRoleSetting
@@ -114,7 +110,6 @@
             return {
                 submitting: false,
                 getData: "getData",
-                valid: {},
                 account: "",
                 showUserModel: false,
                 data: {},
@@ -127,14 +122,14 @@
         },
         computed: {
             alertType() {
-                return this.valid.all ? "success" : "warning"
+                return this.account ? "success" : "warning"
             },
             alertText() {
                 if (this.serverMsg) {
                     return this.serverMsg;
                 }
                 let returnText = "请输入创建账户";
-                if (!this.valid.all) {
+                if (!this.account) {
                     returnText = "请输入创建账户"
                 }
                 return returnText
@@ -147,7 +142,7 @@
                 this.showUserModel = true
             },
             submitAddAccount() {
-                if (this.valid.all) {
+                if (this.account) {
                     var that = this
                     that.submitting = true
                     RBAC.addUser({
