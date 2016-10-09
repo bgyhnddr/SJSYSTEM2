@@ -2,7 +2,7 @@
     <div v-if="checkPermission()">
         <navbar type="default">
             <li v-if="checkPermission()">
-                <a v-link="{ path: '/index/DataManagement/ProjectData' }">工程數據管理</a>
+                <a v-link="{ path: '/index/DataManagement/ProjectType' }">工程類型管理</a>
             </li>
             <li v-if="checkPermission()">
                 <a v-link="{ path: '/index/DataManagement/ProjectManager' }">工程負責人</a>

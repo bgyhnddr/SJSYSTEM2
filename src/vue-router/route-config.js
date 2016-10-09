@@ -17,6 +17,15 @@ export function configRouter(router) {
                         },
                         'ProjectManager': {
                             component: require('../components/ProjectManagerSetting.vue')
+                        },
+                        'ProjectType': {
+                            component: require('../components/ProjectTypeSetting.vue')
+                        },
+                        'ProjectItem/:type': {
+                            component: require('../components/ProjectItemSetting.vue')
+                        },
+                        'ProjectTemplate/:item': {
+                            component: require('../components/ProjectTemplateSetting.vue')
                         }
                     }
                 },
