@@ -121,7 +121,9 @@
         methods: {
             checkPermission,
             addRolePermission() {
-                this.submitData = {}
+                for (var i in this.submitData) {
+                    this.submitData[i] = ""
+                }
                 this.showRolePermissionModel = true
             },
             submitRolePermission() {

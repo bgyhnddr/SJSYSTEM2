@@ -366,6 +366,110 @@ var deleteProjectManager = function(req, res, next) {
     })
 }
 
+var getProjectTypes = function(req, res, next) {
+    var project_type = require('../db/models/project_type')
+
+    var filterKey = req.query.filterKey == undefined ? "" : req.query.filterKey
+    var count = req.query.count == undefined ? 5 : parseInt(req.query.count)
+    var page = req.query.page == undefined ? 0 : parseInt(req.query.page)
+
+    return Promise.all([
+        project_type.findAll({
+            where: {
+                name: {
+                    $like: "%" + filterKey + "%"
+                }
+            },
+            offset: page * count,
+            limit: count
+        }),
+        project_type.count({
+            where: {
+                name: {
+                    $like: "%" + filterKey + "%"
+                }
+            }
+        })
+    ]).then(function(result) {
+        var project_types = result[0]
+        var rowCount = result[1]
+        return {
+            end: (project_types.length + page * count) >= rowCount,
+            list: project_types
+        }
+    })
+}
+
+var submitProjectType = function(req, res, next) {
+    var project_type = require('../db/models/project_type')
+    if (req.body.id) {
+        return project_type.findOne({
+            where: {
+                id: req.body.id
+            }
+        }).then(function(result) {
+            return result.update(req.body)
+        }).catch(function(error) {
+            if (error.name == "SequelizeUniqueConstraintError") {
+                return Promise.reject("數據不能重複")
+            }
+            return Promise.reject(error.name)
+        })
+    } else {
+        return project_type.create(req.body).catch(function(error) {
+            if (error.name == "SequelizeUniqueConstraintError") {
+                return Promise.reject("數據不能重複")
+            }
+            return Promise.reject(error.name)
+        })
+    }
+}
+
+var deleteProjectType = function(req, res, next) {
+    var project_type = require('../db/models/project_type')
+    var project_item = require('../db/models/project_item')
+    var upload_content_template = require('../db/models/upload_content_template')
+    var job_content_template = require('../db/models/job_content_template')
+
+    project_type.hasMany(project_item)
+
+    project_item.hasMany(upload_content_template)
+
+    project_item.hasMany(job_content_template)
+
+
+    return project_type.findOne({
+        include: [{
+            model: project_item,
+            include: [
+                upload_content_template,
+                job_content_template
+            ]
+        }],
+        where: {
+            id: req.body.id
+        }
+    }).then(function(result) {
+        var destroyList = []
+        result.project_items.forEach(function(item) {
+            item.upload_content_templates.forEach(function(template) {
+                destroyList.push(template.destroy())
+            })
+            item.job_content_templates.forEach(function(template) {
+                destroyList.push(template.destroy())
+            })
+            destroyList.push(item.destroy())
+        })
+
+        destroyList.push(result.destroy())
+        if (result) {
+            return Promise.all(destroyList)
+        } else {
+            return "do nothing"
+        }
+    })
+}
+
 module.exports = (req, res, next) => {
     var action = req.params.action
     Promise.resolve(action).then(function(result) {
@@ -394,6 +498,12 @@ module.exports = (req, res, next) => {
                 return submitProjectManager(req, res, next)
             case "deleteProjectManager":
                 return deleteProjectManager(req, res, next)
+            case "getProjectTypes":
+                return getProjectTypes(req, res, next)
+            case "submitProjectType":
+                return submitProjectType(req, res, next)
+            case "deleteProjectType":
+                return deleteProjectType(req, res, next)
         }
     }).then(function(result) {
         res.send(result)

@@ -167,7 +167,9 @@
                 return this.submitData.name
             },
             addBuilding() {
-                this.submitData = {}
+                for (var i in this.submitData) {
+                    this.submitData[i] = ""
+                }
                 this.showBuildingModel = true
             },
             submitBuilding() {

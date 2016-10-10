@@ -16,7 +16,7 @@
                     {{alertText}}
                 </alert>
                 <bs-input v-if="!edit" :value.sync="submitData.code" label="編碼"></bs-input>
-                <bs-input v-else :value.sync="submitData.code" label="編碼"></bs-input>
+                <bs-input v-else :value.sync="submitData.code" label="編碼" readonly></bs-input>
                 <bs-input :value.sync="submitData.name" label="名稱"></bs-input>
             </div>
             <div slot="modal-footer" class="modal-footer">
@@ -125,7 +125,9 @@
                 return this.submitData.code && this.submitData.name
             },
             addPermission() {
-                this.submitData = {}
+                for (var i in this.submitData) {
+                    this.submitData[i] = ""
+                }
                 this.edit = false
                 this.showPermissionModel = true
             },

@@ -1,4 +1,4 @@
-var getUsers = function (req, res, next) {
+var getUsers = function(req, res, next) {
     var user = require('../db/models/user')
 
     var filterKey = req.query.filterKey == undefined ? "" : req.query.filterKey
@@ -28,7 +28,7 @@ var getUsers = function (req, res, next) {
                 }
             }
         })
-    ]).then(function (result) {
+    ]).then(function(result) {
         var users = result[0]
         var rowCount = result[1]
         return {
@@ -38,7 +38,7 @@ var getUsers = function (req, res, next) {
     })
 }
 
-var addUser = function (req, res, next) {
+var addUser = function(req, res, next) {
     var user = require('../db/models/user')
     var account = req.body.account
     if (account) {
@@ -46,19 +46,20 @@ var addUser = function (req, res, next) {
             where: {
                 account: account
             }
-        }).then(function (result) {
+        }).then(function(result) {
             if (result != null) {
                 return Promise.reject({
                     "code": "error",
                     "msg": '賬號已存在'
                 })
-            }
-            else {
-                return user.create({ account: account, password: "123" })
+            } else {
+                return user.create({
+                    account: account,
+                    password: "123"
+                })
             }
         })
-    }
-    else {
+    } else {
         return Promise.reject({
             "code": "error",
             "msg": '請輸入用戶'
@@ -66,7 +67,7 @@ var addUser = function (req, res, next) {
     }
 }
 
-var resetPassword = function (req, res, next) {
+var resetPassword = function(req, res, next) {
     var user = require('../db/models/user')
     var account = req.body.account
     if (account) {
@@ -74,23 +75,21 @@ var resetPassword = function (req, res, next) {
             where: {
                 account: account
             }
-        }).then(function (result) {
+        }).then(function(result) {
             console.log(result)
             if (result == null) {
                 return Promise.reject({
                     "code": "error",
                     "msg": '賬號不存在'
                 })
-            }
-            else {
+            } else {
                 result.password = "123"
                 return result.save()
             }
-        }).then(function (result) {
+        }).then(function(result) {
             return 'success'
         })
-    }
-    else {
+    } else {
         return Promise.reject({
             "code": "error",
             "msg": '請輸入用戶'
@@ -98,7 +97,7 @@ var resetPassword = function (req, res, next) {
     }
 }
 
-var deleteUser = function (req, res, next) {
+var deleteUser = function(req, res, next) {
     var user = require('../db/models/user')
     var user_role = require('../db/models/user_role')
 
@@ -116,13 +115,12 @@ var deleteUser = function (req, res, next) {
                 }
             })
         ])
-    }
-    else {
+    } else {
         return "do nothing"
     }
 }
 
-var getRoles = function (req, res, next) {
+var getRoles = function(req, res, next) {
     var role = require('../db/models/role')
 
     var filterKey = req.query.filterKey == undefined ? "" : req.query.filterKey
@@ -166,7 +164,7 @@ var getRoles = function (req, res, next) {
                 }
             }
         })
-    ]).then(function (result) {
+    ]).then(function(result) {
         var roles = result[0]
         var rowCount = result[1]
         return {
@@ -176,14 +174,35 @@ var getRoles = function (req, res, next) {
     })
 }
 
-var submitRole = function (req, res, next) {
+var submitRole = function(req, res, next) {
     var code = req.body.code
     var name = req.body.name ? req.body.name : ""
     if (code) {
         var role = require('../db/models/role')
-        return role.upsert({ code: code, name: name })
-    }
-    else {
+        var user_role = require('../db/models/user_role')
+        var role_permission = require('../db/models/role_permission')
+        return role.upsert({
+            code: code,
+            name: name
+        }).then(function() {
+            return Promise.all([
+                user_role.update({
+                    role_code: code
+                }, {
+                    where: {
+                        role_code: code
+                    }
+                }),
+                role_permission.update({
+                    role_code: code
+                }, {
+                    where: {
+                        role_code: code
+                    }
+                })
+            ])
+        })
+    } else {
         return Promise.reject({
             "code": "error",
             "msg": '請輸入角色編碼'
@@ -191,7 +210,7 @@ var submitRole = function (req, res, next) {
     }
 }
 
-var deleteRole = function (req, res, next) {
+var deleteRole = function(req, res, next) {
     var role = require('../db/models/role')
     var user_role = require('../db/models/user_role')
     var role_permission = require('../db/models/role_permission')
@@ -214,13 +233,12 @@ var deleteRole = function (req, res, next) {
                 }
             })
         ])
-    }
-    else {
+    } else {
         return "do noting"
     }
 }
 
-var getPermissions = function (req, res, next) {
+var getPermissions = function(req, res, next) {
     var permission = require('../db/models/permission')
 
     var filterKey = req.query.filterKey == undefined ? "" : req.query.filterKey
@@ -264,7 +282,7 @@ var getPermissions = function (req, res, next) {
                 }
             }
         })
-    ]).then(function (result) {
+    ]).then(function(result) {
         var permissions = result[0]
         var rowCount = result[1]
         return {
@@ -274,14 +292,25 @@ var getPermissions = function (req, res, next) {
     })
 }
 
-var submitPermission = function (req, res, next) {
+var submitPermission = function(req, res, next) {
     var code = req.body.code
     var name = req.body.name ? req.body.name : ""
     if (code) {
         var permission = require('../db/models/permission')
-        return permission.upsert({ code: code, name: name })
-    }
-    else {
+        var role_permission = require('../db/models/role_permission')
+        return permission.upsert({
+            code: code,
+            name: name
+        }).then(function() {
+            return role_permission.update({
+                permission_code: code
+            }, {
+                where: {
+                    permission_code: code
+                }
+            })
+        })
+    } else {
         return Promise.reject({
             "code": "error",
             "msg": '請輸入權限編碼'
@@ -289,7 +318,7 @@ var submitPermission = function (req, res, next) {
     }
 }
 
-var deletePermission = function (req, res, next) {
+var deletePermission = function(req, res, next) {
     var permission = require('../db/models/permission')
     var role_permission = require('../db/models/role_permission')
     var code = req.body.code
@@ -306,13 +335,12 @@ var deletePermission = function (req, res, next) {
                 }
             })
         ])
-    }
-    else {
+    } else {
         return "do noting"
     }
 }
 
-var getUserRoles = function (req, res, next) {
+var getUserRoles = function(req, res, next) {
     var user_role = require('../db/models/user_role')
     var role = require('../db/models/role')
     user_role.belongsTo(role, {
@@ -375,7 +403,7 @@ var getUserRoles = function (req, res, next) {
                 }
             }
         })
-    ]).then(function (result) {
+    ]).then(function(result) {
         var user_roles = result[0]
         var rowCount = result[1]
         return {
@@ -385,7 +413,7 @@ var getUserRoles = function (req, res, next) {
     })
 }
 
-var submitUserRole = function (req, res, next) {
+var submitUserRole = function(req, res, next) {
     console.log(req.body)
     var id = req.body.id
     var role_code = req.body.role_code ? req.body.role_code : ""
@@ -393,25 +421,21 @@ var submitUserRole = function (req, res, next) {
     if (role_code) {
         var user_role = require('../db/models/user_role')
         if (id) {
-            return user_role.update(
-                {
-                    role_code: role_code
-                },
-                {
-                    where: {
-                        id: id,
-                        user_account: user_account
-                    }
-                })
-        }
-        else {
+            return user_role.update({
+                role_code: role_code
+            }, {
+                where: {
+                    id: id,
+                    user_account: user_account
+                }
+            })
+        } else {
             return user_role.create({
                 user_account: user_account,
                 role_code: role_code
             })
         }
-    }
-    else {
+    } else {
         return Promise.reject({
             "code": "error",
             "msg": '請指定角色'
@@ -419,7 +443,7 @@ var submitUserRole = function (req, res, next) {
     }
 }
 
-var deleteUserRole = function (req, res, next) {
+var deleteUserRole = function(req, res, next) {
     var user_role = require('../db/models/user_role')
 
     var id = req.body.id
@@ -428,16 +452,15 @@ var deleteUserRole = function (req, res, next) {
             where: {
                 id: id
             }
-        }).then(function () {
+        }).then(function() {
             return "success"
         })
-    }
-    else {
+    } else {
         return "do noting"
     }
 }
 
-var getRolePermissions = function (req, res, next) {
+var getRolePermissions = function(req, res, next) {
     var role_permission = require('../db/models/role_permission')
     var role = require('../db/models/role')
     var permission = require('../db/models/permission')
@@ -503,7 +526,7 @@ var getRolePermissions = function (req, res, next) {
                 }
             }
         })
-    ]).then(function (result) {
+    ]).then(function(result) {
         var role_permissions = result[0]
         var rowCount = result[1]
         return {
@@ -513,7 +536,7 @@ var getRolePermissions = function (req, res, next) {
     })
 }
 
-var submitRolePermission = function (req, res, next) {
+var submitRolePermission = function(req, res, next) {
     console.log(req.body)
     var id = req.body.id
     var permission_code = req.body.permission_code ? req.body.permission_code : ""
@@ -521,25 +544,21 @@ var submitRolePermission = function (req, res, next) {
     if (permission_code) {
         var role_permission = require('../db/models/role_permission')
         if (id) {
-            return role_permission.update(
-                {
-                    permission_code: permission_code
-                },
-                {
-                    where: {
-                        id: id,
-                        role_code: role_code
-                    }
-                })
-        }
-        else {
+            return role_permission.update({
+                permission_code: permission_code
+            }, {
+                where: {
+                    id: id,
+                    role_code: role_code
+                }
+            })
+        } else {
             return role_permission.create({
                 permission_code: permission_code,
                 role_code: role_code
             })
         }
-    }
-    else {
+    } else {
         return Promise.reject({
             "code": "error",
             "msg": '請指定權限'
@@ -547,7 +566,7 @@ var submitRolePermission = function (req, res, next) {
     }
 }
 
-var deleteRolePermission = function (req, res, next) {
+var deleteRolePermission = function(req, res, next) {
     var role_permission = require('../db/models/role_permission')
 
     var id = req.body.id
@@ -556,18 +575,17 @@ var deleteRolePermission = function (req, res, next) {
             where: {
                 id: id
             }
-        }).then(function () {
+        }).then(function() {
             return "success"
         })
-    }
-    else {
+    } else {
         return "do nothing"
     }
 }
 
 module.exports = (req, res, next) => {
     var action = req.params.action
-    Promise.resolve(action).then(function (result) {
+    Promise.resolve(action).then(function(result) {
         switch (result) {
             case "getUsers":
                 return getUsers(req)
@@ -602,9 +620,9 @@ module.exports = (req, res, next) => {
             case "deleteRolePermission":
                 return deleteRolePermission(req)
         }
-    }).then(function (result) {
+    }).then(function(result) {
         res.send(result)
-    }).catch(function (error) {
+    }).catch(function(error) {
         res.status(500).send(error)
     })
 

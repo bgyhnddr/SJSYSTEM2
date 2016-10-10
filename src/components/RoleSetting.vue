@@ -15,7 +15,7 @@
                 <alert :type="alertType">
                     {{alertText}}
                 </alert>
-                <bs-input v-if="!edit" :value.sync="submitData.code" label="編碼" required></bs-input>
+                <bs-input v-if="!edit" :value.sync="submitData.code" label="編碼"></bs-input>
                 <bs-input v-else :value.sync="submitData.code" label="編碼" readonly></bs-input>
                 <bs-input :value.sync="submitData.name" label="名稱" required></bs-input>
             </div>
@@ -147,7 +147,9 @@
                 return this.submitData.code && this.submitData.name
             },
             addRole() {
-                this.submitData = {}
+                for (var i in this.submitData) {
+                    this.submitData[i] = ""
+                }
                 this.edit = false
                 this.showRoleModel = true
             },

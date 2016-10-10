@@ -21,10 +21,10 @@ export function configRouter(router) {
                         'ProjectType': {
                             component: require('../components/ProjectTypeSetting.vue')
                         },
-                        'ProjectItem/:type': {
+                        'ProjectType/:type': {
                             component: require('../components/ProjectItemSetting.vue')
                         },
-                        'ProjectTemplate/:item': {
+                        'ProjectType/:type/:item': {
                             component: require('../components/ProjectTemplateSetting.vue')
                         }
                     }

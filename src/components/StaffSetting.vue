@@ -116,7 +116,9 @@
         methods: {
             checkPermission,
             addStaff() {
-                this.submitData = {}
+                for (var i in this.submitData) {
+                    this.submitData[i] = ""
+                }
                 this.showStaffModel = true
             },
             submitStaff() {

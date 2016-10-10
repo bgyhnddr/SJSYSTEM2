@@ -129,7 +129,9 @@
                 return this.submitData.code && this.submitData.name
             },
             addPropertyManagementCo() {
-                this.submitData = {}
+                for (var i in this.submitData) {
+                    this.submitData[i] = ""
+                }
                 this.showPropertyManagementCoModel = true
             },
             submitPropertyManagementCo() {
