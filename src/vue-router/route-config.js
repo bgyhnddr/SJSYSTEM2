@@ -24,8 +24,11 @@ export function configRouter(router) {
                         'ProjectType/:type': {
                             component: require('../components/ProjectItemSetting.vue')
                         },
-                        'ProjectType/:type/:item': {
-                            component: require('../components/ProjectTemplateSetting.vue')
+                        'ProjectType/:type/:item/upload': {
+                            component: require('../components/ProjectUploadTemplateSetting.vue')
+                        },
+                        'ProjectType/:type/:item/job': {
+                            component: require('../components/ProjectContentTemplateSetting.vue')
                         }
                     }
                 },

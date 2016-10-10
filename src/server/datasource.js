@@ -150,7 +150,6 @@ var submitStaff = function(req, res, next) {
 
 var deleteStaff = function(req, res, next) {
     var staff = require('../db/models/staff')
-    console.log(req.body)
     return staff.destroy({
         where: {
             id: req.body.id
@@ -601,6 +600,322 @@ var deleteProjectItem = function(req, res, next) {
     })
 }
 
+var getUploadTemplates = function(req, res, next) {
+    var upload_content_template = require('../db/models/upload_content_template')
+    var project_item = require('../db/models/project_item')
+
+    var filterKey = req.query.filterKey == undefined ? "" : req.query.filterKey
+    var item = req.query.item
+    if (item) {
+        upload_content_template.belongsTo(project_item)
+
+        return upload_content_template.findAll({
+            include: [{
+                model: project_item,
+                where: {
+                    name: item
+                }
+            }],
+            where: {
+                content: {
+                    $like: "%" + filterKey + "%"
+                }
+            },
+            order: ['index']
+        }).then(function(result) {
+            return {
+                end: true,
+                list: result
+            }
+        })
+    } else {
+        Promise.reject("no item")
+    }
+}
+
+var submitUploadTemplate = function(req, res, next) {
+    var upload_content_template = require('../db/models/upload_content_template')
+    var project_item = require('../db/models/project_item')
+    if (req.body.id) {
+        return upload_content_template.findOne({
+            where: {
+                id: req.body.id
+            }
+        }).then(function(result) {
+            return result.update({
+                content: req.body.content
+            })
+        }).catch(function(error) {
+            if (error.name == "SequelizeUniqueConstraintError") {
+                return Promise.reject("數據不能重複")
+            }
+            return Promise.reject(error.name)
+        })
+    } else {
+        return project_item.findOne({
+            where: {
+                name: req.body.project_item_name
+            }
+        }).then(function(result) {
+            if (result == null) {
+                return Promise.reject("type not found")
+            } else {
+                return upload_content_template.count({
+                    where: {
+                        project_item_id: result.id
+                    }
+                }).then(function(count) {
+                    return upload_content_template.create({
+                        content: req.body.content,
+                        project_item_id: result.id,
+                        index: count + 1
+                    })
+                })
+            }
+        }).catch(function(error) {
+            if (error.name == "SequelizeUniqueConstraintError") {
+                return Promise.reject("數據不能重複")
+            }
+            return Promise.reject(error.name)
+        })
+    }
+}
+
+var deleteUploadTemplate = function(req, res, next) {
+    var upload_content_template = require('../db/models/upload_content_template')
+
+    return upload_content_template.destroy({
+        where: {
+            id: req.body.id
+        }
+    }).then(function(result) {
+        return "success"
+    })
+}
+
+var upUploadTemplate = function(req, res, next) {
+    var upload_content_template = require('../db/models/upload_content_template')
+    console.log(req.body.index)
+    return upload_content_template.findAll({
+        where: {
+            index: {
+                $lte: req.body.index
+            }
+        },
+        limit: 2,
+        order: [
+            ["index", "DESC"]
+        ]
+    }).then(function(result) {
+        if (result.length == 2) {
+            console.log(result[0])
+            console.log(result[1])
+            var tempIndex = result[0].index
+            result[0].index = result[1].index
+            result[1].index = tempIndex
+
+
+
+            console.log(result[0].index)
+            console.log(result[1].index)
+
+            return Promise.all([
+                result[0].save(),
+                result[1].save()
+            ])
+        } else {
+            return "do nothing"
+        }
+    })
+}
+
+var downUploadTemplate = function(req, res, next) {
+    var upload_content_template = require('../db/models/upload_content_template')
+
+    return upload_content_template.findAll({
+        where: {
+            index: {
+                $gte: req.body.index
+            }
+        },
+        limit: 2,
+        order: [
+            ["index"]
+        ]
+    }).then(function(result) {
+        if (result.length == 2) {
+            var tempIndex = result[0].index
+            result[0].index = result[1].index
+            result[1].index = tempIndex
+
+            return Promise.all([
+                result[0].save(),
+                result[1].save()
+            ])
+        } else {
+            return "do nothing"
+        }
+    })
+}
+
+var getJobTemplates = function(req, res, next) {
+    var job_content_template = require('../db/models/job_content_template')
+    var project_item = require('../db/models/project_item')
+
+    var filterKey = req.query.filterKey == undefined ? "" : req.query.filterKey
+    var item = req.query.item
+    if (item) {
+        job_content_template.belongsTo(project_item)
+
+        return job_content_template.findAll({
+            include: [{
+                model: project_item,
+                where: {
+                    name: item
+                }
+            }],
+            where: {
+                content: {
+                    $like: "%" + filterKey + "%"
+                }
+            },
+            order: ['index']
+        }).then(function(result) {
+            return {
+                end: true,
+                list: result
+            }
+        })
+    } else {
+        Promise.reject("no item")
+    }
+}
+
+var submitJobTemplate = function(req, res, next) {
+    var job_content_template = require('../db/models/job_content_template')
+    var project_item = require('../db/models/project_item')
+    if (req.body.id) {
+        return job_content_template.findOne({
+            where: {
+                id: req.body.id
+            }
+        }).then(function(result) {
+            return result.update({
+                content: req.body.content
+            })
+        }).catch(function(error) {
+            if (error.name == "SequelizeUniqueConstraintError") {
+                return Promise.reject("數據不能重複")
+            }
+            return Promise.reject(error.name)
+        })
+    } else {
+        return project_item.findOne({
+            where: {
+                name: req.body.project_item_name
+            }
+        }).then(function(result) {
+            if (result == null) {
+                return Promise.reject("type not found")
+            } else {
+                return job_content_template.count({
+                    where: {
+                        project_item_id: result.id
+                    }
+                }).then(function(count) {
+                    return job_content_template.create({
+                        content: req.body.content,
+                        project_item_id: result.id,
+                        index: count + 1
+                    })
+                })
+            }
+        }).catch(function(error) {
+            if (error.name == "SequelizeUniqueConstraintError") {
+                return Promise.reject("數據不能重複")
+            }
+            return Promise.reject(error.name)
+        })
+    }
+}
+
+var deleteJobTemplate = function(req, res, next) {
+    var job_content_template = require('../db/models/job_content_template')
+
+    return job_content_template.destroy({
+        where: {
+            id: req.body.id
+        }
+    }).then(function(result) {
+        return "success"
+    })
+}
+
+var upJobTemplate = function(req, res, next) {
+    var job_content_template = require('../db/models/job_content_template')
+    console.log(req.body.index)
+    return job_content_template.findAll({
+        where: {
+            index: {
+                $lte: req.body.index
+            }
+        },
+        limit: 2,
+        order: [
+            ["index", "DESC"]
+        ]
+    }).then(function(result) {
+        if (result.length == 2) {
+            console.log(result[0])
+            console.log(result[1])
+            var tempIndex = result[0].index
+            result[0].index = result[1].index
+            result[1].index = tempIndex
+
+
+
+            console.log(result[0].index)
+            console.log(result[1].index)
+
+            return Promise.all([
+                result[0].save(),
+                result[1].save()
+            ])
+        } else {
+            return "do nothing"
+        }
+    })
+}
+
+var downJobTemplate = function(req, res, next) {
+    var job_content_template = require('../db/models/job_content_template')
+
+    return job_content_template.findAll({
+        where: {
+            index: {
+                $gte: req.body.index
+            }
+        },
+        limit: 2,
+        order: [
+            ["index"]
+        ]
+    }).then(function(result) {
+        if (result.length == 2) {
+            var tempIndex = result[0].index
+            result[0].index = result[1].index
+            result[1].index = tempIndex
+
+            return Promise.all([
+                result[0].save(),
+                result[1].save()
+            ])
+        } else {
+            return "do nothing"
+        }
+    })
+}
+
 module.exports = (req, res, next) => {
     var action = req.params.action
     Promise.resolve(action).then(function(result) {
@@ -641,6 +956,26 @@ module.exports = (req, res, next) => {
                 return submitProjectItem(req, res, next)
             case "deleteProjectItem":
                 return deleteProjectItem(req, res, next)
+            case "getUploadTemplates":
+                return getUploadTemplates(req, res, next)
+            case "submitUploadTemplate":
+                return submitUploadTemplate(req, res, next)
+            case "deleteUploadTemplate":
+                return deleteUploadTemplate(req, res, next)
+            case "upUploadTemplate":
+                return upUploadTemplate(req, res, next)
+            case "downUploadTemplate":
+                return downUploadTemplate(req, res, next)
+            case "getJobTemplates":
+                return getJobTemplates(req, res, next)
+            case "submitJobTemplate":
+                return submitJobTemplate(req, res, next)
+            case "deleteJobTemplate":
+                return deleteJobTemplate(req, res, next)
+            case "upJobTemplate":
+                return upJobTemplate(req, res, next)
+            case "downJobTemplate":
+                return downJobTemplate(req, res, next)
         }
     }).then(function(result) {
         res.send(result)

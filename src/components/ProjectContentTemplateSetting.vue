@@ -2,29 +2,30 @@
     <div v-if="checkPermission()">
         <ol class="breadcrumb">
             <li><a v-link="{ path: '/index/DataManagement/ProjectType' }">工程類別</a></li>
-            <li class="active">{{$route.params.type}}</li>
+            <li><a v-link="{ path: '/index/DataManagement/ProjectType/'+$route.params.type }">{{$route.params.type}}</a></li>
+            <li class="active">{{$route.params.item}}:工作內容模板</li>
         </ol>
         <div>
-            <button @click="addProjectItem" class="btn btn-default">添加工程項目</button>
+            <button @click="addJobTemplate" class="btn btn-default">添加工作內容</button>
             <div style="position:relative">
                 <spinner size="md" text="loading..."></spinner>
-                <vue-strap-table :err-msg.sync="errMsg" :data.sync="data" :get-data-event="getData" :columns="columns"></vue-strap-table>
+                <vue-strap-table :has-filter="hasFilter" :err-msg.sync="errMsg" :data.sync="data" :get-data-event="getData" :columns.sync="columns"></vue-strap-table>
             </div>
-            <modal :show.sync="showProjectItemModel" effect="fade" width="400">
+            <modal :show.sync="showJobTemplateModel" effect="fade" width="400">
                 <div slot="modal-header" class="modal-header">
                     <h4 class="modal-title">
-                        工程項目
+                        工作內容
                     </h4>
                 </div>
                 <div slot="modal-body" class="modal-body">
                     <alert :type="alertType">
                         {{alertText}}
                     </alert>
-                    <bs-input :value.sync="submitData.name" label="名稱"></bs-input>
+                    <bs-input :value.sync="submitData.content" label="內容"></bs-input>
                 </div>
                 <div slot="modal-footer" class="modal-footer">
-                    <button type="button" class="btn btn-default" @click="showProjectItemModel=false">关闭</button>
-                    <button :disabled="submitting" type="button" class="btn btn-success" @click="submitProjectItem">確認</button>
+                    <button type="button" class="btn btn-default" @click="showJobTemplateModel=false">关闭</button>
+                    <button :disabled="submitting" type="button" class="btn btn-success" @click="submitJobTemplate">確認</button>
                 </div>
             </modal>
         </div>
@@ -41,7 +42,6 @@
     } from 'vue-strap'
     import datasource from '../api/datasource'
     import checkPermission from '../extend/check-permission'
-    import VueRouter from "vue-router" //首先导入路由对象
 
     export default {
         props: {
@@ -63,21 +63,24 @@
         },
         data() {
             let columns = [{
+                "header": "序號",
+                "type": "index"
+            }, {
                 "header": "名稱",
-                "bind": "name"
+                "bind": "content"
             }, {
                 "header": "操作",
                 "type": "action",
                 "items": [{
-                    eventName: "editUploadDetail",
+                    eventName: "up",
                     tag: "button",
                     class: "btn-xs",
-                    text: "编辑上傳模板"
+                    text: "上移"
                 }, {
-                    eventName: "editContentDetail",
+                    eventName: "down",
                     tag: "button",
                     class: "btn-xs",
-                    text: "编辑內容模板"
+                    text: "下移"
                 }, {
                     eventName: "edit",
                     tag: "button",
@@ -107,13 +110,15 @@
                 getData: "getData",
                 submitData: {
                     id: "",
-                    name: ""
+                    content: ""
                 },
-                showProjectItemModel: false,
+                edit: false,
+                showJobTemplateModel: false,
                 data: {},
                 serverMsg: "",
                 columns: columns,
-                errMsg: ""
+                errMsg: "",
+                hasFilter: false
             }
         },
         computed: {
@@ -134,27 +139,27 @@
         methods: {
             checkPermission,
             valid() {
-                return this.submitData.name
+                return this.submitData.content
             },
-            addProjectItem() {
+            addJobTemplate() {
                 for (var i in this.submitData) {
                     this.submitData[i] = ""
                 }
-                this.showProjectItemModel = true
+                this.edit = false
+                this.showJobTemplateModel = true
             },
-            submitProjectItem() {
+            submitJobTemplate() {
                 if (this.valid()) {
                     var that = this
                     that.submitting = true
-                    console.log(that.submitData.id)
-                    datasource.submitProjectItem({
+                    datasource.submitJobTemplate({
                         id: that.submitData.id,
-                        name: that.submitData.name,
-                        project_type_name: that.$route.params.type
+                        content: that.submitData.content,
+                        project_item_name: that.$route.params.item
                     }).then(function(result) {
                         that.submitting = false
                         that.$broadcast("refreshData")
-                        that.showProjectItemModel = false
+                        that.showJobTemplateModel = false
                         that.serverMsg = ""
                     }).catch(function(err) {
                         that.submitting = false
@@ -162,17 +167,16 @@
                     })
                 }
             },
-            editProjectItem(row) {
-                for (var i in this.submitData) {
-                    this.submitData[i] = row[i]
-                }
-                console.log(this.submitData.name)
-                this.showProjectItemModel = true
+            editJobTemplate(row) {
+                this.submitData.id = row.id
+                this.submitData.content = row.content
+                this.edit = true
+                this.showJobTemplateModel = true
             },
-            deleteProjectItem(row) {
-                if (window.confirm("是否確認刪除：" + row.name + "及其相關的工程項目與模板?")) {
+            deleteJobTemplate(row) {
+                if (window.confirm("是否確認刪除：" + row.content + "?")) {
                     var that = this
-                    datasource.deleteProjectItem({
+                    datasource.deleteJobTemplate({
                         id: row.id
                     }).then(function(result) {
                         that.$broadcast("refreshData")
@@ -180,38 +184,51 @@
                         window.alert(err)
                     })
                 }
+            },
+            up(row) {
+                var that = this
+                datasource.upJobTemplate({
+                    index: row.index
+                }).then(function(result) {
+                    that.$broadcast("refreshData")
+                }).catch(function(err) {
+                    window.alert(err)
+                })
+            },
+            down(row) {
+                var that = this
+                datasource.downJobTemplate({
+                    index: row.index
+                }).then(function(result) {
+                    that.$broadcast("refreshData")
+                }).catch(function(err) {
+                    window.alert(err)
+                })
             }
         },
         events: {
             "edit": function(row) {
-                this.editProjectItem(row)
+                this.editJobTemplate(row)
             },
             "delete": function(row) {
-                this.deleteProjectItem(row)
+                this.deleteJobTemplate(row)
             },
             "getData": function(pageNum, countPerPage, filterKey, append) {
                 let that = this
                 that.$broadcast('show::spinner')
-                datasource.getProjectItems(that.$route.params.type, pageNum, countPerPage, filterKey).then(function(result) {
+                datasource.getJobTemplates(that.$route.params.item, filterKey).then(function(result) {
                     that.$broadcast('hide::spinner')
-                    if (append) {
-                        that.data.end = result.end
-                        that.data.list = that.data.list.concat(result.list)
-                    } else {
-                        that.data = result
-                    }
+                    that.data = result
                 }).catch(function(err) {
                     that.errMsg = err
                     that.$broadcast('hide::spinner')
                 })
             },
-            "editUploadDetail": function(row) {
-                var router = new VueRouter();
-                router.go("/index/DataManagement/ProjectType/" + this.$route.params.type + "/" + row.name + "/upload")
+            "up": function(row) {
+                this.up(row)
             },
-            "editContentDetail": function(row) {
-                var router = new VueRouter();
-                router.go("/index/DataManagement/ProjectType/" + this.$route.params.type + "/" + row.name + "/job")
+            "down": function(row) {
+                this.down(row)
             }
         },
         ready() {

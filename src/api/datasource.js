@@ -416,5 +416,221 @@ export default {
                 }
             })
         })
+    },
+    getUploadTemplates(item, filterKey) {
+        return new Promise(function(resolve, reject) {
+            Vue.http.get('/service/private/datasource/getUploadTemplates', {
+                _timeout: 5000,
+                params: {
+                    item,
+                    filterKey
+                },
+                onTimeout: (request) => {
+                    reject("timeout")
+                }
+            }).then(function(res) {
+                if (res.ok) {
+                    if (res.body) {
+                        resolve(res.body)
+                    } else {
+                        reject("error")
+                    }
+                }
+            }).catch(function(e) {
+                if (e.body.code == "error") {
+                    reject(e.body.msg)
+                } else {
+                    reject(e.body)
+                }
+            })
+        })
+    },
+    submitUploadTemplate(params) {
+        return new Promise(function(resolve, reject) {
+            Vue.http.post('/service/private/datasource/submitUploadTemplate', params, {
+                _timeout: 5000,
+                onTimeout: (request) => {
+                    reject("timeout")
+                }
+            }).then(function(res) {
+                if (res.ok) {
+                    resolve(res.body)
+                }
+            }).catch(function(e) {
+                if (e.body.code == "error") {
+                    reject(e.body.msg)
+                } else {
+                    reject(e.body)
+                }
+            })
+        })
+    },
+    deleteUploadTemplate(params) {
+        return new Promise(function(resolve, reject) {
+            Vue.http.post('/service/private/datasource/deleteUploadTemplate', params, {
+                _timeout: 5000,
+                onTimeout: (request) => {
+                    reject("timeout")
+                }
+            }).then(function(res) {
+                if (res.ok) {
+                    resolve(res.body)
+                }
+            }).catch(function(e) {
+                if (e.body.code == "error") {
+                    reject(e.body.msg)
+                } else {
+                    reject(e.body)
+                }
+            })
+        })
+    },
+    upUploadTemplate(params) {
+        return new Promise(function(resolve, reject) {
+            Vue.http.post('/service/private/datasource/upUploadTemplate', params, {
+                _timeout: 5000,
+                onTimeout: (request) => {
+                    reject("timeout")
+                }
+            }).then(function(res) {
+                if (res.ok) {
+                    resolve(res.body)
+                }
+            }).catch(function(e) {
+                if (e.body.code == "error") {
+                    reject(e.body.msg)
+                } else {
+                    reject(e.body)
+                }
+            })
+        })
+    },
+    downUploadTemplate(params) {
+        return new Promise(function(resolve, reject) {
+            Vue.http.post('/service/private/datasource/downUploadTemplate', params, {
+                _timeout: 5000,
+                onTimeout: (request) => {
+                    reject("timeout")
+                }
+            }).then(function(res) {
+                if (res.ok) {
+                    resolve(res.body)
+                }
+            }).catch(function(e) {
+                if (e.body.code == "error") {
+                    reject(e.body.msg)
+                } else {
+                    reject(e.body)
+                }
+            })
+        })
+    },
+    getJobTemplates(item, filterKey) {
+        return new Promise(function(resolve, reject) {
+            Vue.http.get('/service/private/datasource/getJobTemplates', {
+                _timeout: 5000,
+                params: {
+                    item,
+                    filterKey
+                },
+                onTimeout: (request) => {
+                    reject("timeout")
+                }
+            }).then(function(res) {
+                if (res.ok) {
+                    if (res.body) {
+                        resolve(res.body)
+                    } else {
+                        reject("error")
+                    }
+                }
+            }).catch(function(e) {
+                if (e.body.code == "error") {
+                    reject(e.body.msg)
+                } else {
+                    reject(e.body)
+                }
+            })
+        })
+    },
+    submitJobTemplate(params) {
+        return new Promise(function(resolve, reject) {
+            Vue.http.post('/service/private/datasource/submitJobTemplate', params, {
+                _timeout: 5000,
+                onTimeout: (request) => {
+                    reject("timeout")
+                }
+            }).then(function(res) {
+                if (res.ok) {
+                    resolve(res.body)
+                }
+            }).catch(function(e) {
+                if (e.body.code == "error") {
+                    reject(e.body.msg)
+                } else {
+                    reject(e.body)
+                }
+            })
+        })
+    },
+    deleteJobTemplate(params) {
+        return new Promise(function(resolve, reject) {
+            Vue.http.post('/service/private/datasource/deleteJobTemplate', params, {
+                _timeout: 5000,
+                onTimeout: (request) => {
+                    reject("timeout")
+                }
+            }).then(function(res) {
+                if (res.ok) {
+                    resolve(res.body)
+                }
+            }).catch(function(e) {
+                if (e.body.code == "error") {
+                    reject(e.body.msg)
+                } else {
+                    reject(e.body)
+                }
+            })
+        })
+    },
+    upJobTemplate(params) {
+        return new Promise(function(resolve, reject) {
+            Vue.http.post('/service/private/datasource/upJobTemplate', params, {
+                _timeout: 5000,
+                onTimeout: (request) => {
+                    reject("timeout")
+                }
+            }).then(function(res) {
+                if (res.ok) {
+                    resolve(res.body)
+                }
+            }).catch(function(e) {
+                if (e.body.code == "error") {
+                    reject(e.body.msg)
+                } else {
+                    reject(e.body)
+                }
+            })
+        })
+    },
+    downJobTemplate(params) {
+        return new Promise(function(resolve, reject) {
+            Vue.http.post('/service/private/datasource/downJobTemplate', params, {
+                _timeout: 5000,
+                onTimeout: (request) => {
+                    reject("timeout")
+                }
+            }).then(function(res) {
+                if (res.ok) {
+                    resolve(res.body)
+                }
+            }).catch(function(e) {
+                if (e.body.code == "error") {
+                    reject(e.body.msg)
+                } else {
+                    reject(e.body)
+                }
+            })
+        })
     }
 }

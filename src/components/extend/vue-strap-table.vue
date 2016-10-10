@@ -33,6 +33,9 @@
                                     </template>
                                 </template>
                             </template>
+                            <template v-if="column.type == 'index'">
+                                {{$parent.$index+1}}
+                            </template>
                         </td>
                     </tr>
                 </tbody>
