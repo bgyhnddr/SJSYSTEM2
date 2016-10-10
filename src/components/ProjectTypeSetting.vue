@@ -40,6 +40,8 @@
     } from 'vue-strap'
     import datasource from '../api/datasource'
     import checkPermission from '../extend/check-permission'
+    import VueRouter from "vue-router" //首先导入路由对象
+
     export default {
         props: {
             selectable: {
@@ -144,7 +146,6 @@
                         that.$broadcast("refreshData")
                         that.showProjectTypeModel = false
                         that.serverMsg = ""
-                        that.submitData = {}
                     }).catch(function(err) {
                         that.submitting = false
                         that.serverMsg = err
@@ -195,7 +196,8 @@
                 })
             },
             "editDetail": function(row) {
-
+                var router = new VueRouter();
+                router.go("/index/DataManagement/ProjectType/" + row.name)
             }
         },
         ready() {

@@ -138,7 +138,6 @@
                     that.$broadcast("refreshData")
                     that.showRolePermissionModel = false
                     that.serverMsg = ""
-                    that.submitData = {}
                 }).catch(function(err) {
                     that.submitting = false
                     that.serverMsg = err

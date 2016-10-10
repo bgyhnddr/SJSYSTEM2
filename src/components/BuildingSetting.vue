@@ -181,7 +181,6 @@
                         that.$broadcast("refreshData")
                         that.showBuildingModel = false
                         that.serverMsg = ""
-                        that.submitData = {}
                     }).catch(function(err) {
                         that.submitting = false
                         that.serverMsg = err

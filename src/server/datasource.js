@@ -470,6 +470,137 @@ var deleteProjectType = function(req, res, next) {
     })
 }
 
+var getProjectItems = function(req, res, next) {
+    var project_item = require('../db/models/project_item')
+    var project_type = require('../db/models/project_type')
+
+    var filterKey = req.query.filterKey == undefined ? "" : req.query.filterKey
+    var count = req.query.count == undefined ? 5 : parseInt(req.query.count)
+    var page = req.query.page == undefined ? 0 : parseInt(req.query.page)
+    var type = req.query.type
+
+    if (type) {
+        project_item.belongsTo(project_type)
+
+        return Promise.all([
+            project_item.findAll({
+                include: [{
+                    model: project_type,
+                    where: {
+                        name: type
+                    }
+                }],
+                where: {
+                    name: {
+                        $like: "%" + filterKey + "%"
+                    }
+                },
+                offset: page * count,
+                limit: count
+            }),
+            project_item.count({
+                include: [{
+                    model: project_type,
+                    where: {
+                        name: type
+                    }
+                }],
+                where: {
+                    name: {
+                        $like: "%" + filterKey + "%"
+                    }
+                }
+            })
+        ]).then(function(result) {
+            var project_items = result[0]
+            var rowCount = result[1]
+            return {
+                end: (project_items.length + page * count) >= rowCount,
+                list: project_items
+            }
+        })
+    } else {
+        Promise.reject("no type")
+    }
+}
+
+var submitProjectItem = function(req, res, next) {
+    var project_item = require('../db/models/project_item')
+    var project_type = require('../db/models/project_type')
+    if (req.body.id) {
+        return project_item.findOne({
+            where: {
+                id: req.body.id
+            }
+        }).then(function(result) {
+            return result.update({
+                name: req.body.name
+            })
+        }).catch(function(error) {
+            if (error.name == "SequelizeUniqueConstraintError") {
+                return Promise.reject("數據不能重複")
+            }
+            return Promise.reject(error.name)
+        })
+    } else {
+        return project_type.findOne({
+            where: {
+                name: req.body.project_type_name
+            }
+        }).then(function(result) {
+            if (result == null) {
+                return Promise.reject("type not found")
+            } else {
+                return project_item.create({
+                    name: req.body.name,
+                    project_type_id: result.id
+                })
+            }
+        }).catch(function(error) {
+            if (error.name == "SequelizeUniqueConstraintError") {
+                return Promise.reject("數據不能重複")
+            }
+            return Promise.reject(error.name)
+        })
+    }
+}
+
+var deleteProjectItem = function(req, res, next) {
+    var project_item = require('../db/models/project_item')
+    var upload_content_template = require('../db/models/upload_content_template')
+    var job_content_template = require('../db/models/job_content_template')
+
+    project_item.hasMany(upload_content_template)
+
+    project_item.hasMany(job_content_template)
+
+
+    return project_item.findOne({
+        include: [
+            upload_content_template,
+            job_content_template
+        ],
+        where: {
+            id: req.body.id
+        }
+    }).then(function(result) {
+        var destroyList = []
+        result.upload_content_templates.forEach(function(template) {
+            destroyList.push(template.destroy())
+        })
+        result.job_content_templates.forEach(function(template) {
+            destroyList.push(template.destroy())
+        })
+        destroyList.push(result.destroy())
+
+        if (result) {
+            return Promise.all(destroyList)
+        } else {
+            return "do nothing"
+        }
+    })
+}
+
 module.exports = (req, res, next) => {
     var action = req.params.action
     Promise.resolve(action).then(function(result) {
@@ -504,6 +635,12 @@ module.exports = (req, res, next) => {
                 return submitProjectType(req, res, next)
             case "deleteProjectType":
                 return deleteProjectType(req, res, next)
+            case "getProjectItems":
+                return getProjectItems(req, res, next)
+            case "submitProjectItem":
+                return submitProjectItem(req, res, next)
+            case "deleteProjectItem":
+                return deleteProjectItem(req, res, next)
         }
     }).then(function(result) {
         res.send(result)
