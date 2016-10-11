@@ -3,6 +3,20 @@ export function configRouter(router) {
         '/index': {
             component: require('../components/Master.vue'),
             subRoutes: {
+                'ProjectManagement': {
+                    component: require('../components/ProjectManagement.vue'),
+                    subRoutes: {
+                        'Project': {
+                            component: require('../components/CreateProject.vue')
+                        },
+                        'Project/:id': {
+                            component: require('../components/Project.vue')
+                        },
+                        'Project/:id/:mode': {
+                            component: require('../components/Project.vue')
+                        }
+                    }
+                },
                 'DataManagement': {
                     component: require('../components/DataManagement.vue'),
                     subRoutes: {
@@ -29,6 +43,9 @@ export function configRouter(router) {
                         },
                         'ProjectType/:type/:item/job': {
                             component: require('../components/ProjectContentTemplateSetting.vue')
+                        },
+                        'OutSourceContractor': {
+                            component: require('../components/OutSourceContractorSetting.vue')
                         }
                     }
                 },

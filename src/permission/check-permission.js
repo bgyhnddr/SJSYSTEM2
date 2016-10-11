@@ -1,4 +1,4 @@
-module.exports = function (req, res, next) {
+module.exports = function(req, res, next) {
     var user_role = require('../db/models/user_role')
     var role_permission = require('../db/models/role_permission')
 
@@ -8,11 +8,10 @@ module.exports = function (req, res, next) {
         constraints: false
     })
 
-    return new Promise(function (resolve, reject) {
+    return new Promise(function(resolve, reject) {
         if (!req.session.userInfo) {
             reject("not_login")
-        }
-        else {
+        } else {
             role_permission.findAll({
                 include: [{
                     model: user_role,
@@ -20,15 +19,14 @@ module.exports = function (req, res, next) {
                         user_account: req.session.userInfo.name
                     }
                 }]
-            }).then(function (result) {
+            }).then(function(result) {
                 if (
-                    result.map(o => o.permission_code).some(function (o) {
+                    result.map(o => o.permission_code).some(function(o) {
                         return o == req.params.type || o == "admin"
                     })
                 ) {
                     resolve()
-                }
-                else {
+                } else {
                     reject("no_authorization")
                 }
             })

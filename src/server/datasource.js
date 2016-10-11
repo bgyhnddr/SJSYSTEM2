@@ -39,11 +39,11 @@ var getPropertyManagementCos = function(req, res, next) {
             }
         })
     ]).then(function(result) {
-        var property_management_cos = result[0]
+        var list = result[0]
         var rowCount = result[1]
         return {
-            end: (property_management_cos.length + page * count) >= rowCount,
-            list: property_management_cos
+            end: (list.length + page * count) >= rowCount,
+            list: list
         }
     })
 }
@@ -114,11 +114,11 @@ var getStaffs = function(req, res, next) {
             }
         })
     ]).then(function(result) {
-        var staffs = result[0]
+        var list = result[0]
         var rowCount = result[1]
         return {
-            end: (staffs.length + page * count) >= rowCount,
-            list: staffs
+            end: (list.length + page * count) >= rowCount,
+            list: list
         }
     })
 }
@@ -248,11 +248,11 @@ var getBuildings = function(req, res, next) {
             }
         })
     ]).then(function(result) {
-        var buildings = result[0]
+        var list = result[0]
         var rowCount = result[1]
         return {
-            end: (buildings.length + page * count) >= rowCount,
-            list: buildings
+            end: (list.length + page * count) >= rowCount,
+            list: list
         }
     })
 }
@@ -319,11 +319,11 @@ var getProjectManagers = function(req, res, next) {
             }
         })
     ]).then(function(result) {
-        var project_managers = result[0]
+        var list = result[0]
         var rowCount = result[1]
         return {
-            end: (project_managers.length + page * count) >= rowCount,
-            list: project_managers
+            end: (list.length + page * count) >= rowCount,
+            list: list
         }
     })
 }
@@ -390,11 +390,11 @@ var getProjectTypes = function(req, res, next) {
             }
         })
     ]).then(function(result) {
-        var project_types = result[0]
+        var list = result[0]
         var rowCount = result[1]
         return {
-            end: (project_types.length + page * count) >= rowCount,
-            list: project_types
+            end: (list.length + page * count) >= rowCount,
+            list: list
         }
     })
 }
@@ -511,11 +511,11 @@ var getProjectItems = function(req, res, next) {
                 }
             })
         ]).then(function(result) {
-            var project_items = result[0]
+            var list = result[0]
             var rowCount = result[1]
             return {
-                end: (project_items.length + page * count) >= rowCount,
-                list: project_items
+                end: (list.length + page * count) >= rowCount,
+                list: list
             }
         })
     } else {
@@ -916,6 +916,147 @@ var downJobTemplate = function(req, res, next) {
     })
 }
 
+var getOutSourceContractors = function(req, res, next) {
+    var out_source_contractor = require('../db/models/out_source_contractor')
+
+    var filterKey = req.query.filterKey == undefined ? "" : req.query.filterKey
+    var count = req.query.count == undefined ? 5 : parseInt(req.query.count)
+    var page = req.query.page == undefined ? 0 : parseInt(req.query.page)
+
+    return Promise.all([
+        out_source_contractor.findAll({
+            where: {
+                $or: {
+                    code: {
+                        $like: "%" + filterKey + "%"
+                    },
+                    company: {
+                        $like: "%" + filterKey + "%"
+                    },
+                    address: {
+                        $like: "%" + filterKey + "%"
+                    },
+                    address_en: {
+                        $like: "%" + filterKey + "%"
+                    },
+                    bill_address: {
+                        $like: "%" + filterKey + "%"
+                    },
+                    bill_address_en: {
+                        $like: "%" + filterKey + "%"
+                    },
+                    attn: {
+                        $like: "%" + filterKey + "%"
+                    },
+                    attn_en: {
+                        $like: "%" + filterKey + "%"
+                    },
+                    tel: {
+                        $like: "%" + filterKey + "%"
+                    },
+                    fax: {
+                        $like: "%" + filterKey + "%"
+                    },
+                    email: {
+                        $like: "%" + filterKey + "%"
+                    },
+                    comments: {
+                        $like: "%" + filterKey + "%"
+                    }
+                }
+            },
+            offset: page * count,
+            limit: count
+        }),
+        out_source_contractor.count({
+            where: {
+                $or: {
+                    code: {
+                        $like: "%" + filterKey + "%"
+                    },
+                    company: {
+                        $like: "%" + filterKey + "%"
+                    },
+                    address: {
+                        $like: "%" + filterKey + "%"
+                    },
+                    address_en: {
+                        $like: "%" + filterKey + "%"
+                    },
+                    bill_address: {
+                        $like: "%" + filterKey + "%"
+                    },
+                    bill_address_en: {
+                        $like: "%" + filterKey + "%"
+                    },
+                    attn: {
+                        $like: "%" + filterKey + "%"
+                    },
+                    attn_en: {
+                        $like: "%" + filterKey + "%"
+                    },
+                    tel: {
+                        $like: "%" + filterKey + "%"
+                    },
+                    fax: {
+                        $like: "%" + filterKey + "%"
+                    },
+                    email: {
+                        $like: "%" + filterKey + "%"
+                    },
+                    comments: {
+                        $like: "%" + filterKey + "%"
+                    }
+                }
+            }
+        })
+    ]).then(function(result) {
+        var list = result[0]
+        var rowCount = result[1]
+        return {
+            end: (list.length + page * count) >= rowCount,
+            list: list
+        }
+    })
+}
+
+var submitOutSourceContractor = function(req, res, next) {
+    var out_source_contractor = require('../db/models/out_source_contractor')
+    if (req.body.id) {
+        return out_source_contractor.findOne({
+            where: {
+                id: req.body.id
+            }
+        }).then(function(result) {
+            return result.update(req.body)
+        }).catch(function(error) {
+            if (error.name == "SequelizeUniqueConstraintError") {
+                return Promise.reject("數據不能重複")
+            }
+            return Promise.reject(error.name)
+        })
+    } else {
+        return out_source_contractor.create(req.body).catch(function(error) {
+            if (error.name == "SequelizeUniqueConstraintError") {
+                return Promise.reject("數據不能重複")
+            }
+            return Promise.reject(error.name)
+        })
+    }
+}
+
+var deleteOutSourceContractor = function(req, res, next) {
+    var out_source_contractor = require('../db/models/out_source_contractor')
+    console.log(req.body)
+    return out_source_contractor.destroy({
+        where: {
+            id: req.body.id
+        }
+    }).then(function() {
+        return "success"
+    })
+}
+
 module.exports = (req, res, next) => {
     var action = req.params.action
     Promise.resolve(action).then(function(result) {
@@ -976,6 +1117,12 @@ module.exports = (req, res, next) => {
                 return upJobTemplate(req, res, next)
             case "downJobTemplate":
                 return downJobTemplate(req, res, next)
+            case "getOutSourceContractors":
+                return getOutSourceContractors(req, res, next)
+            case "submitOutSourceContractor":
+                return submitOutSourceContractor(req, res, next)
+            case "deleteOutSourceContractor":
+                return deleteOutSourceContractor(req, res, next)
         }
     }).then(function(result) {
         res.send(result)

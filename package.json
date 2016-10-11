@@ -8,7 +8,8 @@
     "dev": "node build/dev-server.js",
     "build": "node build/build.js",
     "test": "",
-    "lint": "eslint --ext .js,.vue src test/unit/specs test/e2e/specs"
+    "lint": "eslint --ext .js,.vue src test/unit/specs test/e2e/specs",
+    "server": "node build/run_server.js"
   },
   "dependencies": {
     "babel-runtime": "^6.0.0",
@@ -19,7 +20,8 @@
     "vue": "^1.0.21",
     "vue-resource": "^1.0.2",
     "vue-router": "^0.7.13",
-    "vue-strap": "^1.1.23"
+    "vue-strap": "^1.1.23",
+    "vuejs-datepicker": "^0.4.7"
   },
   "devDependencies": {
     "babel-core": "^6.0.0",

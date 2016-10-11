@@ -29,11 +29,11 @@ var getUsers = function(req, res, next) {
             }
         })
     ]).then(function(result) {
-        var users = result[0]
+        var list = result[0]
         var rowCount = result[1]
         return {
-            end: (users.length + page * count) >= rowCount,
-            list: users
+            end: (list.length + page * count) >= rowCount,
+            list: list
         }
     })
 }
@@ -165,11 +165,11 @@ var getRoles = function(req, res, next) {
             }
         })
     ]).then(function(result) {
-        var roles = result[0]
+        var list = result[0]
         var rowCount = result[1]
         return {
-            end: (roles.length + page * count) >= rowCount,
-            list: roles
+            end: (list.length + page * count) >= rowCount,
+            list: list
         }
     })
 }
@@ -283,11 +283,11 @@ var getPermissions = function(req, res, next) {
             }
         })
     ]).then(function(result) {
-        var permissions = result[0]
+        var list = result[0]
         var rowCount = result[1]
         return {
-            end: (permissions.length + page * count) >= rowCount,
-            list: permissions
+            end: (list.length + page * count) >= rowCount,
+            list: list
         }
     })
 }
@@ -404,11 +404,11 @@ var getUserRoles = function(req, res, next) {
             }
         })
     ]).then(function(result) {
-        var user_roles = result[0]
+        var list = result[0]
         var rowCount = result[1]
         return {
-            end: (user_roles.length + page * count) >= rowCount,
-            list: user_roles
+            end: (list.length + page * count) >= rowCount,
+            list: list
         }
     })
 }
@@ -527,11 +527,11 @@ var getRolePermissions = function(req, res, next) {
             }
         })
     ]).then(function(result) {
-        var role_permissions = result[0]
+        var list = result[0]
         var rowCount = result[1]
         return {
-            end: (role_permissions.length + page * count) >= rowCount,
-            list: role_permissions
+            end: (list.length + page * count) >= rowCount,
+            list: list
         }
     })
 }

@@ -27,6 +27,10 @@ module.exports = (app) => {
                     case "datasource":
                         require('./datasource')(req, res, next)
                         break
+                    case "create_quotation":
+                        require('./create_quotation')(req, res, next)
+                        break
+
                 }
             }, function(error) {
                 if (error == "not_login") {
@@ -45,9 +49,6 @@ module.exports = (app) => {
             switch (req.params.type) {
                 case "auth":
                     require('./auth')(req, res, next)
-                    break
-                case "upload":
-                    require('./upload')(req, res, next)
                     break
             }
         }

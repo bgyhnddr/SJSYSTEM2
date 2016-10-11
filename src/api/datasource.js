@@ -632,5 +632,74 @@ export default {
                 }
             })
         })
+    },
+    getOutSourceContractors(page, count, filterKey) {
+        return new Promise(function(resolve, reject) {
+            Vue.http.get('/service/private/datasource/getOutSourceContractors', {
+                _timeout: 5000,
+                params: {
+                    page,
+                    count,
+                    filterKey
+                },
+                onTimeout: (request) => {
+                    reject("timeout")
+                }
+            }).then(function(res) {
+                if (res.ok) {
+                    if (res.body) {
+                        resolve(res.body)
+                    } else {
+                        reject("error")
+                    }
+                }
+            }).catch(function(e) {
+                if (e.body.code == "error") {
+                    reject(e.body.msg)
+                } else {
+                    reject(e.body)
+                }
+            })
+        })
+    },
+    submitOutSourceContractor(params) {
+        return new Promise(function(resolve, reject) {
+            Vue.http.post('/service/private/datasource/submitOutSourceContractor', params, {
+                _timeout: 5000,
+                onTimeout: (request) => {
+                    reject("timeout")
+                }
+            }).then(function(res) {
+                if (res.ok) {
+                    resolve(res.body)
+                }
+            }).catch(function(e) {
+                if (e.body.code == "error") {
+                    reject(e.body.msg)
+                } else {
+                    reject(e.body)
+                }
+            })
+        })
+    },
+    deleteOutSourceContractor(params) {
+        return new Promise(function(resolve, reject) {
+            Vue.http.post('/service/private/datasource/deleteOutSourceContractor', params, {
+                _timeout: 5000,
+                onTimeout: (request) => {
+                    reject("timeout")
+                }
+            }).then(function(res) {
+                if (res.ok) {
+                    resolve(res.body)
+                }
+            }).catch(function(e) {
+                if (e.body.code == "error") {
+                    reject(e.body.msg)
+                } else {
+                    reject(e.body)
+                }
+            })
+        })
     }
 }
