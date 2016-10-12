@@ -1,68 +1,14 @@
-var Vue = require('vue')
+var httpRequest = require('../extend/http-request')
+var path = '/service/public/auth/'
 
 export default {
     login(params) {
-        return new Promise(function (resolve, reject) {
-            Vue.http.post('/service/public/auth/login', params, {
-                _timeout: 5000,
-                onTimeout: (request) => {
-                    reject("timeout")
-                }
-            }).then(function (res) {
-                if (res.ok) {
-                    resolve(res.body)
-                }
-            }).catch(function (e) {
-                if (e.body.code == "error") {
-                    reject(e.body.msg)
-                } else {
-                    reject(e.body)
-                }
-            })
-        })
+        return httpRequest.post(path + 'login', params)
     },
     logout() {
-        return new Promise(function (resolve, reject) {
-            Vue.http.get('/service/public/auth/logout', {
-                _timeout: 5000,
-                onTimeout: (request) => {
-                    reject("timeout")
-                }
-            }).then(function (res) {
-                if (res.ok) {
-                    resolve()
-                }
-            }).catch(function (e) {
-                if (e.body.code == "error") {
-                    reject(e.body.msg)
-                } else {
-                    reject(e.body)
-                }
-            })
-        })
+        return httpRequest.post(path + 'logout')
     },
     getUser() {
-        return new Promise(function (resolve, reject) {
-            Vue.http.get('/service/public/auth/getUser', {
-                _timeout: 5000,
-                onTimeout: (request) => {
-                    reject("timeout")
-                }
-            }).then(function (res) {
-                if (res.ok) {
-                    if (res.body.name) {
-                        resolve(res.body)
-                    } else {
-                        reject("error")
-                    }
-                }
-            }).catch(function (e) {
-                if (e.body.code == "error") {
-                    reject(e.body.msg)
-                } else {
-                    reject(e.body)
-                }
-            })
-        })
+        return httpRequest.get(path + 'getUser')
     }
 }

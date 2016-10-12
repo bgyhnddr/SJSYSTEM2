@@ -1,6 +1,6 @@
 <template>
-    <main-header></main-header>
-    <router-view></router-view>
+	<main-header></main-header>
+	<router-view></router-view>
 </template>
 
 <script>
@@ -24,8 +24,11 @@
             var vm = this;
             authAPI.getUser()
                 .then((userInfo) => {
-                    console.log(userInfo)
-                    vm.state.userInfo = userInfo
+                    if (userInfo.name) {
+                        vm.state.userInfo = userInfo
+                    } else {
+                        return Promise.reject()
+                    }
                 })
                 .catch((err) => {
                     window.actions.logout()

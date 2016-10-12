@@ -1,4 +1,4 @@
-var login = function (req, res, next) {
+var login = function(req, res, next) {
     var account = req.body.account
     var password = req.body.password
 
@@ -9,21 +9,19 @@ var login = function (req, res, next) {
         where: {
             account: account
         }
-    }).then(function (result) {
+    }).then(function(result) {
         if (result == null) {
             return Promise.reject({
                 "code": "error",
                 "msg": '賬號不存在'
             })
-        }
-        else {
+        } else {
             if (result.password != password) {
                 return Promise.reject({
                     "code": "error",
                     "msg": '密碼錯誤'
                 })
-            }
-            else {
+            } else {
                 var user_role = require('../db/models/user_role')
                 var role_permission = require('../db/models/role_permission')
 
@@ -42,7 +40,7 @@ var login = function (req, res, next) {
                 })
             }
         }
-    }).then(function (result) {
+    }).then(function(result) {
         if (result != null) {
             var userInfo = {}
             userInfo.name = account
@@ -53,11 +51,11 @@ var login = function (req, res, next) {
     })
 }
 
-var logout = function (req, res, next) {
+var logout = function(req, res, next) {
     req.session.userInfo = undefined
 }
 
-var getUser = function (req, res, next) {
+var getUser = function(req, res, next) {
     return req.session.userInfo
 }
 
@@ -66,7 +64,7 @@ var getUser = function (req, res, next) {
 
 module.exports = (req, res, next) => {
     var action = req.params.action
-    Promise.resolve(action).then(function (result) {
+    Promise.resolve(action).then(function(result) {
         switch (result) {
             case "login":
                 return login(req, res, next)
@@ -75,9 +73,9 @@ module.exports = (req, res, next) => {
             case "getUser":
                 return getUser(req, res, next)
         }
-    }).then(function (result) {
+    }).then(function(result) {
         res.send(result)
-    }).catch(function (error) {
+    }).catch(function(error) {
         res.status(500).send(error)
     })
 }

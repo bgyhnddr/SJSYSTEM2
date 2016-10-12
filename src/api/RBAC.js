@@ -1,371 +1,73 @@
-var Vue = require('vue')
+var request = require('../extend/http-request')
+var path = '/service/private/RBAC/'
 
 export default {
     getUsers(page, count, filterKey) {
-        return new Promise(function (resolve, reject) {
-            Vue.http.get('/service/private/RBAC/getUsers', {
-                _timeout: 5000,
-                params: {
-                    page,
-                    count,
-                    filterKey
-                },
-                onTimeout: (request) => {
-                    reject("timeout")
-                }
-            }).then(function (res) {
-                if (res.ok) {
-                    if (res.body) {
-                        resolve(res.body)
-                    } else {
-                        reject("error")
-                    }
-                }
-            }).catch(function (e) {
-                if (e.body.code == "error") {
-                    reject(e.body.msg)
-                } else {
-                    reject(e.body)
-                }
-            })
+        return request.get(path + 'getUsers', {
+            page,
+            count,
+            filterKey
         })
     },
     addUser(params) {
-        return new Promise(function (resolve, reject) {
-            Vue.http.post('/service/private/RBAC/addUser', params, {
-                _timeout: 5000,
-                onTimeout: (request) => {
-                    reject("timeout")
-                }
-            }).then(function (res) {
-                if (res.ok) {
-                    resolve(res.body)
-                }
-            }).catch(function (e) {
-                if (e.body.code == "error") {
-                    reject(e.body.msg)
-                } else {
-                    reject(e.body)
-                }
-            })
-        })
+        return request.post(path + 'addUser', params)
     },
     deleteUser(params) {
-        return new Promise(function (resolve, reject) {
-            Vue.http.post('/service/private/RBAC/deleteUser', params, {
-                _timeout: 5000,
-                onTimeout: (request) => {
-                    reject("timeout")
-                }
-            }).then(function (res) {
-                if (res.ok) {
-                    resolve(res.body)
-                }
-            }).catch(function (e) {
-                if (e.body.code == "error") {
-                    reject(e.body.msg)
-                } else {
-                    reject(e.body)
-                }
-            })
-        })
+        return request.post(path + 'deleteUser', params)
     },
     resetPassword(params) {
-        return new Promise(function (resolve, reject) {
-            Vue.http.post('/service/private/RBAC/resetPassword', params, {
-                _timeout: 5000,
-                onTimeout: (request) => {
-                    reject("timeout")
-                }
-            }).then(function (res) {
-                if (res.ok) {
-                    resolve(res.body)
-                }
-            }).catch(function (e) {
-                if (e.body.code == "error") {
-                    reject(e.body.msg)
-                } else {
-                    reject(e.body)
-                }
-            })
-        })
+        return request.post(path + 'resetPassword', params)
     },
     getRoles(page, count, filterKey) {
-        return new Promise(function (resolve, reject) {
-            Vue.http.get('/service/private/RBAC/getRoles', {
-                _timeout: 5000,
-                params: {
-                    page,
-                    count,
-                    filterKey
-                },
-                onTimeout: (request) => {
-                    reject("timeout")
-                }
-            }).then(function (res) {
-                if (res.ok) {
-                    if (res.body) {
-                        resolve(res.body)
-                    } else {
-                        reject("error")
-                    }
-                }
-            }).catch(function (e) {
-                if (e.body.code == "error") {
-                    reject(e.body.msg)
-                } else {
-                    reject(e.body)
-                }
-            })
+        return request.get(path + 'getRoles', {
+            page,
+            count,
+            filterKey
         })
     },
     submitRole(params) {
-        return new Promise(function (resolve, reject) {
-            Vue.http.post('/service/private/RBAC/submitRole', params, {
-                _timeout: 5000,
-                onTimeout: (request) => {
-                    reject("timeout")
-                }
-            }).then(function (res) {
-                if (res.ok) {
-                    resolve(res.body)
-                }
-            }).catch(function (e) {
-                if (e.body.code == "error") {
-                    reject(e.body.msg)
-                } else {
-                    reject(e.body)
-                }
-            })
-        })
+        return request.post(path + 'submitRole', params)
     },
     deleteRole(params) {
-        return new Promise(function (resolve, reject) {
-            Vue.http.post('/service/private/RBAC/deleteRole', params, {
-                _timeout: 5000,
-                onTimeout: (request) => {
-                    reject("timeout")
-                }
-            }).then(function (res) {
-                if (res.ok) {
-                    resolve(res.body)
-                }
-            }).catch(function (e) {
-                if (e.body.code == "error") {
-                    reject(e.body.msg)
-                } else {
-                    reject(e.body)
-                }
-            })
-        })
+        return request.post(path + 'deleteRole', params)
     },
     getPermissions(page, count, filterKey) {
-        return new Promise(function (resolve, reject) {
-            Vue.http.get('/service/private/RBAC/getPermissions', {
-                _timeout: 5000,
-                params: {
-                    page,
-                    count,
-                    filterKey
-                },
-                onTimeout: (request) => {
-                    reject("timeout")
-                }
-            }).then(function (res) {
-                if (res.ok) {
-                    if (res.body) {
-                        resolve(res.body)
-                    } else {
-                        reject("error")
-                    }
-                }
-            }).catch(function (e) {
-                if (e.body.code == "error") {
-                    reject(e.body.msg)
-                } else {
-                    reject(e.body)
-                }
-            })
+        return request.get(path + 'getPermissions', {
+            page,
+            count,
+            filterKey
         })
     },
     submitPermission(params) {
-        return new Promise(function (resolve, reject) {
-            Vue.http.post('/service/private/RBAC/submitPermission', params, {
-                _timeout: 5000,
-                onTimeout: (request) => {
-                    reject("timeout")
-                }
-            }).then(function (res) {
-                if (res.ok) {
-                    resolve(res.body)
-                }
-            }).catch(function (e) {
-                if (e.body.code == "error") {
-                    reject(e.body.msg)
-                } else {
-                    reject(e.body)
-                }
-            })
-        })
+        return request.post(path + 'submitPermission', params)
     },
     deletePermission(params) {
-        return new Promise(function (resolve, reject) {
-            Vue.http.post('/service/private/RBAC/deletePermission', params, {
-                _timeout: 5000,
-                onTimeout: (request) => {
-                    reject("timeout")
-                }
-            }).then(function (res) {
-                if (res.ok) {
-                    resolve(res.body)
-                }
-            }).catch(function (e) {
-                if (e.body.code == "error") {
-                    reject(e.body.msg)
-                } else {
-                    reject(e.body)
-                }
-            })
-        })
+        return request.post(path + 'deletePermission', params)
     },
     getUserRoles(user, page, count, filterKey) {
-        return new Promise(function (resolve, reject) {
-            Vue.http.get('/service/private/RBAC/getUserRoles', {
-                _timeout: 5000,
-                params: {
-                    user,
-                    page,
-                    count,
-                    filterKey
-                },
-                onTimeout: (request) => {
-                    reject("timeout")
-                }
-            }).then(function (res) {
-                if (res.ok) {
-                    if (res.body) {
-                        resolve(res.body)
-                    } else {
-                        reject("error")
-                    }
-                }
-            }).catch(function (e) {
-                if (e.body.code == "error") {
-                    reject(e.body.msg)
-                } else {
-                    reject(e.body)
-                }
-            })
+        return request.get(path + 'getUserRoles', {
+            page,
+            count,
+            filterKey
         })
     },
     submitUserRole(params) {
-        return new Promise(function (resolve, reject) {
-            Vue.http.post('/service/private/RBAC/submitUserRole', params, {
-                _timeout: 5000,
-                onTimeout: (request) => {
-                    reject("timeout")
-                }
-            }).then(function (res) {
-                if (res.ok) {
-                    resolve(res.body)
-                }
-            }).catch(function (e) {
-                if (e.body.code == "error") {
-                    reject(e.body.msg)
-                } else {
-                    reject(e.body)
-                }
-            })
-        })
+        return request.post(path + 'submitUserRole', params)
     },
     deleteUserRole(params) {
-        return new Promise(function (resolve, reject) {
-            Vue.http.post('/service/private/RBAC/deleteUserRole', params, {
-                _timeout: 5000,
-                onTimeout: (request) => {
-                    reject("timeout")
-                }
-            }).then(function (res) {
-                if (res.ok) {
-                    resolve(res.body)
-                }
-            }).catch(function (e) {
-                if (e.body.code == "error") {
-                    reject(e.body.msg)
-                } else {
-                    reject(e.body)
-                }
-            })
-        })
+        return request.post(path + 'deleteUserRole', params)
     },
     getRolePermissions(role, page, count, filterKey) {
-        return new Promise(function (resolve, reject) {
-            Vue.http.get('/service/private/RBAC/getRolePermissions', {
-                _timeout: 5000,
-                params: {
-                    role,
-                    page,
-                    count,
-                    filterKey
-                },
-                onTimeout: (request) => {
-                    reject("timeout")
-                }
-            }).then(function (res) {
-                if (res.ok) {
-                    if (res.body) {
-                        resolve(res.body)
-                    } else {
-                        reject("error")
-                    }
-                }
-            }).catch(function (e) {
-                if (e.body.code == "error") {
-                    reject(e.body.msg)
-                } else {
-                    reject(e.body)
-                }
-            })
+        return request.get(path + 'getRolePermissions', {
+            page,
+            count,
+            filterKey
         })
     },
     submitRolePermission(params) {
-        return new Promise(function (resolve, reject) {
-            Vue.http.post('/service/private/RBAC/submitRolePermission', params, {
-                _timeout: 5000,
-                onTimeout: (request) => {
-                    reject("timeout")
-                }
-            }).then(function (res) {
-                if (res.ok) {
-                    resolve(res.body)
-                }
-            }).catch(function (e) {
-                if (e.body.code == "error") {
-                    reject(e.body.msg)
-                } else {
-                    reject(e.body)
-                }
-            })
-        })
+        return request.post(path + 'submitRolePermission', params)
     },
     deleteRolePermission(params) {
-        return new Promise(function (resolve, reject) {
-            Vue.http.post('/service/private/RBAC/deleteRolePermission', params, {
-                _timeout: 5000,
-                onTimeout: (request) => {
-                    reject("timeout")
-                }
-            }).then(function (res) {
-                if (res.ok) {
-                    resolve(res.body)
-                }
-            }).catch(function (e) {
-                if (e.body.code == "error") {
-                    reject(e.body.msg)
-                } else {
-                    reject(e.body)
-                }
-            })
-        })
+        return request.post(path + 'deleteRolePermission', params)
     }
 }

@@ -1,10 +1,11 @@
-export default function (request, next) {
+export default function(request, next) {
     next((res) => {
-        if (res.body.code == "not_login") {
-            window.state.showLoginModal = true
+        if (res.body) {
+            if (res.body.code == "not_login") {
+                window.state.showLoginModal = true
+            } else if (res.body.code == "no_authorization") {
+                alert(res.body.msg)
+            }
         }
-        else if (res.body.code == "no_authorization") {
-            alert(res.body.msg)
-        }
-    });
+    })
 }
