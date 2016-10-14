@@ -106,7 +106,7 @@
             addData() {
                 let that = this
                 this.errMsg = ""
-                this.pageNum +=1
+                this.pageNum += 1
                 this.$dispatch(this.getDataEvent, this.pageNum, this.countPerPage, this.filterKey, true)
             },
             action(event, row) {

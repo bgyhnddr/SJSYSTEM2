@@ -18,9 +18,8 @@
 		</div>
 		<div class="form-group">
 			<label class="control-label">報價日期</label>
-            <p>
-				<datepicker v-ref:dp :value.sync="datepickerSetting.value" format="yyyy-MM-dd" :clear-button="datepickerSetting.clear"
-					width="370px"></datepicker>
+			<p>
+				<datepicker v-ref:dp :value.sync="datepickerSetting.value" format="yyyy-MM-dd" :clear-button="datepickerSetting.clear" width="370px"></datepicker>
 			</p>
 		</div>
 		<div class="form-group">
@@ -100,10 +99,9 @@
                 deep: true
             }
         },
-        ready(){
-            if(quotation.quotation_date)
-            {
-                this.datepickerSetting.
+        ready() {
+            if (quotation.quotation_date) {
+                this.datepickerSetting.value = quotation.quotation_date
             }
         }
     }
