@@ -46,6 +46,7 @@ export default {
     },
     getUserRoles(user, page, count, filterKey) {
         return request.get(path + 'getUserRoles', {
+            user,
             page,
             count,
             filterKey
@@ -59,6 +60,7 @@ export default {
     },
     getRolePermissions(role, page, count, filterKey) {
         return request.get(path + 'getRolePermissions', {
+            role,
             page,
             count,
             filterKey

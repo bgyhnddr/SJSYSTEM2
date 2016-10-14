@@ -68,6 +68,7 @@ export default {
     },
     getProjectItems(type, page, count, filterKey) {
         return request.get(path + 'getProjectItems', {
+            type,
             page,
             count,
             filterKey
@@ -81,6 +82,7 @@ export default {
     },
     getUploadTemplates(item, filterKey) {
         return request.get(path + 'getUploadTemplates', {
+            item,
             filterKey
         })
     },
@@ -98,6 +100,7 @@ export default {
     },
     getJobTemplates(item, filterKey) {
         return request.get(path + 'getJobTemplates', {
+            item,
             filterKey
         })
     },

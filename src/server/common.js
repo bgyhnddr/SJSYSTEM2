@@ -1,20 +1,21 @@
 var padString = function(target, padString, length, right) {
     while (target.length < length) {
         if (right) {
-            target = padString + target
-        } else {
             target = target + padString
+        } else {
+            target = padString + target
         }
     }
     return target
 }
 
-exports.generate_serial_no = function(type, company) {
+exports.generate_serial_no = function(type) {
     var serial_number = require('../db/models/serial_number')
+    var date = new Date()
     var values = {
         type: type,
-        company: company,
-        year: parseInt(new Date().getFullYear().toString().substr(2, 2))
+        year: parseInt(date.getFullYear().toString().substr(2, 2)),
+        month: date.getMonth() + 1
     }
     return serial_number.findOne({
         where: values
@@ -22,12 +23,12 @@ exports.generate_serial_no = function(type, company) {
         if (result == null) {
             values.number = 1
             return serial_number.create(values).then(function() {
-                return type + "-" + company + "-" + padString("1", "0", 5) + "-" + values.year
+                return type + values.year + padString(values.month.toString(), "0", 2) + padString("1", "0", 5)
             })
         } else {
             result.number += 1
             return result.save().then(function() {
-                return type + "-" + company + "-" + padString(result.number.toString(), "0", 5) + "-" + values.year
+                return type + result.year + padString(result.month.toString(), "0", 2) + padString(result.number.toString(), "0", 5)
             })
         }
     })

@@ -8,10 +8,12 @@ var quotation = sequelize.define(
         project_name: { type: Sequelize.STRING },
         project_type: { type: Sequelize.STRING },
         project_item: { type: Sequelize.STRING },
-        property_management_co: { type: Sequelize.STRING },
-        buliding: { type: Sequelize.STRING },
+        property_management_co_name: { type: Sequelize.STRING },
+        property_management_co_name_en: { type: Sequelize.STRING },
+        building_id: { type: Sequelize.INTEGER },
         manager: { type: Sequelize.STRING },
-        project_id: { type: Sequelize.INTEGER }
+        project_id: { type: Sequelize.INTEGER },
+        quotation_date: { type: Sequelize.STRING }
 
     }, {
         underscored: true

@@ -8,7 +8,6 @@ module.exports = function(req, res, next) {
         require('./models/role_permission'),
         require('./models/property_management_co'),
         require('./models/staff'),
-        require('./models/project_manager'),
         require('./models/project_type'),
         require('./models/project_item'),
         require('./models/job_content_template'),
@@ -19,7 +18,9 @@ module.exports = function(req, res, next) {
         require('./models/quotation'),
         require('./models/quotation_content'),
         require('./models/quotation_version'),
-        require('./models/serial_number')
+        require('./models/serial_number'),
+        require('./models/project_state'),
+        require('./models/project_setting')
     ].map((o) => o.sync({ force: true }))).then(function() {
         return require('./init_data')()
     }).then(function() {

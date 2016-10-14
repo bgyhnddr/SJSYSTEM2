@@ -30,6 +30,9 @@ module.exports = (app) => {
                     case "create_quotation":
                         require('./create_quotation')(req, res, next)
                         break
+                    case "view_quotation":
+                        require('./view_quotation')(req, res, next)
+                        break
 
                 }
             }, function(error) {

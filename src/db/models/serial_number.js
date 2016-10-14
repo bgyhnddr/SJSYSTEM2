@@ -7,6 +7,7 @@ var serial_number = sequelize.define(
         company: { type: Sequelize.STRING },
         number: { type: Sequelize.INTEGER, default: 0 },
         year: { type: Sequelize.INTEGER },
+        month: { type: Sequelize.INTEGER },
         type: { type: Sequelize.STRING }
     }, {
         underscored: true

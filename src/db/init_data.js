@@ -3,15 +3,6 @@ var role = require('./models/role')
 var permission = require('./models/permission')
 var user_role = require('./models/user_role')
 var role_permission = require('./models/role_permission')
-var property_management_co = require('./models/property_management_co')
-var staff = require('./models/staff')
-var project_manager = require('./models/project_manager')
-var project_type = require('./models/project_type')
-var project_item = require('./models/project_item')
-var job_content_template = require('./models/job_content_template')
-var upload_content_template = require('./models/upload_content_template')
-var building = require('./models/building')
-var out_source_contractor = require('./models/out_source_contractor')
 
 module.exports = function() {
     return Promise.all([

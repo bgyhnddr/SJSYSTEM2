@@ -18,10 +18,10 @@
         events: {
             'select': function(row) {
                 var that = this
-                create_quotation.create_quotation({
+                create_quotation.createQuotation({
                     co_id: row.id
                 }).then(function(result) {
-                    that.$router.go("/index/ProjectManagement/Project/" + result.id)
+                    that.$router.go("/index/ProjectManagement/Project/" + result.project_id)
                 }).catch(function(err) {
                     console.log(err)
                     window.alert(err)

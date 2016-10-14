@@ -370,10 +370,8 @@ var getUserRoles = function(req, res, next) {
                     role_code: {
                         $not: "admin"
                     },
-                    $or: {
-                        role_code: {
-                            $like: "%" + filterKey + "%"
-                        }
+                    role_code: {
+                        $like: "%" + filterKey + "%"
                     }
                 }
             },
@@ -395,10 +393,8 @@ var getUserRoles = function(req, res, next) {
                     role_code: {
                         $not: "admin"
                     },
-                    $or: {
-                        role_code: {
-                            $like: "%" + filterKey + "%"
-                        }
+                    role_code: {
+                        $like: "%" + filterKey + "%"
                     }
                 }
             }

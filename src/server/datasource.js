@@ -295,26 +295,32 @@ var deleteBuilding = function(req, res, next) {
 }
 
 var getProjectManagers = function(req, res, next) {
-    var project_manager = require('../db/models/project_manager')
+    var user_role = require('../db/models/user_role')
 
     var filterKey = req.query.filterKey == undefined ? "" : req.query.filterKey
     var count = req.query.count == undefined ? 5 : parseInt(req.query.count)
     var page = req.query.page == undefined ? 0 : parseInt(req.query.page)
 
     return Promise.all([
-        project_manager.findAll({
+        user_role.findAll({
             where: {
-                user_account: {
-                    $like: "%" + filterKey + "%"
+                $and: {
+                    user_account: {
+                        $like: "%" + filterKey + "%"
+                    },
+                    role_code: "PIC"
                 }
             },
             offset: page * count,
             limit: count
         }),
-        project_manager.count({
+        user_role.count({
             where: {
-                user_account: {
-                    $like: "%" + filterKey + "%"
+                $and: {
+                    user_account: {
+                        $like: "%" + filterKey + "%"
+                    },
+                    role_code: "PIC"
                 }
             }
         })
@@ -329,9 +335,9 @@ var getProjectManagers = function(req, res, next) {
 }
 
 var submitProjectManager = function(req, res, next) {
-    var project_manager = require('../db/models/project_manager')
+    var user_role = require('../db/models/user_role')
     if (req.body.id) {
-        return project_manager.findOne({
+        return user_role.findOne({
             where: {
                 id: req.body.id
             }
@@ -344,7 +350,8 @@ var submitProjectManager = function(req, res, next) {
             return Promise.reject(error.name)
         })
     } else {
-        return project_manager.create(req.body).catch(function(error) {
+        req.body.role_code = "PIC"
+        return user_role.create(req.body).catch(function(error) {
             if (error.name == "SequelizeUniqueConstraintError") {
                 return Promise.reject("數據不能重複")
             }
@@ -354,9 +361,8 @@ var submitProjectManager = function(req, res, next) {
 }
 
 var deleteProjectManager = function(req, res, next) {
-    var project_manager = require('../db/models/project_manager')
-    console.log(req.body)
-    return project_manager.destroy({
+    var user_role = require('../db/models/user_role')
+    return user_role.destroy({
         where: {
             id: req.body.id
         }

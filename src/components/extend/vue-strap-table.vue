@@ -1,51 +1,51 @@
 <template>
-    <div class="vue-strap-table">
-        <div class="table-responsive">
-            <div v-show="hasFilter">
-                <div class="col-sm-6">
-                    <bs-input :value.sync="filterKey" @keyup.enter="getData" placeholder="輸入任意關鍵字進行搜索" type="text">
-                        <span slot="after" class="input-group-btn">
+	<div class="vue-strap-table">
+		<div class="table-responsive">
+			<div v-show="hasFilter">
+				<div class="col-sm-6">
+					<bs-input :value.sync="filterKey" @keyup.enter="getData" placeholder="輸入任意關鍵字進行搜索" type="text">
+						<span slot="after" class="input-group-btn">
                             <button type="button" @click="getData" class="btn btn-primary">搜索</button>
                             <button type="button" @click="clearFilter" class="btn btn-default">清除</button>
                         </span>
-                    </bs-input>
-                </div>
-            </div>
-            <table class="table table-hover table-condensed">
-                <thead>
-                    <tr>
-                        <th v-for="column of columns | filterBy undefiend in 'hide'">
-                            {{ column.header }}
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="row of data.list">
-                        <td v-for="column of columns | filterBy undefiend in 'hide'">
-                            <template v-if="column.type == undefined || column.type == 'string'">
-                                <template v-if="column.format">{{ column.format(row[column.bind]) }}</template>
-                                <template v-else>{{ row[column.bind] }}</template>
-                            </template>
-                            <template v-if="column.type == 'action'">
-                                <template v-for="item in column.items">
-                                    <template v-if="item.tag=='button'">
-                                        <button @click="action(item.eventName,row)" class="{{item.class}} btn btn-default">{{item.text}}</button>
-                                    </template>
-                                </template>
-                            </template>
-                            <template v-if="column.type == 'index'">
-                                {{$parent.$index+1}}
-                            </template>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            <button type="button" v-if="!data.end" class="btn btn-default" @click="addData">更多...</button>
-            <div v-if="errMsg">
-                {{errMsg}}
-            </div>
-        </div>
-    </div>
+					</bs-input>
+				</div>
+			</div>
+			<table class="table table-hover table-condensed">
+				<thead>
+					<tr>
+						<th v-for="column of columns | filterBy undefiend in 'hide'">
+							{{ column.header }}
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr v-for="row of data.list">
+						<td v-for="column of columns | filterBy undefiend in 'hide'">
+							<template v-if="column.type == undefined || column.type == 'string'">
+								<template v-if="column.format">{{ column.format(row[column.bind]) }}</template>
+								<template v-else>{{ row[column.bind] }}</template>
+							</template>
+							<template v-if="column.type == 'action'">
+								<template v-for="item in column.items">
+									<template v-if="item.tag=='button'">
+										<button @click="action(item.eventName,row)" class="{{item.class}} btn btn-default">{{item.text}}</button>
+									</template>
+								</template>
+							</template>
+							<template v-if="column.type == 'index'">
+								{{$parent.$index+1}}
+							</template>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			<button type="button" v-if="!data.end" class="btn btn-default" @click="addData">更多...</button>
+			<div v-if="errMsg">
+				{{errMsg}}
+			</div>
+		</div>
+	</div>
 </template>
 <script>
     import {
@@ -106,8 +106,8 @@
             addData() {
                 let that = this
                 this.errMsg = ""
-                this.pageNum++
-                    this.$dispatch(this.getDataEvent, this.pageNum, this.countPerPage, this.filterKey, true)
+                this.pageNum +=1
+                this.$dispatch(this.getDataEvent, this.pageNum, this.countPerPage, this.filterKey, true)
             },
             action(event, row) {
                 this.$dispatch(event, row)
@@ -125,7 +125,7 @@
     }
 </script>
 <style>
-    .vue-strap-table {
-        position: relative;
-    }
+	.vue-strap-table {
+		position: relative;
+	}
 </style>
