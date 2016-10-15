@@ -6,5 +6,8 @@ export default {
     },
     getProject(params) {
         return request.get(path + 'getProject', params)
+    },
+    getQuotationJobs(params) {
+        return request.get(path + 'getQuotationJobs', params)
     }
 }

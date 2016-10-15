@@ -48,10 +48,18 @@ var saveDraft = function(req, res, next) {
         var quotation = require('../db/models/quotation')
         var project = require('../db/models/project')
         var project_state = require('../db/models/project_state')
+        var project_item = require('../db/models/project_item')
+        var job_content_template = require('../db/models/job_content_template')
+        var quotation_job = require('../db/models/quotation_job')
+
         quotation.belongsTo(project)
         project.hasOne(project_state)
 
-        quotation.findOne({
+        project_item.hasMany(job_content_template)
+
+
+
+        return quotation.findOne({
             include: [{
                 model: project,
                 include: [{
@@ -63,29 +71,58 @@ var saveDraft = function(req, res, next) {
             }
         }).then(function(result) {
             if (result) {
-                return Promise.resolve(result)
+                if (result.project &&
+                    result.project.quotation_no == result.no &&
+                    result.project.project_state.state == "draft") {
+                    result.no = req.body.no
+                    result.property_management_co_name = req.body.property_management_co_name
+                    result.property_management_co_name_en = req.body.property_management_co_name_en
+                    result.project_name = req.body.project_name
+                    result.manager = req.body.manager
+                    result.quotation_date = req.body.quotation_date
+                    result.building_id = req.body.building_id
+                    return result
+                } else {
+                    return Promise.reject("不能保存這張報價單")
+                }
             } else {
                 return Promise.reject("找不到報價單")
             }
         }).then(function(result) {
-            if (result.project &&
-                result.project.quotation_no == result.no &&
-                result.project.project_state.state == "draft") {
-                return Promise.resolve(result)
+            if (result.project_item != req.body.project_item && req.body.project_item) {
+                return quotation_job.destroy({
+                    where: {
+                        quotation_no: result.no
+                    }
+                }).then(function() {
+                    return project_item.findOne({
+                        include: [job_content_template]
+                    })
+                }).then(function(pi) {
+                    if (pi) {
+                        var createList = pi.job_content_templates.map((o) => {
+                            return {
+                                quotation_no: result.no,
+                                index: o.index,
+                                content: o.content
+                            }
+                        })
+                        return quotation_job.bulkCreate(createList)
+                    } else {
+                        return "done"
+                    }
+                }).then(function() {
+                    result.project_type = req.body.project_type
+                    result.project_item = req.body.project_item
+                    return result
+                })
             } else {
-                return Promise.reject("不能保存這張報價單")
+                return result
             }
         }).then(function(result) {
-            result.no = req.body.no
-            result.property_management_co_name = req.body.property_management_co_name
-            result.property_management_co_name_en = req.body.property_management_co_name_en
-            result.project_name = req.body.project_name
-            result.manager = req.body.manager
-            result.quotation_date = req.body.quotation_date
-            result.building_id = req.body.building_id
-            result.project_type = req.body.project_type
-            result.project_item = req.body.project_item
-            return result.save()
+            return result.save().then(function() {
+                return "success"
+            })
         })
     } else {
         return Promise.reject("沒有報價單號")

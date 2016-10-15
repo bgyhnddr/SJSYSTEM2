@@ -16,7 +16,7 @@ module.exports = function(req, res, next) {
         require('./models/out_source_contractor'),
         require('./models/project'),
         require('./models/quotation'),
-        require('./models/quotation_content'),
+        require('./models/quotation_job'),
         require('./models/quotation_version'),
         require('./models/serial_number'),
         require('./models/project_state'),

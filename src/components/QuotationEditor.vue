@@ -45,6 +45,9 @@
 				</div>
 			</div>
 		</div>
+		<div class="col-sm-12">
+			<quotation-job :quotation-no="quotation.no"></quotation-job>
+		</div>
 	</div>
 </template>
 <script>
@@ -53,6 +56,7 @@
     import ProjectTypeSetting from './ProjectTypeSetting'
     import ProjectItemSetting from './ProjectItemSetting'
     import create_quotation from '../api/create_quotation'
+    import QuotationJob from './QuotationJob'
 
     import {
         datepicker,
@@ -61,6 +65,14 @@
     } from 'vue-strap'
 
     export default {
+        components: {
+            bsInput,
+            datepicker,
+            ProjectManagerSetting,
+            ProjectTypeSetting,
+            ProjectItemSetting,
+            QuotationJob
+        },
         props: {
             quotation: {
                 type: Object,
@@ -89,13 +101,6 @@
                     }
                 }
             }
-        },
-        components: {
-            bsInput,
-            datepicker,
-            ProjectManagerSetting,
-            ProjectTypeSetting,
-            ProjectItemSetting
         },
         data() {
             var dateNow = new Date()
@@ -129,7 +134,7 @@
             checkPermission,
             save() {
                 var that = this
-                create_quotation.saveDraft(that.quotation).then(function() {
+                return create_quotation.saveDraft(that.quotation).then(function() {
                     that.change = false
                 }).catch(function(err) {
                     window.alert(err)
@@ -169,11 +174,15 @@
                 this.project_item_setting.type = row.name
             },
             'project_item_select': function(row) {
-                if (this.quotation.project_item != row.name) {
+                var that = this
+                if (that.quotation.project_item != row.name) {
                     if (confirm("選擇工程類型項目會重置工作内容，是否確認選擇？")) {
-                        this.quotation.project_type = this.project_item_setting.type
-                        this.quotation.project_item = row.name
-                        this.hideProjectTypeItem()
+                        that.quotation.project_type = that.project_item_setting.type
+                        that.quotation.project_item = row.name
+                        that.hideProjectTypeItem() //refreshQuotationJob
+                        that.save().then(function() {
+                            that.$broadcast("refreshQuotationJob")
+                        })
                     }
                 }
             }

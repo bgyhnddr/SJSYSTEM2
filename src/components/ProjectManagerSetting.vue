@@ -37,7 +37,7 @@
                         </h4>
                     </div>
                     <div class="modal-body">
-                        <user-setting :selectable="selectable"></user-setting>
+                        <user-setting :selectable="userSelect"></user-setting>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" @click="showUserModel=false">关闭</button>
@@ -130,7 +130,8 @@
                 data: {},
                 serverMsg: "",
                 columns: columns,
-                errMsg: ""
+                errMsg: "",
+                userSelect: true
             }
         },
         methods: {

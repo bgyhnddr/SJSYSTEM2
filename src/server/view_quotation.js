@@ -46,6 +46,27 @@ var getProject = function(req, res, next) {
     }
 }
 
+
+var getQuotationJobs = function(req, res, next) {
+    var quotation_job = require('../db/models/quotation_job')
+    var quotationNo = req.query.quotationNo
+    if (quotationNo) {
+        return quotation_job.findAll({
+            where: {
+                quotation_no: quotationNo
+            },
+            order: ['index']
+        }).then(function(result) {
+            return {
+                end: true,
+                list: result
+            }
+        })
+    } else {
+        Promise.reject("no qno")
+    }
+}
+
 module.exports = (req, res, next) => {
     var action = req.params.action
     Promise.resolve(action).then(function(result) {
@@ -55,6 +76,8 @@ module.exports = (req, res, next) => {
                     return getQuotation(req, res, next)
                 case "getProject":
                     return getProject(req, res, next)
+                case "getQuotationJobs":
+                    return getQuotationJobs(req, res, next)
             }
         } catch (e) {
             console.log(e)

@@ -1,10 +1,10 @@
 var Sequelize = require('sequelize')
 var sequelize = require('../sequelize')
 
-var quotation_content = sequelize.define(
-    'quotation_content', {
+var quotation_job = sequelize.define(
+    'quotation_job', {
         id: { type: Sequelize.INTEGER, autoIncrement: true, primaryKey: true },
-        quotation_no: { type: Sequelize.STRING, unique: true },
+        quotation_no: { type: Sequelize.STRING },
         index: { type: Sequelize.INTEGER, defaultValue: 0 },
         content: { type: Sequelize.STRING },
         cost: { type: Sequelize.DECIMAL, defaultValue: 0 },
@@ -15,4 +15,4 @@ var quotation_content = sequelize.define(
     })
 
 
-module.exports = quotation_content
+module.exports = quotation_job

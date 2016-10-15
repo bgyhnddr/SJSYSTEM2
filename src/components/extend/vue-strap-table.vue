@@ -40,7 +40,7 @@
 					</tr>
 				</tbody>
 			</table>
-			<button type="button" v-if="!data.end" class="btn btn-default" @click="addData">更多...</button>
+			<button type="button" v-if="data.end===false" class="btn btn-default" @click="addData">更多...</button>
 			<div v-if="errMsg">
 				{{errMsg}}
 			</div>
