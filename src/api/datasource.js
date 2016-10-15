@@ -54,7 +54,7 @@ export default {
         return request.post(path + 'deleteProjectManager', params)
     },
     getProjectTypes(page, count, filterKey) {
-        return request.get(path + 'getProjectManagers', {
+        return request.get(path + 'getProjectTypes', {
             page,
             count,
             filterKey

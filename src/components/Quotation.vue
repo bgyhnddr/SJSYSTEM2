@@ -41,7 +41,6 @@
                     if (!result.quotation_date) {
                         result.quotation_date = new Date().Format("yyyy-MM-dd")
                     }
-                    console.log("sdfsdfds" + result)
                     return result
                 })
             }

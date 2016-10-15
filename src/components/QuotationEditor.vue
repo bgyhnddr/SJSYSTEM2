@@ -14,7 +14,11 @@
 		</div>
 		<div class="form-group">
 			<label class="control-label">工程負責人</label>
-			<p>{{quotation.manager}}</p>
+			<p>{{quotation.manager}}<button @click="project_manager_select_setting.show = true" class="btn btn-default btn-xs">選擇</button>
+				<button @click="project_manager_select_setting.show = false" v-if="project_manager_select_setting.show" class="btn btn-default btn-xs">關閉</button></p>
+			<p v-if="project_manager_select_setting.show">
+				<project-manager-setting :selectable="project_manager_select_setting.selectable" :select-event="project_manager_select_setting.selectEvent"></project-manager-setting>
+			</p>
 		</div>
 		<div class="form-group">
 			<label class="control-label">報價日期</label>
@@ -24,16 +28,31 @@
 		</div>
 		<div class="form-group">
 			<label class="control-label">盤名</label>
-			<p>{{quotation.building}}</p>
+			<p>{{quotation.building_detail.name}}</p>
 		</div>
 		<div class="form-group">
 			<label class="control-label">工程類型與項目</label>
-			<p>{{quotation.project_type}} {{quotation.project_item}}</p>
+			<p>{{quotation.project_type}} {{quotation.project_item}}<button @click="project_type_setting.show = true" class="btn btn-default btn-xs">選擇</button>
+				<button @click="project_type_setting.show = false" v-if="project_type_setting.show" class="btn btn-default btn-xs">關閉</button>
+			</p>
+			<div v-if="project_type_setting.show">
+				<div class="col-sm-6">
+					<project-type-setting :breadcrumb="project_type_setting.breadcrumb" :selectable="project_type_setting.selectable" :select-event="project_type_setting.selectEvent"></project-type-setting>
+				</div>
+				<div v-if="project_item_setting.show" class="col-sm-6">
+					<project-item-setting :breadcrumb="project_item_setting.breadcrumb" :project-type="project_item_setting.type" :selectable="project_item_setting.selectable"
+						:select-event="project_item_setting.selectEvent"></project-item-setting>
+				</div>
+			</div>
 		</div>
 	</div>
 </template>
 <script>
     import checkPermission from '../extend/check-permission'
+    import ProjectManagerSetting from './ProjectManagerSetting'
+    import ProjectTypeSetting from './ProjectTypeSetting'
+    import ProjectItemSetting from './ProjectItemSetting'
+    import create_quotation from '../api/create_quotation'
 
     import {
         datepicker,
@@ -47,11 +66,12 @@
                 type: Object,
                 default: {
                     no: "",
-                    property_management_co: "",
+                    property_management_co_name: "",
+                    property_management_co_name_en: "",
                     project_name: "",
                     manager: "",
                     quotation_date: "",
-                    building: "",
+                    building_id: "",
                     project_type: "",
                     project_item: "",
                     building_detail: {
@@ -72,7 +92,10 @@
         },
         components: {
             bsInput,
-            datepicker
+            datepicker,
+            ProjectManagerSetting,
+            ProjectTypeSetting,
+            ProjectItemSetting
         },
         data() {
             var dateNow = new Date()
@@ -81,26 +104,82 @@
                 datepickerSetting: {
                     value: dateNow.Format("yyyy-MM-dd"),
                     clear: true
+                },
+                project_manager_select_setting: {
+                    selectable: true,
+                    selectEvent: "project_manager_select",
+                    show: false
+                },
+                project_type_setting: {
+                    selectable: true,
+                    selectEvent: "project_type_select",
+                    show: false,
+                    breadcrumb: false
+                },
+                project_item_setting: {
+                    selectable: true,
+                    selectEvent: "project_item_select",
+                    show: false,
+                    type: "",
+                    breadcrumb: false
                 }
             }
         },
         methods: {
             checkPermission,
             save() {
-                this.change = false
+                var that = this
+                create_quotation.saveDraft(that.quotation).then(function() {
+                    that.change = false
+                }).catch(function(err) {
+                    window.alert(err)
+                })
+            },
+            showProjectTypeItem: function() {
+                this.project_type_setting.show = true
+            },
+            hideProjectTypeItem: function() {
+                this.project_type_setting.show = false
+                this.project_item_setting.show = false
             }
         },
         watch: {
             'quotation': {
                 handler: function(val, oldVal) {
-                    console.log(val)
-                    this.change = true
+                    if (oldVal.no !== undefined) {
+                        this.change = true
+                    }
                 },
                 deep: true
+            },
+            'quotation.quotation_date': function(val, oldVal) {
+                this.datepickerSetting.value = val
+            },
+            'datepickerSetting.value': function(val, oldVal) {
+                this.quotation.quotation_date = val
+            }
+        },
+        events: {
+            'project_manager_select': function(row) {
+                this.quotation.manager = row.user_account
+                this.project_manager_select_setting.show = false
+            },
+            'project_type_select': function(row) {
+                this.project_item_setting.show = true
+                this.project_item_setting.type = row.name
+            },
+            'project_item_select': function(row) {
+                if (this.quotation.project_item != row.name) {
+                    if (confirm("選擇工程類型項目會重置工作内容，是否確認選擇？")) {
+                        this.quotation.project_type = this.project_item_setting.type
+                        this.quotation.project_item = row.name
+                        this.hideProjectTypeItem()
+                    }
+                }
             }
         },
         ready() {
-            if (quotation.quotation_date) {
+            if (this.quotation.quotation_date) {
                 this.datepickerSetting.value = quotation.quotation_date
             }
         }

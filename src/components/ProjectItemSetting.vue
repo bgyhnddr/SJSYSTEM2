@@ -1,8 +1,8 @@
 <template>
     <div v-if="checkPermission()">
-        <ol class="breadcrumb">
+        <ol v-if="breadcrumb" class="breadcrumb">
             <li><a v-link="{ path: '/index/DataManagement/ProjectType' }">工程類別</a></li>
-            <li class="active">{{$route.params.type}}</li>
+            <li class="active">{{type}}</li>
         </ol>
         <div>
             <button @click="addProjectItem" class="btn btn-default">添加工程項目</button>
@@ -52,6 +52,14 @@
             selectEvent: {
                 type: String,
                 default: 'select'
+            },
+            projectType: {
+                type: String,
+                default: ""
+            },
+            breadcrumb: {
+                type: Boolean,
+                default: true
             }
         },
         components: {
@@ -129,6 +137,9 @@
                     returnText = "請輸入"
                 }
                 return returnText
+            },
+            type() {
+                return this.projectType ? this.projectType : this.$route.params.type
             }
         },
         methods: {
@@ -150,7 +161,7 @@
                     datasource.submitProjectItem({
                         id: that.submitData.id,
                         name: that.submitData.name,
-                        project_type_name: that.$route.params.type
+                        project_type_name: that.type
                     }).then(function(result) {
                         that.submitting = false
                         that.$broadcast("refreshData")
@@ -192,7 +203,7 @@
             "getData": function(pageNum, countPerPage, filterKey, append) {
                 let that = this
                 that.$broadcast('show::spinner')
-                datasource.getProjectItems(that.$route.params.type, pageNum, countPerPage, filterKey).then(function(result) {
+                datasource.getProjectItems(that.type, pageNum, countPerPage, filterKey).then(function(result) {
                     that.$broadcast('hide::spinner')
                     if (append) {
                         that.data.end = result.end
@@ -207,11 +218,11 @@
             },
             "editUploadDetail": function(row) {
                 var router = new VueRouter();
-                router.go("/index/DataManagement/ProjectType/" + this.$route.params.type + "/" + row.name + "/upload")
+                router.go("/index/DataManagement/ProjectType/" + this.type + "/" + row.name + "/upload")
             },
             "editContentDetail": function(row) {
                 var router = new VueRouter();
-                router.go("/index/DataManagement/ProjectType/" + this.$route.params.type + "/" + row.name + "/job")
+                router.go("/index/DataManagement/ProjectType/" + this.type + "/" + row.name + "/job")
             }
         },
         ready() {

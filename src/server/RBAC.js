@@ -76,7 +76,6 @@ var resetPassword = function(req, res, next) {
                 account: account
             }
         }).then(function(result) {
-            console.log(result)
             if (result == null) {
                 return Promise.reject({
                     "code": "error",
@@ -410,7 +409,6 @@ var getUserRoles = function(req, res, next) {
 }
 
 var submitUserRole = function(req, res, next) {
-    console.log(req.body)
     var id = req.body.id
     var role_code = req.body.role_code ? req.body.role_code : ""
     var user_account = req.body.user_account
@@ -533,7 +531,6 @@ var getRolePermissions = function(req, res, next) {
 }
 
 var submitRolePermission = function(req, res, next) {
-    console.log(req.body)
     var id = req.body.id
     var permission_code = req.body.permission_code ? req.body.permission_code : ""
     var role_code = req.body.role_code

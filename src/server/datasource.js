@@ -75,7 +75,6 @@ var submitPropertyManagementCo = function(req, res, next) {
 
 var deletePropertyManagementCo = function(req, res, next) {
     var property_management_co = require('../db/models/property_management_co')
-    console.log(req.body)
     return property_management_co.destroy({
         where: {
             id: req.body.id
@@ -284,7 +283,6 @@ var submitBuilding = function(req, res, next) {
 
 var deleteBuilding = function(req, res, next) {
     var building = require('../db/models/building')
-    console.log(req.body)
     return building.destroy({
         where: {
             id: req.body.id
@@ -701,7 +699,6 @@ var deleteUploadTemplate = function(req, res, next) {
 
 var upUploadTemplate = function(req, res, next) {
     var upload_content_template = require('../db/models/upload_content_template')
-    console.log(req.body.index)
     return upload_content_template.findAll({
         where: {
             index: {
@@ -714,16 +711,9 @@ var upUploadTemplate = function(req, res, next) {
         ]
     }).then(function(result) {
         if (result.length == 2) {
-            console.log(result[0])
-            console.log(result[1])
             var tempIndex = result[0].index
             result[0].index = result[1].index
             result[1].index = tempIndex
-
-
-
-            console.log(result[0].index)
-            console.log(result[1].index)
 
             return Promise.all([
                 result[0].save(),
@@ -859,7 +849,6 @@ var deleteJobTemplate = function(req, res, next) {
 
 var upJobTemplate = function(req, res, next) {
     var job_content_template = require('../db/models/job_content_template')
-    console.log(req.body.index)
     return job_content_template.findAll({
         where: {
             index: {
@@ -872,16 +861,9 @@ var upJobTemplate = function(req, res, next) {
         ]
     }).then(function(result) {
         if (result.length == 2) {
-            console.log(result[0])
-            console.log(result[1])
             var tempIndex = result[0].index
             result[0].index = result[1].index
             result[1].index = tempIndex
-
-
-
-            console.log(result[0].index)
-            console.log(result[1].index)
 
             return Promise.all([
                 result[0].save(),
@@ -1053,7 +1035,6 @@ var submitOutSourceContractor = function(req, res, next) {
 
 var deleteOutSourceContractor = function(req, res, next) {
     var out_source_contractor = require('../db/models/out_source_contractor')
-    console.log(req.body)
     return out_source_contractor.destroy({
         where: {
             id: req.body.id

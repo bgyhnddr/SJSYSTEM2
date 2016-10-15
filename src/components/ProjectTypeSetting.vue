@@ -1,6 +1,6 @@
 <template>
     <div v-if="checkPermission()">
-        <ol class="breadcrumb">
+        <ol v-if="breadcrumb" class="breadcrumb">
             <li class="active">工程類別</li>
         </ol>
         <div>
@@ -51,6 +51,10 @@
             selectEvent: {
                 type: String,
                 default: 'select'
+            },
+            breadcrumb: {
+                type: Boolean,
+                default: true
             }
         },
         components: {

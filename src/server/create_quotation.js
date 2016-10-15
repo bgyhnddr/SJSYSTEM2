@@ -41,6 +41,57 @@ var createQuotation = function(req, res, next) {
     }
 }
 
+var saveDraft = function(req, res, next) {
+    var no = req.body.no
+    if (no) {
+        var common = require('./common')
+        var quotation = require('../db/models/quotation')
+        var project = require('../db/models/project')
+        var project_state = require('../db/models/project_state')
+        quotation.belongsTo(project)
+        project.hasOne(project_state)
+
+        quotation.findOne({
+            include: [{
+                model: project,
+                include: [{
+                    model: project_state,
+                }]
+            }],
+            where: {
+                no: no
+            }
+        }).then(function(result) {
+            if (result) {
+                return Promise.resolve(result)
+            } else {
+                return Promise.reject("找不到報價單")
+            }
+        }).then(function(result) {
+            if (result.project &&
+                result.project.quotation_no == result.no &&
+                result.project.project_state.state == "draft") {
+                return Promise.resolve(result)
+            } else {
+                return Promise.reject("不能保存這張報價單")
+            }
+        }).then(function(result) {
+            result.no = req.body.no
+            result.property_management_co_name = req.body.property_management_co_name
+            result.property_management_co_name_en = req.body.property_management_co_name_en
+            result.project_name = req.body.project_name
+            result.manager = req.body.manager
+            result.quotation_date = req.body.quotation_date
+            result.building_id = req.body.building_id
+            result.project_type = req.body.project_type
+            result.project_item = req.body.project_item
+            return result.save()
+        })
+    } else {
+        return Promise.reject("沒有報價單號")
+    }
+}
+
 module.exports = (req, res, next) => {
     var action = req.params.action
     Promise.resolve(action).then(function(result) {
@@ -48,6 +99,8 @@ module.exports = (req, res, next) => {
             switch (result) {
                 case "createQuotation":
                     return createQuotation(req, res, next)
+                case "saveDraft":
+                    return saveDraft(req, res, next)
             }
         } catch (e) {
             console.log(e)
