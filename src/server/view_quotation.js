@@ -67,6 +67,28 @@ var getQuotationJobs = function(req, res, next) {
     }
 }
 
+var getBuilding = function(req, res, next) {
+    var building = require('../db/models/building')
+
+    var id = req.query.id == undefined ? "" : req.query.id
+
+    if (id) {
+        return building.findOne({
+            where: {
+                id: id
+            }
+        }).then((result) => {
+            if (result == null) {
+                return Promise.reject("not found")
+            } else {
+                return result
+            }
+        })
+    } else {
+        return Promise.reject("not found")
+    }
+}
+
 module.exports = (req, res, next) => {
     var action = req.params.action
     Promise.resolve(action).then(function(result) {
@@ -78,6 +100,8 @@ module.exports = (req, res, next) => {
                     return getProject(req, res, next)
                 case "getQuotationJobs":
                     return getQuotationJobs(req, res, next)
+                case "getBuilding":
+                    return getBuilding(req, res, next)
             }
         } catch (e) {
             console.log(e)

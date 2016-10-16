@@ -28,7 +28,16 @@
 		</div>
 		<div class="form-group">
 			<label class="control-label">盤名</label>
-			<p>{{quotation.building_detail.name}}</p>
+			<p>{{quotation.building_id}}<button @click="building_setting.show = true" class="btn btn-default btn-xs">選擇</button>
+				<button @click="building_setting.show = false" v-if="building_setting.show" class="btn btn-default btn-xs">關閉</button>
+				<div v-if="building_setting.show">
+					<building-setting :selectable="building_setting.selectable" :select-event="building_setting.selectEvent"></building-setting>
+				</div>
+				<div v-if="!building_setting.show">
+					<vue-strap-table 
+                    :has-filter="!true" :data.sync="building_setting.data" :columns.sync="building_setting.columns"></vue-strap-table>
+				</div>
+			</p>
 		</div>
 		<div class="form-group">
 			<label class="control-label">工程類型與項目</label>
@@ -56,7 +65,10 @@
     import ProjectTypeSetting from './ProjectTypeSetting'
     import ProjectItemSetting from './ProjectItemSetting'
     import create_quotation from '../api/create_quotation'
+    import view_quotation from '../api/view_quotation'
     import QuotationJob from './QuotationJob'
+    import BuildingSetting from './BuildingSetting'
+    import VueStrapTable from './extend/vue-strap-table'
 
     import {
         datepicker,
@@ -71,7 +83,9 @@
             ProjectManagerSetting,
             ProjectTypeSetting,
             ProjectItemSetting,
-            QuotationJob
+            QuotationJob,
+            BuildingSetting,
+            VueStrapTable
         },
         props: {
             quotation: {
@@ -85,20 +99,7 @@
                     quotation_date: "",
                     building_id: "",
                     project_type: "",
-                    project_item: "",
-                    building_detail: {
-                        name: "",
-                        name_en: "",
-                        address: "",
-                        address_en: "",
-                        bill_address: "",
-                        bill_address_en: "",
-                        attn: "",
-                        attn_en: "",
-                        tel: "",
-                        fax: "",
-                        email: ""
-                    }
+                    project_item: ""
                 }
             }
         },
@@ -127,6 +128,62 @@
                     show: false,
                     type: "",
                     breadcrumb: false
+                },
+                building_setting: {
+                    selectable: true,
+                    selectEvent: "building_select",
+                    show: false,
+                    hasFilter: false,
+                    data: {
+                        end: true,
+                        list: [{
+                            name: "",
+                            name_en: "",
+                            address: "",
+                            address_en: "",
+                            bill_address: "",
+                            bill_address_en: "",
+                            attn: "",
+                            attn_en: "",
+                            tel: "",
+                            fax: "",
+                            email: ""
+                        }]
+                    },
+                    columns: [{
+                        "header": "名稱",
+                        "bind": "name"
+                    }, {
+                        "header": "名稱(英文)",
+                        "bind": "name_en"
+                    }, {
+                        "header": "地址",
+                        "bind": "address"
+                    }, {
+                        "header": "地址（英文）",
+                        "bind": "address_en"
+                    }, {
+                        "header": "賬單地址",
+                        "bind": "bill_address"
+                    }, {
+                        "header": "賬單地址（英文）",
+                        "bind": "bill_address_en"
+                    }, {
+                        "header": "聯繫人",
+                        "bind": "attn"
+                    }, {
+                        "header": "聯繫人（英文）",
+                        "bind": "attn_en"
+                    }, {
+                        "header": "電話",
+                        "bind": "tel"
+                    }, {
+                        "header": "傳真",
+                        "bind": "fax"
+                    }, {
+                        "header": "電郵",
+                        "bind": "email"
+                    }]
                 }
             }
         },
@@ -146,6 +203,25 @@
             hideProjectTypeItem: function() {
                 this.project_type_setting.show = false
                 this.project_item_setting.show = false
+            },
+            getBuilding(id) {
+                console.log(id)
+                if (id) {
+                    var that = this
+                    view_quotation.getBuilding(id).then((result) => {
+                        console.log(result)
+                        var newObj = {}
+                        for (var c in that.building_setting.data.list[0]) {
+                            newObj[c] = result[c]
+                        }
+                        that.building_setting.data = {
+                            end: true,
+                            list: [newObj]
+                        }
+                    }).catch((err) => {
+                        window.alert(err)
+                    })
+                }
             }
         },
         watch: {
@@ -162,6 +238,9 @@
             },
             'datepickerSetting.value': function(val, oldVal) {
                 this.quotation.quotation_date = val
+            },
+            'quotation.building_id': function(val) {
+                this.getBuilding(val)
             }
         },
         events: {
@@ -185,11 +264,19 @@
                         })
                     }
                 }
+            },
+            'building_select': function(row) {
+                this.quotation.building_id = row.id
+                this.building_setting.show = false
             }
         },
         ready() {
             if (this.quotation.quotation_date) {
                 this.datepickerSetting.value = quotation.quotation_date
+            }
+
+            if (this.quotation.building_id) {
+                this.getBuilding(this.quotation.building_id)
             }
         }
     }

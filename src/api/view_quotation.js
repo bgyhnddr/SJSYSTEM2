@@ -9,5 +9,10 @@ export default {
     },
     getQuotationJobs(params) {
         return request.get(path + 'getQuotationJobs', params)
+    },
+    getBuilding(id) {
+        return request.get(path + 'getBuilding', {
+            id
+        })
     }
 }
