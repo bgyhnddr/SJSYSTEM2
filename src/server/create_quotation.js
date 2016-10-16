@@ -1,3 +1,36 @@
+var checkQuotationDraftAndActive = function(no) {
+    return Promise.resolve().then(function() {
+        var quotation = require('../db/models/quotation')
+        var project = require('../db/models/project')
+        var project_state = require('../db/models/project_state')
+
+        quotation.belongsTo(project)
+        project.hasOne(project_state)
+
+        return quotation.findOne({
+            include: [{
+                model: project,
+                include: [{
+                    model: project_state,
+                }]
+            }],
+            where: {
+                no: no
+            }
+        }).then(function(result) {
+            if (result == null) {
+                return Promise.reject("quotation not found")
+            } else {
+                if (result.project.project_state.state == "draft" && result.project.quotation_no == result.no) {
+                    return "OK"
+                } else {
+                    return Promise.reject("can not save this quotation")
+                }
+            }
+        })
+    })
+}
+
 var createQuotation = function(req, res, next) {
     var co_id = req.body.co_id
     if (co_id) {
@@ -47,44 +80,31 @@ var saveDraft = function(req, res, next) {
         var common = require('./common')
         var quotation = require('../db/models/quotation')
         var project = require('../db/models/project')
-        var project_state = require('../db/models/project_state')
         var project_item = require('../db/models/project_item')
         var job_content_template = require('../db/models/job_content_template')
         var quotation_job = require('../db/models/quotation_job')
 
         quotation.belongsTo(project)
-        project.hasOne(project_state)
 
         project_item.hasMany(job_content_template)
 
 
 
-        return quotation.findOne({
-            include: [{
-                model: project,
-                include: [{
-                    model: project_state,
-                }]
-            }],
-            where: {
-                no: no
-            }
+        return checkQuotationDraftAndActive(no).then(function() {
+            return quotation.findOne({
+                where: {
+                    no: no
+                }
+            })
         }).then(function(result) {
             if (result) {
-                if (result.project &&
-                    result.project.quotation_no == result.no &&
-                    result.project.project_state.state == "draft") {
-                    result.no = req.body.no
-                    result.property_management_co_name = req.body.property_management_co_name
-                    result.property_management_co_name_en = req.body.property_management_co_name_en
-                    result.project_name = req.body.project_name
-                    result.manager = req.body.manager
-                    result.quotation_date = req.body.quotation_date
-                    result.building_id = req.body.building_id
-                    return result
-                } else {
-                    return Promise.reject("不能保存這張報價單")
-                }
+                result.no = req.body.no
+                result.property_management_co_name = req.body.property_management_co_name
+                result.property_management_co_name_en = req.body.property_management_co_name_en
+                result.project_name = req.body.project_name
+                result.manager = req.body.manager
+                result.quotation_date = req.body.quotation_date
+                result.building_id = req.body.building_id
             } else {
                 return Promise.reject("找不到報價單")
             }
@@ -129,6 +149,132 @@ var saveDraft = function(req, res, next) {
     }
 }
 
+var submitQuotationJob = function(req, res, next) {
+    var quotation_job = require('../db/models/quotation_job')
+
+    if (req.body.id) {
+        return checkQuotationDraftAndActive(req.body.quotation_no).then(function() {
+            quotation_job.findOne({
+                where: {
+                    id: req.body.id
+                }
+            })
+        }).then(function(result) {
+            return result.update({
+                content: req.body.content
+            })
+        }).catch(function(error) {
+            if (error.name == "SequelizeUniqueConstraintError") {
+                return Promise.reject("數據不能重複")
+            }
+            return Promise.reject(error.name)
+        })
+    } else {
+        return quotation.findOne({
+            where: {
+                no: req.body.quotation_no
+            }
+        }).then(function(result) {
+            return quotation_job.count({
+                where: {
+                    quotation_no: req.body.quotation_no
+                }
+            }).then(function(count) {
+                return quotation_job.create({
+                    content: req.body.content,
+                    cost: req.body.cost,
+                    retail: req.body.retail,
+                    count: req.body.count,
+                    quotation_no: req.body.quotation_no,
+                    index: count + 1
+                })
+            })
+        }).catch(function(error) {
+            if (error.name == "SequelizeUniqueConstraintError") {
+                return Promise.reject("數據不能重複")
+            }
+            return Promise.reject(error.name)
+        })
+    }
+}
+
+var deleteQuotationJob = function(req, res, next) {
+    var quotation_job = require('../db/models/quotation_job')
+
+    return quotation_job.findOne({
+        where: {
+            id: req.body.id
+        }
+    }).then(function(result) {
+        return checkQuotationDraftAndActive(result.quotation_no)
+    }).then(function() {
+        quotation_job.destroy({
+            where: {
+                id: req.body.id
+            }
+        })
+    }).then(function(result) {
+        return "success"
+    })
+}
+
+var upQuotationJob = function(req, res, next) {
+    var job_content_template = require('../db/models/job_content_template')
+    return job_content_template.findAll({
+        where: {
+            index: {
+                $lte: req.body.index
+            }
+        },
+        limit: 2,
+        order: [
+            ["index", "DESC"]
+        ]
+    }).then(function(result) {
+        if (result.length == 2) {
+            var tempIndex = result[0].index
+            result[0].index = result[1].index
+            result[1].index = tempIndex
+
+            return Promise.all([
+                result[0].save(),
+                result[1].save()
+            ])
+        } else {
+            return "do nothing"
+        }
+    })
+}
+
+var downQuotationJob = function(req, res, next) {
+    var job_content_template = require('../db/models/job_content_template')
+
+    return job_content_template.findAll({
+        where: {
+            index: {
+                $gte: req.body.index
+            }
+        },
+        limit: 2,
+        order: [
+            ["index"]
+        ]
+    }).then(function(result) {
+        if (result.length == 2) {
+            var tempIndex = result[0].index
+            result[0].index = result[1].index
+            result[1].index = tempIndex
+
+            return Promise.all([
+                result[0].save(),
+                result[1].save()
+            ])
+        } else {
+            return "do nothing"
+        }
+    })
+}
+
 module.exports = (req, res, next) => {
     var action = req.params.action
     Promise.resolve(action).then(function(result) {
@@ -138,6 +284,14 @@ module.exports = (req, res, next) => {
                     return createQuotation(req, res, next)
                 case "saveDraft":
                     return saveDraft(req, res, next)
+                case "submitQuotationJob":
+                    return submitQuotationJob(req, res, next)
+                case "deleteQuotationJob":
+                    return deleteQuotationJob(req, res, next)
+                case "upQuotationJob":
+                    return upQuotationJob(req, res, next)
+                case "downQuotationJob":
+                    return downQuotationJob(req, res, next)
             }
         } catch (e) {
             console.log(e)

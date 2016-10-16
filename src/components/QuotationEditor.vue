@@ -205,11 +205,9 @@
                 this.project_item_setting.show = false
             },
             getBuilding(id) {
-                console.log(id)
                 if (id) {
                     var that = this
                     view_quotation.getBuilding(id).then((result) => {
-                        console.log(result)
                         var newObj = {}
                         for (var c in that.building_setting.data.list[0]) {
                             newObj[c] = result[c]

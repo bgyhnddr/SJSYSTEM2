@@ -112,13 +112,12 @@
                     id: "",
                     content: ""
                 },
-                edit: false,
                 showUploadTemplateModel: false,
                 data: {},
                 serverMsg: "",
                 columns: columns,
                 errMsg: "",
-                hasFilter:false
+                hasFilter: false
             }
         },
         computed: {
@@ -145,7 +144,6 @@
                 for (var i in this.submitData) {
                     this.submitData[i] = ""
                 }
-                this.edit = false
                 this.showUploadTemplateModel = true
             },
             submitUploadTemplate() {
@@ -170,7 +168,6 @@
             editUploadTemplate(row) {
                 this.submitData.id = row.id
                 this.submitData.content = row.content
-                this.edit = true
                 this.showUploadTemplateModel = true
             },
             deleteUploadTemplate(row) {
@@ -188,6 +185,7 @@
             up(row) {
                 var that = this
                 datasource.upUploadTemplate({
+                    item: that.$route.params.item,
                     index: row.index
                 }).then(function(result) {
                     that.$broadcast("refreshData")
@@ -198,6 +196,7 @@
             down(row) {
                 var that = this
                 datasource.downUploadTemplate({
+                    item: that.$route.params.item,
                     index: row.index
                 }).then(function(result) {
                     that.$broadcast("refreshData")

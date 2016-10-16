@@ -144,7 +144,6 @@
                 if (this.valid()) {
                     var that = this
                     that.submitting = true
-                    console.log(that.submitData.id)
                     datasource.submitProjectType(that.submitData).then(function(result) {
                         that.submitting = false
                         that.$broadcast("refreshData")
@@ -160,7 +159,6 @@
                 for (var i in this.submitData) {
                     this.submitData[i] = row[i]
                 }
-                console.log(this.submitData.name)
                 this.showProjectTypeModel = true
             },
             deleteProjectType(row) {

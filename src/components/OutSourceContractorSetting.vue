@@ -196,7 +196,6 @@
                 for (var i in this.submitData) {
                     this.submitData[i] = row[i]
                 }
-                console.log(this.submitData.name)
                 this.showOutSourceContractorModel = true
             },
             deleteOutSourceContractor(row) {

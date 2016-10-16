@@ -699,7 +699,16 @@ var deleteUploadTemplate = function(req, res, next) {
 
 var upUploadTemplate = function(req, res, next) {
     var upload_content_template = require('../db/models/upload_content_template')
+    var project_item = require('../db/models/project_item')
+    upload_content_template.belongsTo(project_item)
+
     return upload_content_template.findAll({
+        include: [{
+            model: project_item,
+            where: {
+                name: req.body.item
+            }
+        }],
         where: {
             index: {
                 $lte: req.body.index
@@ -727,8 +736,16 @@ var upUploadTemplate = function(req, res, next) {
 
 var downUploadTemplate = function(req, res, next) {
     var upload_content_template = require('../db/models/upload_content_template')
+    var project_item = require('../db/models/project_item')
+    upload_content_template.belongsTo(project_item)
 
     return upload_content_template.findAll({
+        include: [{
+            model: project_item,
+            where: {
+                name: req.body.item
+            }
+        }],
         where: {
             index: {
                 $gte: req.body.index
@@ -849,7 +866,16 @@ var deleteJobTemplate = function(req, res, next) {
 
 var upJobTemplate = function(req, res, next) {
     var job_content_template = require('../db/models/job_content_template')
+    var project_item = require('../db/models/project_item')
+    job_content_template.belongsTo(project_item)
+
     return job_content_template.findAll({
+        include: [{
+            model: project_item,
+            where: {
+                name: req.body.item
+            }
+        }],
         where: {
             index: {
                 $lte: req.body.index
@@ -877,8 +903,16 @@ var upJobTemplate = function(req, res, next) {
 
 var downJobTemplate = function(req, res, next) {
     var job_content_template = require('../db/models/job_content_template')
+    var project_item = require('../db/models/project_item')
+    job_content_template.belongsTo(project_item)
 
     return job_content_template.findAll({
+        include: [{
+            model: project_item,
+            where: {
+                name: req.body.item
+            }
+        }],
         where: {
             index: {
                 $gte: req.body.index

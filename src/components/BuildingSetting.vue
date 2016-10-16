@@ -191,7 +191,6 @@
                 for (var i in this.submitData) {
                     this.submitData[i] = row[i]
                 }
-                console.log(this.submitData.name)
                 this.showBuildingModel = true
             },
             deleteBuilding(row) {

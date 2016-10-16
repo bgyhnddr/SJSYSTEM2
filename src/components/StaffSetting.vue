@@ -122,7 +122,6 @@
                 this.showStaffModel = true
             },
             submitStaff() {
-                console.log(this.submitData.name)
                 if (this.submitData.name) {
                     var that = this
                     that.submitting = true

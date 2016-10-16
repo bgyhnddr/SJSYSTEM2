@@ -16,6 +16,9 @@
 					{{alertText}}
 				</alert>
 				<bs-input :value.sync="submitData.content" label="內容"></bs-input>
+				<bs-input type="number" :value.sync="submitData.cost" label="成本單價"></bs-input>
+				<bs-input type="number" :value.sync="submitData.retail" label="出街單價"></bs-input>
+				<bs-input type="number" :value.sync="submitData.count" label="數量"></bs-input>
 			</div>
 			<div slot="modal-footer" class="modal-footer">
 				<button type="button" class="btn btn-default" @click="showQuotationJobModel=false">关闭</button>
@@ -121,7 +124,6 @@
                     retail: "",
                     count: ""
                 },
-                edit: false,
                 showQuotationJobModel: false,
                 data: {},
                 serverMsg: "",
@@ -154,8 +156,7 @@
                 for (var i in this.submitData) {
                     this.submitData[i] = ""
                 }
-                this.edit = false
-                this.showQuotationJob = true
+                this.showQuotationJobModel = true
             },
             submitQuotationJob() {
                 if (this.valid()) {
@@ -180,9 +181,9 @@
                 }
             },
             editQuotationJob(row) {
-                this.submitData.id = row.id
-                this.submitData.content = row.content
-                this.edit = true
+                for (var i in this.submitData) {
+                    this.submitData[i] = row[i]
+                }
                 this.showQuotationJobModel = true
             },
             deleteQuotationJob(row) {
@@ -200,6 +201,7 @@
             up(row) {
                 var that = this
                 view_quotation.upQuotationJob({
+                    project_id: that.$route.params.id
                     index: row.index
                 }).then(function(result) {
                     that.$broadcast("refreshData")
@@ -210,6 +212,7 @@
             down(row) {
                 var that = this
                 view_quotation.downQuotationJob({
+                    project_id: that.$route.params.id
                     index: row.index
                 }).then(function(result) {
                     that.$broadcast("refreshData")

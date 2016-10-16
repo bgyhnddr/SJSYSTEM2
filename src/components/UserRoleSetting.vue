@@ -195,7 +195,6 @@
                 })
             },
             "select": function(row) {
-                console.log(row)
                 this.role_code = row.code
                 this.role_name = row.name
                 this.showRoleModel = false

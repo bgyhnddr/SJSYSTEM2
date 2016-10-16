@@ -42,7 +42,7 @@ export function configRouter(router) {
                             component: require('../components/ProjectUploadTemplateSetting.vue')
                         },
                         'ProjectType/:type/:item/job': {
-                            component: require('../components/ProjectContentTemplateSetting.vue')
+                            component: require('../components/ProjectJobTemplateSetting.vue')
                         },
                         'OutSourceContractor': {
                             component: require('../components/OutSourceContractorSetting.vue')

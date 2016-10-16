@@ -112,7 +112,6 @@
                     id: "",
                     content: ""
                 },
-                edit: false,
                 showJobTemplateModel: false,
                 data: {},
                 serverMsg: "",
@@ -145,7 +144,6 @@
                 for (var i in this.submitData) {
                     this.submitData[i] = ""
                 }
-                this.edit = false
                 this.showJobTemplateModel = true
             },
             submitJobTemplate() {
@@ -170,7 +168,6 @@
             editJobTemplate(row) {
                 this.submitData.id = row.id
                 this.submitData.content = row.content
-                this.edit = true
                 this.showJobTemplateModel = true
             },
             deleteJobTemplate(row) {
@@ -188,6 +185,7 @@
             up(row) {
                 var that = this
                 datasource.upJobTemplate({
+                    item: that.$route.params.item,
                     index: row.index
                 }).then(function(result) {
                     that.$broadcast("refreshData")
@@ -198,6 +196,7 @@
             down(row) {
                 var that = this
                 datasource.downJobTemplate({
+                    item: that.$route.params.item,
                     index: row.index
                 }).then(function(result) {
                     that.$broadcast("refreshData")
