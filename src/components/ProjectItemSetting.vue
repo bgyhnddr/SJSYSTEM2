@@ -157,7 +157,6 @@
                 if (this.valid()) {
                     var that = this
                     that.submitting = true
-                    console.log(that.submitData.id)
                     datasource.submitProjectItem({
                         id: that.submitData.id,
                         name: that.submitData.name,

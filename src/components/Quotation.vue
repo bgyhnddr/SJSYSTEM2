@@ -53,7 +53,6 @@
                     that.getQuotation(val).then((result) => {
                         that.quotation = result
                         that.alertText = ""
-                        console.log(that.quotation)
                     }).catch((err) => {
                         console.log(err)
                         that.alertText = err

@@ -699,27 +699,26 @@ var deleteUploadTemplate = function(req, res, next) {
 
 var upUploadTemplate = function(req, res, next) {
     var upload_content_template = require('../db/models/upload_content_template')
-    var project_item = require('../db/models/project_item')
-    upload_content_template.belongsTo(project_item)
-
-    return upload_content_template.findAll({
-        include: [{
-            model: project_item,
+    return upload_content_template.findOne({
+        where: { id: req.body.id }
+    }).then((result) => {
+        return upload_content_template.findOne({
             where: {
-                name: req.body.item
-            }
-        }],
-        where: {
-            index: {
-                $lte: req.body.index
-            }
-        },
-        limit: 2,
-        order: [
-            ["index", "DESC"]
-        ]
+                $and: {
+                    index: {
+                        $lt: result.index
+                    },
+                    project_item_id: result.project_item_id
+                }
+            },
+            order: [
+                ["index", "DESC"]
+            ]
+        }).then((o) => {
+            return [o, result]
+        })
     }).then(function(result) {
-        if (result.length == 2) {
+        if (result[0] != null) {
             var tempIndex = result[0].index
             result[0].index = result[1].index
             result[1].index = tempIndex
@@ -736,27 +735,26 @@ var upUploadTemplate = function(req, res, next) {
 
 var downUploadTemplate = function(req, res, next) {
     var upload_content_template = require('../db/models/upload_content_template')
-    var project_item = require('../db/models/project_item')
-    upload_content_template.belongsTo(project_item)
-
-    return upload_content_template.findAll({
-        include: [{
-            model: project_item,
+    return upload_content_template.findOne({
+        where: { id: req.body.id }
+    }).then((result) => {
+        return upload_content_template.findOne({
             where: {
-                name: req.body.item
-            }
-        }],
-        where: {
-            index: {
-                $gte: req.body.index
-            }
-        },
-        limit: 2,
-        order: [
-            ["index"]
-        ]
+                $and: {
+                    index: {
+                        $gt: result.index
+                    },
+                    project_item_id: result.project_item_id
+                }
+            },
+            order: [
+                ["index"]
+            ]
+        }).then((o) => {
+            return [o, result]
+        })
     }).then(function(result) {
-        if (result.length == 2) {
+        if (result[0] != null) {
             var tempIndex = result[0].index
             result[0].index = result[1].index
             result[1].index = tempIndex
@@ -866,27 +864,26 @@ var deleteJobTemplate = function(req, res, next) {
 
 var upJobTemplate = function(req, res, next) {
     var job_content_template = require('../db/models/job_content_template')
-    var project_item = require('../db/models/project_item')
-    job_content_template.belongsTo(project_item)
-
-    return job_content_template.findAll({
-        include: [{
-            model: project_item,
+    return job_content_template.findOne({
+        where: { id: req.body.id }
+    }).then((result) => {
+        return job_content_template.findOne({
             where: {
-                name: req.body.item
-            }
-        }],
-        where: {
-            index: {
-                $lte: req.body.index
-            }
-        },
-        limit: 2,
-        order: [
-            ["index", "DESC"]
-        ]
+                $and: {
+                    index: {
+                        $lt: result.index
+                    },
+                    project_item_id: result.project_item_id
+                }
+            },
+            order: [
+                ["index", "DESC"]
+            ]
+        }).then((o) => {
+            return [o, result]
+        })
     }).then(function(result) {
-        if (result.length == 2) {
+        if (result[0] != null) {
             var tempIndex = result[0].index
             result[0].index = result[1].index
             result[1].index = tempIndex
@@ -903,27 +900,26 @@ var upJobTemplate = function(req, res, next) {
 
 var downJobTemplate = function(req, res, next) {
     var job_content_template = require('../db/models/job_content_template')
-    var project_item = require('../db/models/project_item')
-    job_content_template.belongsTo(project_item)
-
-    return job_content_template.findAll({
-        include: [{
-            model: project_item,
+    return job_content_template.findOne({
+        where: { id: req.body.id }
+    }).then((result) => {
+        return job_content_template.findOne({
             where: {
-                name: req.body.item
-            }
-        }],
-        where: {
-            index: {
-                $gte: req.body.index
-            }
-        },
-        limit: 2,
-        order: [
-            ["index"]
-        ]
+                $and: {
+                    index: {
+                        $gt: result.index
+                    },
+                    project_item_id: result.project_item_id
+                }
+            },
+            order: [
+                ["index"]
+            ]
+        }).then((o) => {
+            return [o, result]
+        })
     }).then(function(result) {
-        if (result.length == 2) {
+        if (result[0] != null) {
             var tempIndex = result[0].index
             result[0].index = result[1].index
             result[1].index = tempIndex

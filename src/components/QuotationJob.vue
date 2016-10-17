@@ -201,8 +201,7 @@
             up(row) {
                 var that = this
                 view_quotation.upQuotationJob({
-                    project_id: that.$route.params.id
-                    index: row.index
+                    id: row.id
                 }).then(function(result) {
                     that.$broadcast("refreshData")
                 }).catch(function(err) {
@@ -212,8 +211,7 @@
             down(row) {
                 var that = this
                 view_quotation.downQuotationJob({
-                    project_id: that.$route.params.id
-                    index: row.index
+                    id: row.id
                 }).then(function(result) {
                     that.$broadcast("refreshData")
                 }).catch(function(err) {

@@ -185,8 +185,7 @@
             up(row) {
                 var that = this
                 datasource.upUploadTemplate({
-                    item: that.$route.params.item,
-                    index: row.index
+                    id: row.id
                 }).then(function(result) {
                     that.$broadcast("refreshData")
                 }).catch(function(err) {
@@ -196,8 +195,7 @@
             down(row) {
                 var that = this
                 datasource.downUploadTemplate({
-                    item: that.$route.params.item,
-                    index: row.index
+                    id: row.id
                 }).then(function(result) {
                     that.$broadcast("refreshData")
                 }).catch(function(err) {

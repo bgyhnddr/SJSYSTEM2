@@ -50,7 +50,6 @@
         ready() {
             var that = this
             that.getProject(that.$route.params.id).then((result) => {
-                console.log(result)
                 that.project = result
                 that.alertText = ""
             }).catch((err) => {
