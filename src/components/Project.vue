@@ -32,7 +32,8 @@
         data() {
             return {
                 alertText: "",
-                project: {}
+                project: {},
+                state: window.state
             }
         },
         components: {
@@ -55,6 +56,20 @@
             }).catch((err) => {
                 that.alertText = err
             })
+        },
+        route: {
+            deactivate(transition) {
+                if (transition.from.path.indexOf("/index/ProjectManagement/Project/") >= 0) {
+                    if (this.state.quotation_change) {
+                        if (window.confirm("存在未保存内容，是否離開頁面？")) {
+                            this.state.quotation_change = false
+                        } else {
+                            transition.abort()
+                        }
+                    }
+                }
+                transition.next()
+            }
         }
     }
 </script>

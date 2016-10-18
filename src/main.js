@@ -16,7 +16,8 @@ disableHistoryBack()
 
 window.state = {
     userInfo: { name: "", permissions: [] },
-    showLoginModal: false
+    showLoginModal: false,
+    quotation_change: false
 }
 
 window.actions = {

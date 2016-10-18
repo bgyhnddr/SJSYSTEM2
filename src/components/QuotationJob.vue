@@ -25,6 +25,7 @@
 				<button :disabled="submitting" type="button" class="btn btn-success" @click="submitQuotationJob">確認</button>
 			</div>
 		</modal>
+        <p>成本總價：{{totalCost}}      出街總價：{{totalRetail}}</p>
 	</div>
 </template>
 
@@ -37,6 +38,7 @@
         input as bsInput
     } from 'vue-strap'
     import view_quotation from '../api/view_quotation'
+    import create_quotation from '../api/create_quotation'
     import checkPermission from '../extend/check-permission'
 
     export default {
@@ -70,13 +72,34 @@
                 "bind": "content"
             }, {
                 "header": "成本單價",
-                "bind": "cost"
+                "bind": "cost",
+                "format": (val, row) => {
+                    return row.count == 0 ? "" : val
+                }
             }, {
                 "header": "出街單價",
-                "bind": "retail"
+                "bind": "retail",
+                "format": (val, row) => {
+                    return row.count == 0 ? "" : val
+                }
             }, {
                 "header": "數量",
-                "bind": "count"
+                "bind": "count",
+                "format": (val, row) => {
+                    return row.count == 0 ? "" : val
+                }
+            }, {
+                "header": "成本總價",
+                "bind": "cost",
+                "format": (val, row) => {
+                    return row.count == 0 ? "" : (val * row.count)
+                }
+            }, {
+                "header": "出街總價",
+                "bind": "retail",
+                "format": (val, row) => {
+                    return row.count == 0 ? "" : (val * row.count)
+                }
             }, {
                 "header": "操作",
                 "type": "action",
@@ -145,6 +168,20 @@
                     returnText = "請輸入"
                 }
                 return returnText
+            },
+            totalCost() {
+                if (this.data.list) {
+                    return this.data.list.reduce((a, b) => a + b.cost * b.count, 0);
+                } else {
+                    return 0
+                }
+            },
+            totalRetail() {
+                if (this.data.list) {
+                    return this.data.list.reduce((a, b) => a + b.retail * b.count, 0);
+                } else {
+                    return 0
+                }
             }
         },
         methods: {
@@ -162,7 +199,7 @@
                 if (this.valid()) {
                     var that = this
                     that.submitting = true
-                    view_quotation.submitQuotationJob({
+                    create_quotation.submitQuotationJob({
                         id: that.submitData.id,
                         content: that.submitData.content,
                         cost: that.submitData.cost,
@@ -172,7 +209,7 @@
                     }).then(function(result) {
                         that.submitting = false
                         that.$broadcast("refreshData")
-                        that.showJob = false
+                        that.showQuotationJobModel = false
                         that.serverMsg = ""
                     }).catch(function(err) {
                         that.submitting = false
@@ -189,7 +226,7 @@
             deleteQuotationJob(row) {
                 if (window.confirm("是否確認刪除：" + row.content + "?")) {
                     var that = this
-                    view_quotation.deleteQuotationQuotationJob({
+                    create_quotation.deleteQuotationJob({
                         id: row.id
                     }).then(function(result) {
                         that.$broadcast("refreshData")
@@ -200,7 +237,7 @@
             },
             up(row) {
                 var that = this
-                view_quotation.upQuotationJob({
+                create_quotation.upQuotationJob({
                     id: row.id
                 }).then(function(result) {
                     that.$broadcast("refreshData")
@@ -210,7 +247,7 @@
             },
             down(row) {
                 var that = this
-                view_quotation.downQuotationJob({
+                create_quotation.downQuotationJob({
                     id: row.id
                 }).then(function(result) {
                     that.$broadcast("refreshData")

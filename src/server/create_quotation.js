@@ -84,11 +84,7 @@ var saveDraft = function(req, res, next) {
         var job_content_template = require('../db/models/job_content_template')
         var quotation_job = require('../db/models/quotation_job')
 
-        quotation.belongsTo(project)
-
         project_item.hasMany(job_content_template)
-
-
 
         return checkQuotationDraftAndActive(no).then(function() {
             return quotation.findOne({
@@ -105,6 +101,7 @@ var saveDraft = function(req, res, next) {
                 result.manager = req.body.manager
                 result.quotation_date = req.body.quotation_date
                 result.building_id = req.body.building_id
+                return result
             } else {
                 return Promise.reject("找不到報價單")
             }
@@ -151,17 +148,21 @@ var saveDraft = function(req, res, next) {
 
 var submitQuotationJob = function(req, res, next) {
     var quotation_job = require('../db/models/quotation_job')
+    var quotation = require('../db/models/quotation')
 
     if (req.body.id) {
         return checkQuotationDraftAndActive(req.body.quotation_no).then(function() {
-            quotation_job.findOne({
+            return quotation_job.findOne({
                 where: {
                     id: req.body.id
                 }
             })
         }).then(function(result) {
             return result.update({
-                content: req.body.content
+                content: req.body.content,
+                cost: req.body.cost,
+                retail: req.body.retail,
+                count: req.body.count,
             })
         }).catch(function(error) {
             if (error.name == "SequelizeUniqueConstraintError") {
@@ -192,8 +193,13 @@ var submitQuotationJob = function(req, res, next) {
         }).catch(function(error) {
             if (error.name == "SequelizeUniqueConstraintError") {
                 return Promise.reject("數據不能重複")
+            } else {
+                if (error.name) {
+                    return Promise.reject(error.name)
+                } else {
+                    return error
+                }
             }
-            return Promise.reject(error.name)
         })
     }
 }
@@ -219,19 +225,27 @@ var deleteQuotationJob = function(req, res, next) {
 }
 
 var upQuotationJob = function(req, res, next) {
-    var job_content_template = require('../db/models/job_content_template')
-    return job_content_template.findAll({
-        where: {
-            index: {
-                $lte: req.body.index
-            }
-        },
-        limit: 2,
-        order: [
-            ["index", "DESC"]
-        ]
+    var quotation_job = require('../db/models/quotation_job')
+    return quotation_job.findOne({
+        where: { id: req.body.id }
+    }).then((result) => {
+        return quotation_job.findOne({
+            where: {
+                $and: {
+                    index: {
+                        $lt: result.index
+                    },
+                    quotation_no: result.quotation_no
+                }
+            },
+            order: [
+                ["index", "DESC"]
+            ]
+        }).then((o) => {
+            return [o, result]
+        })
     }).then(function(result) {
-        if (result.length == 2) {
+        if (result[0] != null) {
             var tempIndex = result[0].index
             result[0].index = result[1].index
             result[1].index = tempIndex
@@ -247,20 +261,27 @@ var upQuotationJob = function(req, res, next) {
 }
 
 var downQuotationJob = function(req, res, next) {
-    var job_content_template = require('../db/models/job_content_template')
-
-    return job_content_template.findAll({
-        where: {
-            index: {
-                $gte: req.body.index
-            }
-        },
-        limit: 2,
-        order: [
-            ["index"]
-        ]
+    var quotation_job = require('../db/models/quotation_job')
+    return quotation_job.findOne({
+        where: { id: req.body.id }
+    }).then((result) => {
+        return quotation_job.findOne({
+            where: {
+                $and: {
+                    index: {
+                        $gt: result.index
+                    },
+                    quotation_no: result.quotation_no
+                }
+            },
+            order: [
+                ["index"]
+            ]
+        }).then((o) => {
+            return [o, result]
+        })
     }).then(function(result) {
-        if (result.length == 2) {
+        if (result[0] != null) {
             var tempIndex = result[0].index
             result[0].index = result[1].index
             result[1].index = tempIndex

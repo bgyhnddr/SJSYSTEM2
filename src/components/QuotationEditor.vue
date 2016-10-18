@@ -1,6 +1,6 @@
 <template>
 	<div v-if="checkPermission()">
-		<button @click="save" v-if="change" class="btn btn-default">保存</button>
+		<button @click="save" v-if="state.quotation_change" class="btn btn-primary fixed-save">保存報價單</button>
 		<div class="form-group">
 			<label class="control-label">報價單編號</label>
 			<p>{{quotation.no}}</p>
@@ -27,15 +27,14 @@
 			</p>
 		</div>
 		<div class="form-group">
-			<label class="control-label">盤名</label>
-			<p>{{quotation.building_id}}<button @click="building_setting.show = true" class="btn btn-default btn-xs">選擇</button>
+			<label class="control-label">盤</label><button @click="building_setting.show = true" class="btn btn-default btn-xs">選擇</button>
+			<p>
 				<button @click="building_setting.show = false" v-if="building_setting.show" class="btn btn-default btn-xs">關閉</button>
 				<div v-if="building_setting.show">
 					<building-setting :selectable="building_setting.selectable" :select-event="building_setting.selectEvent"></building-setting>
 				</div>
 				<div v-if="!building_setting.show">
-					<vue-strap-table 
-                    :has-filter="!true" :data.sync="building_setting.data" :columns.sync="building_setting.columns"></vue-strap-table>
+					<vue-strap-table :has-filter="false" :data.sync="building_setting.data" :columns.sync="building_setting.columns"></vue-strap-table>
 				</div>
 			</p>
 		</div>
@@ -106,7 +105,7 @@
         data() {
             var dateNow = new Date()
             return {
-                change: false,
+                state: window.state,
                 datepickerSetting: {
                     value: dateNow.Format("yyyy-MM-dd"),
                     clear: true
@@ -192,8 +191,9 @@
             save() {
                 var that = this
                 return create_quotation.saveDraft(that.quotation).then(function() {
-                    that.change = false
+                    that.state.quotation_change = false
                 }).catch(function(err) {
+                    console.log(err)
                     window.alert(err)
                 })
             },
@@ -226,7 +226,7 @@
             'quotation': {
                 handler: function(val, oldVal) {
                     if (oldVal.no !== undefined) {
-                        this.change = true
+                        this.state.quotation_change = true
                     }
                 },
                 deep: true

@@ -23,7 +23,7 @@
 					<tr v-for="row of data.list">
 						<td v-for="column of columns | filterBy undefiend in 'hide'">
 							<template v-if="column.type == undefined || column.type == 'string'">
-								<template v-if="column.format">{{ column.format(row[column.bind]) }}</template>
+								<template v-if="column.format">{{ column.format(row[column.bind],row) }}</template>
 								<template v-else>{{ row[column.bind] }}</template>
 							</template>
 							<template v-if="column.type == 'action'">
