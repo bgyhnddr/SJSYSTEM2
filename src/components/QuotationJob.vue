@@ -15,7 +15,7 @@
 				<alert :type="alertType">
 					{{alertText}}
 				</alert>
-				<bs-input :value.sync="submitData.content" label="內容"></bs-input>
+				<bs-input :value.sync="submitData.content" label="内容"></bs-input>
 				<bs-input type="number" :value.sync="submitData.cost" label="成本單價"></bs-input>
 				<bs-input type="number" :value.sync="submitData.retail" label="出街單價"></bs-input>
 				<bs-input type="number" :value.sync="submitData.count" label="數量"></bs-input>

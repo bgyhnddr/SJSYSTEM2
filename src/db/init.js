@@ -20,7 +20,8 @@ module.exports = function(req, res, next) {
         require('./models/quotation_version'),
         require('./models/serial_number'),
         require('./models/project_state'),
-        require('./models/project_setting')
+        require('./models/project_setting'),
+        require('./models/project_record')
     ].map((o) => o.sync({ force: true }))).then(function() {
         return require('./init_data')()
     }).then(function() {

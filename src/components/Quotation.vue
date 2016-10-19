@@ -3,7 +3,12 @@
 		<alert v-if="alertText" type="success">
 			{{alertText}}
 		</alert>
-		<quotation-editor :quotation.sync="quotation"></quotation-editor>
+		<div v-if="editable">
+			<quotation-editor :quotation.sync="quotation"></quotation-editor>
+		</div>
+		<div v-if="!editable">
+            {{quotation.no}}
+		</div>
 	</div>
 </template>
 
@@ -20,6 +25,10 @@
             quotation_no: {
                 type: String,
                 default: ""
+            },
+            editable: {
+                type: Boolean,
+                default: false
             }
         },
         components: {

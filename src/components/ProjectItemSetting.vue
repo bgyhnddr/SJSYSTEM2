@@ -85,7 +85,7 @@
                     eventName: "editContentDetail",
                     tag: "button",
                     class: "btn-xs",
-                    text: "编辑內容模板"
+                    text: "编辑内容模板"
                 }, {
                     eventName: "edit",
                     tag: "button",

@@ -18,5 +18,8 @@ export default {
     },
     downQuotationJob(params) {
         return request.post(path + 'downQuotationJob', params)
+    },
+    saveQuotation(params) {
+        return request.post(path + 'saveQuotation', params)
     }
 }

@@ -24,7 +24,7 @@ var checkQuotationDraftAndActive = function(no) {
                 if (result.project.project_state.state == "draft" && result.project.quotation_no == result.no) {
                     return "OK"
                 } else {
-                    return Promise.reject("can not save this quotation")
+                    return Promise.reject("該報價單不能進行此項操作")
                 }
             }
         })
@@ -63,6 +63,8 @@ var createQuotation = function(req, res, next) {
                                 state: "draft"
                             })
                         ]).then(function() {
+                            console.log(serial_no + req.session.userInfo.name)
+                            common.log_project_record("create_quotation/createQuotation", serial_no, req.session.userInfo.name)
                             return { project_id: project_result.id }
                         })
                     })
@@ -296,6 +298,68 @@ var downQuotationJob = function(req, res, next) {
     })
 }
 
+var saveQuotation = function(req, res, next) {
+    var no = req.body.no
+    if (no) {
+        var common = require('./common')
+        var quotation = require('../db/models/quotation')
+        var project = require('../db/models/project')
+        var project_state = require('../db/models/project_state')
+        var quotation_job = require('../db/models/quotation_job')
+
+        quotation.belongsTo(project)
+        project.hasOne(project_state)
+        quotation.hasMany(quotation_job)
+
+
+        return checkQuotationDraftAndActive(no).then(function() {
+            return quotation.findOne({
+                include: [{
+                    model: project,
+                    include: [{
+                        model: project_state,
+                    }]
+                }, {
+                    model: quotation_job
+                }],
+                where: {
+                    no: no
+                }
+            })
+        }).then(function(result) {
+            if (result) {
+                if (result.quotation_jobs.length == 0) {
+                    return Promise.reject("至少需要添加一條工作内容")
+                } else {
+                    if (
+                        result.no &&
+                        result.property_management_co_name &&
+                        result.property_management_co_name_en &&
+                        result.project_name &&
+                        result.manager &&
+                        result.quotation_date &&
+                        result.building_id &&
+                        result.project_type &&
+                        result.project_item) {
+                        result.project.project_state.state = "quotation_save"
+                        return Promise.all([result.save(), result.project.project_state.save()])
+                    } else {
+                        return Promise.reject("報價單信息不全無法完成")
+                    }
+                }
+
+            } else {
+                return Promise.reject("找不到報價單")
+            }
+        }).then(function(result) {
+            common.log_project_record("create_quotation/saveQuotation", no, req.session.userInfo.name)
+            return 'success'
+        })
+    } else {
+        return Promise.reject("沒有報價單號")
+    }
+}
+
 module.exports = (req, res, next) => {
     var action = req.params.action
     Promise.resolve(action).then(function(result) {
@@ -313,6 +377,8 @@ module.exports = (req, res, next) => {
                     return upQuotationJob(req, res, next)
                 case "downQuotationJob":
                     return downQuotationJob(req, res, next)
+                case "saveQuotation":
+                    return saveQuotation(req, res, next)
             }
         } catch (e) {
             console.log(e)

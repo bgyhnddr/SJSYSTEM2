@@ -57,3 +57,12 @@ exports.get_next_quotation_no = function(quotation_no) {
         }
     })
 }
+
+exports.log_project_record = function(action, content, account) {
+    var project_record = require('../db/models/project_record')
+    return project_record.create({
+        action: action,
+        content: content,
+        user_account: account
+    })
+}

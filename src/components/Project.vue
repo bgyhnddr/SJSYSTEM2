@@ -13,7 +13,7 @@
 					</div>
 					<div class="panel-collapse collapse in">
 						<div class="panel-body">
-							<quotation :quotation_no.sync="project.quotation_no"></quotation>
+							<quotation :editable="quotation_editable" :quotation_no.sync="project.quotation_no"></quotation>
 						</div>
 					</div>
 				</div>
@@ -33,7 +33,8 @@
             return {
                 alertText: "",
                 project: {},
-                state: window.state
+                state: window.state,
+                quotation_editable: false
             }
         },
         components: {
@@ -43,19 +44,26 @@
         methods: {
             checkPermission,
             getProject(id) {
+                var that = this
                 return view_quotation.getProject({
                     id: id
+                }).then((result) => {
+                    that.project = result
+                    that.quotation_editable = result.project_state.state == "draft"
+                    that.alertText = ""
+                }).catch((err) => {
+                    that.alertText = err
                 })
             }
         },
         ready() {
             var that = this
-            that.getProject(that.$route.params.id).then((result) => {
-                that.project = result
-                that.alertText = ""
-            }).catch((err) => {
-                that.alertText = err
-            })
+            that.getProject(that.$route.params.id)
+        },
+        events: {
+            'refreshProject': function() {
+                this.getProject(this.$route.params.id)
+            }
         },
         route: {
             deactivate(transition) {

@@ -3,10 +3,10 @@
         <ol class="breadcrumb">
             <li><a v-link="{ path: '/index/DataManagement/ProjectType' }">工程類別</a></li>
             <li><a v-link="{ path: '/index/DataManagement/ProjectType/'+$route.params.type }">{{$route.params.type}}</a></li>
-            <li class="active">{{$route.params.item}}:工作內容模板</li>
+            <li class="active">{{$route.params.item}}:工作内容模板</li>
         </ol>
         <div>
-            <button @click="addJobTemplate" class="btn btn-default">添加工作內容</button>
+            <button @click="addJobTemplate" class="btn btn-default">添加工作内容</button>
             <div style="position:relative">
                 <spinner size="md" text="loading..."></spinner>
                 <vue-strap-table :has-filter="hasFilter" :err-msg.sync="errMsg" :data.sync="data" :get-data-event="getData" :columns.sync="columns"></vue-strap-table>
@@ -14,14 +14,14 @@
             <modal :show.sync="showJobTemplateModel" effect="fade" width="400">
                 <div slot="modal-header" class="modal-header">
                     <h4 class="modal-title">
-                        工作內容
+                        工作内容
                     </h4>
                 </div>
                 <div slot="modal-body" class="modal-body">
                     <alert :type="alertType">
                         {{alertText}}
                     </alert>
-                    <bs-input :value.sync="submitData.content" label="內容"></bs-input>
+                    <bs-input :value.sync="submitData.content" label="内容"></bs-input>
                 </div>
                 <div slot="modal-footer" class="modal-footer">
                     <button type="button" class="btn btn-default" @click="showJobTemplateModel=false">关闭</button>

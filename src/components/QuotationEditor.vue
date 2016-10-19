@@ -1,6 +1,6 @@
 <template>
 	<div v-if="checkPermission()">
-		<button @click="save" v-if="state.quotation_change" class="btn btn-primary fixed-save">保存報價單</button>
+		<button @click="save" v-if="state.quotation_change" class="btn btn-primary fixed-save">保存報價</button>
 		<div class="form-group">
 			<label class="control-label">報價單編號</label>
 			<p>{{quotation.no}}</p>
@@ -56,6 +56,7 @@
 		<div class="col-sm-12">
 			<quotation-job :quotation-no="quotation.no"></quotation-job>
 		</div>
+		<button @click="finish" class="btn btn-primary fixed-save">完成報價</button>
 	</div>
 </template>
 <script>
@@ -188,12 +189,37 @@
         },
         methods: {
             checkPermission,
+            vaild() {
+                var check = true
+                for (var i in this.quotation) {
+                    if (this.quotation[i] == null || this.quotation[i] == undefined || this.quotation[i] == "") {
+                        check = false
+                    }
+                }
+                return check
+            },
             save() {
                 var that = this
                 return create_quotation.saveDraft(that.quotation).then(function() {
                     that.state.quotation_change = false
                 }).catch(function(err) {
                     console.log(err)
+                    window.alert(err)
+                })
+            },
+            finish() {
+                var that = this
+                that.save().then(function() {
+                    if (that.vaild()) {
+                        return create_quotation.saveQuotation({
+                            no: that.quotation.no
+                        })
+                    } else {
+                        window.alert("信息不全不能完成")
+                    }
+                }).then(function() {
+                    that.$dispatch("refreshProject")
+                }).catch(function(err) {
                     window.alert(err)
                 })
             },
