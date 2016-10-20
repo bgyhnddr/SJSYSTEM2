@@ -2,12 +2,15 @@
 	<div v-if="checkPermission()">
 		<button class="btn btn-default">確認報價</button>
 		<p>報價單確認狀態：{{confirmText}}</p>
+        <p v-if="projectInfo.belowprofitability">利潤率不達標，需要BOSS確認</p>
+        <p v-if="projectInfo.overtotalprofit">工程總額過高，需要BOSS確認</p>
 		<button v-if="allowEdit" @click="editQuotation" class="btn btn-default">修改報價</button>
 	</div>
 </template>
 <script>
     import checkPermission from '../extend/check-permission'
     import view_quotation from '../api/view_quotation'
+    import create_quotation from '../api/create_quotation'
     export default {
         props: {
             projectState: {
@@ -15,8 +18,7 @@
                 default: {
                     state: "",
                     manager_approve: false,
-                    boss_approve: false,
-                    need_boss: false
+                    boss_approve: false
                 }
             },
             projectId: {
@@ -33,11 +35,12 @@
         computed: {
             allowEdit() {
                 if (this.projectState) {
-                    switch (this.projectState.state) {
-                        case "quotation_save":
-                            return !this.projectState.manager_approve && !this.projectState.boss_approve
-                        default:
-                            return false;
+                    if (this.projectState.state == "quotation_save") {
+                        if (!this.projectState.manager_approve && !this.projectState.boss_approve) {
+                            return this.checkPermission(["create_quotation"])
+                        } else {
+                            return this.checkPermission(["edit_quotation"])
+                        }
                     }
                 }
                 return false
@@ -49,24 +52,44 @@
                             if (this.projectState.boss_approve) {
                                 return "BOSS已確認"
                             } else if (this.projectState.manager_approve) {
-                                return "PIC已確認"
+                                if (this.projectInfo.belowprofitability || this.projectInfo.overtotalprofit) {
+                                    return "等待BOSS確認"
+                                } else {
+                                    return "PIC已確認"
+                                }
                             } else {
-                                return "等待確認"
+                                if (this.projectInfo.belowprofitability || this.projectInfo.overtotalprofit) {
+                                    return "等待BOSS確認"
+                                } else {
+                                    return "等待PIC或BOSS確認"
+                                }
                             }
                         default:
-                            return false;
+                            return "";
                     }
                 }
                 return ""
+            },
+            allowConfirm() {
+                if (this.projectState) {}
             }
         },
         methods: {
             checkPermission,
             editQuotation() {
-                this.projectId = 1
+                var that = this
+                if (!that.projectState.manager_approve && !that.projectState.boss_approve) {
+                    create_quotation.editQuotation({
+                        id: that.projectId
+                    }).then(function() {
+                        that.$dispatch("refreshProject")
+                    })
+                }
             },
             getProjectConfirmInfo(id) {
+                var that = this
                 return view_quotation.getProjectConfirmInfo(id).then(function(result) {
+                    that.projectInfo = result
                     console.log(result)
                 })
             }

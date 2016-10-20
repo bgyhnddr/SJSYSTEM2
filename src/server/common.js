@@ -43,7 +43,7 @@ exports.get_next_quotation_no = function(quotation_no) {
         }
     }).then(function(result) {
         if (result == null) {
-            return serial_number.create({
+            return quotation_version.create({
                 quotation_no: quotation_no,
                 version: 1
             }).then(function() {

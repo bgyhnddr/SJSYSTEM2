@@ -21,5 +21,8 @@ export default {
     },
     saveQuotation(params) {
         return request.post(path + 'saveQuotation', params)
+    },
+    editQuotation(params) {
+        return request.post(path + 'editQuotation', params)
     }
 }

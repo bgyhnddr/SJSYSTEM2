@@ -102,7 +102,6 @@ var getProfitSetting = function(req, res, next) {
 
 var getProjectConfirmInfo = function(req, res, next) {
     var id = req.query.id
-    console.log(id)
     if (id) {
         var project_setting = require('../db/models/project_setting')
         var project = require('../db/models/project')
@@ -126,7 +125,6 @@ var getProjectConfirmInfo = function(req, res, next) {
         ]).then((result) => {
             var settingObj = {}
             result[0].forEach(o => settingObj[o.code] = parseInt(o.value))
-            console.log(result[1])
             var totalRetail = result[1].quotation.quotation_jobs.reduce((sum, o) => {
                 return sum + o.retail
             }, 0)
@@ -177,6 +175,6 @@ module.exports = (req, res, next) => {
     }).then(function(result) {
         res.send(result)
     }).catch(function(error) {
-        res.status(500).send(error)
+        res.status(500).send(error.toString())
     })
 }

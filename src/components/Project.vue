@@ -59,7 +59,6 @@
                 return view_quotation.getProject({
                     id: id
                 }).then((result) => {
-                    console.log(result)
                     that.project = result
                     that.quotationSetting.quotation_editable = result.project_state.state == "draft"
                     that.alertText = ""

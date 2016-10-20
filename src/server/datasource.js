@@ -1144,7 +1144,6 @@ module.exports = (req, res, next) => {
     }).then(function(result) {
         res.send(result)
     }).catch(function(error) {
-        console.log(error)
-        res.status(500).send(error)
+        res.status(500).send(error.toString())
     })
 }

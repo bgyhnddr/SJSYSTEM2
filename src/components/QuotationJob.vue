@@ -25,7 +25,11 @@
 				<button :disabled="submitting" type="button" class="btn btn-success" @click="submitQuotationJob">確認</button>
 			</div>
 		</modal>
-        <p>成本總價：{{totalCost}}      出街總價：{{totalRetail}}</p>
+		<p>
+			<label>成本總價：{{totalCost}}</label>
+			<label>出街總價：{{totalRetail}}</label>
+			<label>利潤率：{{profitPercent}}%</label>
+		</p>
 	</div>
 </template>
 
@@ -179,17 +183,20 @@
             },
             totalCost() {
                 if (this.data.list) {
-                    return this.data.list.reduce((a, b) => a + b.cost * b.count, 0);
+                    return this.data.list.reduce((a, b) => a + b.cost * b.count, 0)
                 } else {
                     return 0
                 }
             },
             totalRetail() {
                 if (this.data.list) {
-                    return this.data.list.reduce((a, b) => a + b.retail * b.count, 0);
+                    return this.data.list.reduce((a, b) => a + b.retail * b.count, 0)
                 } else {
                     return 0
                 }
+            },
+            profitPercent() {
+                return Math.round((this.totalRetail - this.totalCost) / this.totalCost * 100)
             }
         },
         methods: {
