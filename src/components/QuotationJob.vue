@@ -1,6 +1,6 @@
 <template>
 	<div v-if="checkPermission()">
-		<button @click="addQuotationJob" class="btn btn-default">添加工作内容</button>
+		<button v-if="editable" @click="addQuotationJob" class="btn btn-default">添加工作内容</button>
 		<div style="position:relative">
 			<spinner size="md" text="loading..."></spinner>
 			<vue-strap-table :has-filter="hasFilter" :err-msg.sync="errMsg" :data.sync="data" :get-data-event="getData" :columns.sync="columns"></vue-strap-table>
@@ -51,6 +51,10 @@
                 type: String,
                 default: 'select'
             },
+            editable: {
+                type: Boolean,
+                default: true
+            },
             quotationNo: {
                 type: String,
                 default: ""
@@ -100,31 +104,35 @@
                 "format": (val, row) => {
                     return row.count == 0 ? "" : (val * row.count)
                 }
-            }, {
-                "header": "操作",
-                "type": "action",
-                "items": [{
-                    eventName: "up",
-                    tag: "button",
-                    class: "btn-xs",
-                    text: "上移"
-                }, {
-                    eventName: "down",
-                    tag: "button",
-                    class: "btn-xs",
-                    text: "下移"
-                }, {
-                    eventName: "edit",
-                    tag: "button",
-                    class: "btn-xs",
-                    text: "修改"
-                }, {
-                    eventName: "delete",
-                    tag: "button",
-                    class: "btn-xs",
-                    text: "刪除"
-                }]
             }]
+            if (this.editable) {
+                columns.push({
+                    "header": "操作",
+                    "type": "action",
+                    "items": [{
+                        eventName: "up",
+                        tag: "button",
+                        class: "btn-xs",
+                        text: "上移"
+                    }, {
+                        eventName: "down",
+                        tag: "button",
+                        class: "btn-xs",
+                        text: "下移"
+                    }, {
+                        eventName: "edit",
+                        tag: "button",
+                        class: "btn-xs",
+                        text: "修改"
+                    }, {
+                        eventName: "delete",
+                        tag: "button",
+                        class: "btn-xs",
+                        text: "刪除"
+                    }]
+                })
+            }
+
             if (this.selectable) {
                 columns.unshift({
                     "header": "",
@@ -292,8 +300,13 @@
         watch: {
             'quotationNo': function(val, oldVal) {
                 if (val) {
-                    this.$broadcast("refreshData")
+                    this.refreshData()
                 }
+            }
+        },
+        ready() {
+            if (this.quotationNo) {
+                this.refreshData()
             }
         }
     }

@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div v-if="checkPermission()">
 		<alert v-if="alertText" type="success">
 			{{alertText}}
 		</alert>
@@ -13,7 +13,8 @@
 					</div>
 					<div class="panel-collapse collapse in">
 						<div class="panel-body">
-							<quotation :editable="quotation_editable" :quotation_no.sync="project.quotation_no"></quotation>
+							<quotation-confirm v-if="showQuotationConfirm" :project-id="project.id" :project-state="project.project_state"></quotation-confirm>
+							<quotation :editable="quotationSetting.quotation_editable" :quotation_no.sync="project.quotation_no"></quotation>
 						</div>
 					</div>
 				</div>
@@ -24,6 +25,7 @@
 <script>
     import checkPermission from '../extend/check-permission'
     import Quotation from './Quotation'
+    import QuotationConfirm from './QuotationConfirm'
     import view_quotation from '../api/view_quotation'
     import {
         alert
@@ -34,11 +36,20 @@
                 alertText: "",
                 project: {},
                 state: window.state,
-                quotation_editable: false
+                quotationSetting: {
+                    quotation_editable: false
+                },
+                test: false
+            }
+        },
+        computed: {
+            showQuotationConfirm() {
+                return (this.project.project_state && this.project.project_state.state == "quotation_save")
             }
         },
         components: {
             Quotation,
+            QuotationConfirm,
             alert
         },
         methods: {
@@ -48,8 +59,9 @@
                 return view_quotation.getProject({
                     id: id
                 }).then((result) => {
+                    console.log(result)
                     that.project = result
-                    that.quotation_editable = result.project_state.state == "draft"
+                    that.quotationSetting.quotation_editable = result.project_state.state == "draft"
                     that.alertText = ""
                 }).catch((err) => {
                     that.alertText = err

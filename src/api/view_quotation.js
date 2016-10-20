@@ -14,5 +14,13 @@ export default {
         return request.get(path + 'getBuilding', {
             id
         })
+    },
+    getProfitSetting() {
+        return request.get(path + 'getProfitSetting')
+    },
+    getProjectConfirmInfo(id) {
+        return request.get(path + 'getProjectConfirmInfo', {
+            id
+        })
     }
 }

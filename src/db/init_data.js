@@ -3,6 +3,7 @@ var role = require('./models/role')
 var permission = require('./models/permission')
 var user_role = require('./models/user_role')
 var role_permission = require('./models/role_permission')
+var project_setting = require('./models/project_setting')
 
 module.exports = function() {
     return Promise.all([
@@ -18,7 +19,7 @@ module.exports = function() {
         permission.create({ code: "create_quotation", name: "創建報價單" }),
         permission.create({ code: "confirm_quotation", name: "確認報價單" }),
         permission.create({ code: "approve_quotation", name: "核准報價單" }),
-        permission.create({ code: "edit_quotation", name: "修改報價單" }),
+        permission.create({ code: "edit_quotation", name: "修改已確認報價單" }),
         permission.create({ code: "view_quotation", name: "查閱報價單" }),
         permission.create({ code: "workhour_and_outsource", name: "工時/外判錄入" }),
         permission.create({ code: "invoice", name: "開具發票" }),
@@ -27,6 +28,8 @@ module.exports = function() {
         permission.create({ code: "confirm_po", name: "確認PO" }),
         permission.create({ code: "approve_po", name: "核准PO" }),
         permission.create({ code: "view_po", name: "查閱PO" }),
-        permission.create({ code: "moneylog", name: "付款記錄" })
+        permission.create({ code: "moneylog", name: "付款記錄" }),
+        project_setting.create({ code: "profitability", value: "20" }),
+        project_setting.create({ code: "totalprofit", value: "0" })
     ])
 }

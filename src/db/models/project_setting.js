@@ -4,7 +4,7 @@ var sequelize = require('../sequelize')
 var project_setting = sequelize.define(
     'project_setting', {
         id: { type: Sequelize.INTEGER, autoIncrement: true, unique: true },
-        code: { type: Sequelize.INTEGER, primaryKey: true },
+        code: { type: Sequelize.STRING, primaryKey: true },
         value: Sequelize.STRING
     }, {
         underscored: true

@@ -26,5 +26,7 @@ module.exports = function(req, res, next) {
         return require('./init_data')()
     }).then(function() {
         res.send("success")
+    }).catch(function(err) {
+        res.send(err)
     })
 }

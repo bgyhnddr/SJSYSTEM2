@@ -7,7 +7,13 @@
 			<quotation-editor :quotation.sync="quotation"></quotation-editor>
 		</div>
 		<div v-if="!editable">
-            {{quotation.no}}
+            <button class="btn btn-default">下載報價單</button>
+			<quotation-view :quotation.sync="quotation"></quotation-view>
+		</div>
+		<div>
+			<p>BOSS審批條件</p>
+			<p>毛利率低於：{{profitSetting.profitability}}%</p>
+			<p>項目總價高於：{{profitSetting.totalprofit}}</p>
 		</div>
 	</div>
 </template>
@@ -15,6 +21,7 @@
 <script>
     import checkPermission from '../extend/check-permission'
     import QuotationEditor from './QuotationEditor'
+    import QuotationView from './QuotationView'
     import ViewQuotation from '../api/view_quotation'
     import {
         alert
@@ -33,12 +40,17 @@
         },
         components: {
             QuotationEditor,
+            QuotationView,
             alert
         },
         data() {
             return {
                 quotation: {},
-                alertText: ""
+                alertText: "",
+                profitSetting: {
+                    totalprofit: "0",
+                    profitability: "0"
+                }
             }
         },
         methods: {
@@ -80,6 +92,13 @@
                     that.alertText = err
                 })
             }
+
+            ViewQuotation.getProfitSetting().then((result) => {
+                that.profitSetting.totalprofit = result.totalprofit
+                that.profitSetting.profitability = result.profitability
+            }).catch((err) => {
+                window.alert(err)
+            })
         }
     }
 </script>
