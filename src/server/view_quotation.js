@@ -2,7 +2,16 @@ var getQuotation = function(req, res, next) {
     var no = req.query.no
     if (no) {
         var quotation = require('../db/models/quotation')
+        var project = require('../db/models/project')
+        var project_state = require('../db/models/project_state')
+        quotation.belongsTo(project)
+        project.hasOne(project_state)
+
         return quotation.findOne({
+            include: {
+                model: project,
+                include: project_state
+            },
             where: { no: no }
         }).then(function(result) {
             if (result == null) {
@@ -132,21 +141,31 @@ var getProjectConfirmInfo = function(req, res, next) {
                 return sum + o.cost
             }, 0)
             var belowprofitability = settingObj.profitability > ((totalRetail - totalCost) / totalCost) * 100
-            console.log({
-                settingObj,
-                totalRetail,
-                totalCost
-            })
+
             return {
                 settingObj,
                 totalRetail,
                 totalCost,
                 overtotalprofit: settingObj.totalprofit < totalCost,
-                belowprofitability
+                belowprofitability,
+                quotation_no: result[1].quotation.no
             }
         })
     } else {
         return Promise.reject("not found")
+    }
+}
+
+var getQuotationHistory = function(req, res, next) {
+    var id = req.query.id
+    if (id) {
+        var quotation = require('../db/models/quotation')
+
+        return quotation.findAll({
+            where: {
+                project_id: id
+            }
+        })
     }
 }
 
@@ -167,6 +186,8 @@ module.exports = (req, res, next) => {
                     return getProfitSetting(req, res, next)
                 case "getProjectConfirmInfo":
                     return getProjectConfirmInfo(req, res, next)
+                case "getQuotationHistory":
+                    return getQuotationHistory(req, res, next)
             }
         } catch (e) {
             console.log(e)

@@ -22,7 +22,8 @@
 		</div>
 		<div class="form-group">
 			<label class="control-label">報價日期</label>
-			<p>
+            <p v-if="quotation.project.project_state.boss_edit">{{new Date().Format("yyyy-MM-dd")}}</p>
+			<p v-else>
 				<datepicker v-ref:dp :value.sync="datepickerSetting.value" format="yyyy-MM-dd" :clear-button="datepickerSetting.clear" width="370px"></datepicker>
 			</p>
 		</div>
@@ -56,7 +57,7 @@
 		<div class="col-sm-12">
 			<quotation-job :quotation-no="quotation.no"></quotation-job>
 		</div>
-		<button @click="finish" class="btn btn-primary fixed-save">完成報價</button>
+		<button :disabled="finishing" @click="finish" class="btn btn-primary fixed-save">{{finishing?'loading':'完成報價'}}</button>
 	</div>
 </template>
 <script>
@@ -184,7 +185,8 @@
                         "header": "電郵",
                         "bind": "email"
                     }]
-                }
+                },
+                finishing: false
             }
         },
         methods: {
@@ -210,6 +212,7 @@
             },
             finish() {
                 var that = this
+                that.finishing = true
                 that.save().then(function() {
                     if (that.vaild()) {
                         return create_quotation.saveQuotation({
@@ -220,8 +223,11 @@
                     }
                 }).then(function() {
                     that.$dispatch("refreshProject")
+                    that.$dispatch("refreshQuotation")
+                    that.finishing = false
                 }).catch(function(err) {
                     window.alert(err)
+                    that.finishing = false
                 })
             },
             showProjectTypeItem: function() {
@@ -297,7 +303,7 @@
         },
         ready() {
             if (this.quotation.quotation_date) {
-                this.datepickerSetting.value = quotation.quotation_date
+                this.datepickerSetting.value = this.quotation.quotation_date
             }
 
             if (this.quotation.building_id) {

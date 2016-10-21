@@ -29,7 +29,7 @@
 							<template v-if="column.type == 'action'">
 								<template v-for="item in column.items">
 									<template v-if="item.tag=='button'">
-										<button @click="action(item.eventName,row)" class="{{item.class}} btn btn-default">{{item.text}}</button>
+										<button v-if="item.filter?item.filter(row):true" @click="action(item.eventName,row)" class="{{item.class}} btn btn-default">{{item.text}}</button>
 									</template>
 								</template>
 							</template>

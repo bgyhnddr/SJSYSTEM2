@@ -22,5 +22,8 @@ export default {
         return request.get(path + 'getProjectConfirmInfo', {
             id
         })
+    },
+    getQuotationHistory(params) {
+        return request.get(path + 'getQuotationHistory', params)
     }
 }

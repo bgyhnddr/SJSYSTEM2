@@ -32,10 +32,6 @@
             quotation_no: {
                 type: String,
                 default: ""
-            },
-            editable: {
-                type: Boolean,
-                default: false
             }
         },
         components: {
@@ -53,6 +49,13 @@
                 }
             }
         },
+        computed: {
+            editable() {
+                if (this.quotation.project) {
+                    return this.quotation.project.project_state.state == "draft"
+                }
+            }
+        },
         methods: {
             checkPermission,
             getQuotation(no) {
@@ -64,11 +67,29 @@
                     }
                     return result
                 })
+            },
+            refresh() {
+                var that = this
+                if (that.quotation_no) {
+                    that.getQuotation(that.quotation_no).then((result) => {
+                        that.quotation = result
+                        that.alertText = ""
+                    }).catch((err) => {
+                        console.log(err)
+                        that.alertText = err
+                    })
+                }
+
+                ViewQuotation.getProfitSetting().then((result) => {
+                    that.profitSetting.totalprofit = result.totalprofit
+                    that.profitSetting.profitability = result.profitability
+                }).catch((err) => {
+                    window.alert(err)
+                })
             }
         },
         watch: {
             "quotation_no": function(val, oldVal) {
-                window.alert(val + "mark")
                 if (val) {
                     var that = this
                     that.getQuotation(val).then((result) => {
@@ -81,24 +102,13 @@
                 }
             }
         },
-        ready() {
-            var that = this
-            if (that.quotation_no) {
-                that.getQuotation(that.quotation_no).then((result) => {
-                    that.quotation = result
-                    that.alertText = ""
-                }).catch((err) => {
-                    console.log(err)
-                    that.alertText = err
-                })
+        events: {
+            'refreshQuotation': function() {
+                this.refresh()
             }
-
-            ViewQuotation.getProfitSetting().then((result) => {
-                that.profitSetting.totalprofit = result.totalprofit
-                that.profitSetting.profitability = result.profitability
-            }).catch((err) => {
-                window.alert(err)
-            })
+        },
+        ready() {
+            this.refresh()
         }
     }
 </script>

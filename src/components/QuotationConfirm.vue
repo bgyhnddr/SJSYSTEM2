@@ -4,13 +4,14 @@
 		<p>報價單確認狀態：{{confirmText}}</p>
         <p v-if="projectInfo.belowprofitability">利潤率不達標，需要BOSS確認</p>
         <p v-if="projectInfo.overtotalprofit">工程總額過高，需要BOSS確認</p>
-		<button v-if="allowEdit" @click="editQuotation" class="btn btn-default">修改報價</button>
+		<button :disabled="editing" v-if="allowEdit" @click="editQuotation" class="btn btn-default">{{editing?'loading':'修改報價'}}</button>
 	</div>
 </template>
 <script>
     import checkPermission from '../extend/check-permission'
     import view_quotation from '../api/view_quotation'
     import create_quotation from '../api/create_quotation'
+    import edit_quotation from '../api/edit_quotation'
     export default {
         props: {
             projectState: {
@@ -29,7 +30,8 @@
         data() {
             return {
                 state: window.state,
-                projectInfo: {}
+                projectInfo: {},
+                editing: false
             }
         },
         computed: {
@@ -78,11 +80,26 @@
             checkPermission,
             editQuotation() {
                 var that = this
+                that.editing = true
                 if (!that.projectState.manager_approve && !that.projectState.boss_approve) {
                     create_quotation.editQuotation({
-                        id: that.projectId
+                        no: that.projectInfo.quotation_no
                     }).then(function() {
                         that.$dispatch("refreshProject")
+                        that.editing = false
+                    }).catch((err) => {
+                        window.alert(err)
+                        that.editing = false
+                    })
+                } else {
+                    edit_quotation.editQuotation({
+                        no: that.projectInfo.quotation_no
+                    }).then(function() {
+                        that.$dispatch("refreshProject")
+                        that.editing = false
+                    }).catch((err) => {
+                        window.alert(err)
+                        that.editing = false
                     })
                 }
             },

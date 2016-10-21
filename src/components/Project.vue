@@ -13,8 +13,8 @@
 					</div>
 					<div class="panel-collapse collapse in">
 						<div class="panel-body">
-							<quotation-confirm v-if="showQuotationConfirm" :project-id="project.id" :project-state="project.project_state"></quotation-confirm>
-							<quotation :editable="quotationSetting.quotation_editable" :quotation_no.sync="project.quotation_no"></quotation>
+							<quotation-confirm v-if="showQuotationConfirm" :project-id.sync="project.id" :project-state="project.project_state"></quotation-confirm>
+							<quotation :quotation_no.sync="project.quotation_no"></quotation>
 						</div>
 					</div>
 				</div>
@@ -35,11 +35,7 @@
             return {
                 alertText: "",
                 project: {},
-                state: window.state,
-                quotationSetting: {
-                    quotation_editable: false
-                },
-                test: false
+                state: window.state
             }
         },
         computed: {
@@ -59,8 +55,8 @@
                 return view_quotation.getProject({
                     id: id
                 }).then((result) => {
+                    console.log(that.project.quotation_no)
                     that.project = result
-                    that.quotationSetting.quotation_editable = result.project_state.state == "draft"
                     that.alertText = ""
                 }).catch((err) => {
                     that.alertText = err
