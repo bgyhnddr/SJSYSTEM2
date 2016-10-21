@@ -6,6 +6,7 @@ var editQuotation = function(req, res, next) {
         var project = require('../db/models/project')
         var project_state = require('../db/models/project_state')
         var quotation_job = require('../db/models/quotation_job')
+        var moment = require('moment')
 
         quotation.belongsTo(project)
         project.hasOne(project_state)
@@ -50,7 +51,7 @@ var editQuotation = function(req, res, next) {
                 newQuotation.property_management_co_name_en = result.property_management_co_name_en
                 newQuotation.project_name = result.project_name
                 newQuotation.manager = result.manager
-                newQuotation.quotation_date = result.quotation_date
+                newQuotation.quotation_date = moment().format("YYYY-MM-DD")
                 newQuotation.building_id = result.building_id
 
                 var newJobs = result.quotation_jobs.map((o) => {

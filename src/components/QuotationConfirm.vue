@@ -1,6 +1,6 @@
 <template>
 	<div v-if="checkPermission()">
-		<button class="btn btn-default">確認報價</button>
+		<button v-if="showConfirm" @click="confirmQuotation" class="btn btn-default">確認報價</button>
 		<p>報價單確認狀態：{{confirmText}}</p>
         <p v-if="projectInfo.belowprofitability">利潤率不達標，需要BOSS確認</p>
         <p v-if="projectInfo.overtotalprofit">工程總額過高，需要BOSS確認</p>
@@ -12,6 +12,8 @@
     import view_quotation from '../api/view_quotation'
     import create_quotation from '../api/create_quotation'
     import edit_quotation from '../api/edit_quotation'
+    import confirm_quotation from '../api/confirm_quotation'
+    import confirm_quotation_boss from '../api/confirm_quotation_boss'
     export default {
         props: {
             projectState: {
@@ -67,13 +69,24 @@
                                 }
                             }
                         default:
-                            return "";
+                            return ""
                     }
                 }
                 return ""
             },
-            allowConfirm() {
-                if (this.projectState) {}
+            showConfirm() {
+                if (this.projectState) {
+                    if (this.projectState.state == "quotation_save") {
+                        if (this.checkPermission(["confirm_quotation_boss"])) {
+                            return !this.projectState.boss_approve
+                        } else {
+                            if (!this.projectInfo.belowprofitability && !this.projectInfo.overtotalprofit) {
+                                return this.projectInfo.manager == this.state.userInfo.name && !this.projectState.manager_approve
+                            }
+                        }
+                    }
+                }
+                return false
             }
         },
         methods: {
@@ -108,6 +121,26 @@
                 return view_quotation.getProjectConfirmInfo(id).then(function(result) {
                     that.projectInfo = result
                 })
+            },
+            confirmQuotation() {
+                var that = this
+                that.reqConfirm().then((result) => {
+                    that.getProjectConfirmInfo(that.projectId)
+                    that.$dispatch("refreshProject")
+                }).catch((err) => {
+                    window.alert(err)
+                })
+            },
+            reqConfirm() {
+                if (this.checkPermission(["confirm_quotation_boss"])) {
+                    return confirm_quotation_boss.confirmQuotation({
+                        id: this.projectId
+                    })
+                } else {
+                    return confirm_quotation.confirmQuotation({
+                        id: this.projectId
+                    })
+                }
             }
         },
         watch: {

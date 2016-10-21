@@ -20,20 +20,17 @@ var confirmQuotation = function(req, res, next) {
                 if (result.project_state.state != "quotation_save") {
                     return Promise.reject("not allow")
                 } else {
-                    if (account != result.quotation.manager) {
-                        return Promise.reject("not manager of this quotation")
-                    } else {
-                        result.project_state.manager_approve = true
-                        return result.project_state.save().then(() => {
-                            return result.quotation.no
-                        })
-                    }
+                    result.project_state.boss_approve = true
+                    return result.project_state.save().then(() => {
+                        console.log(result.quotation.no)
+                        return result.quotation.no
+                    })
                 }
             } else {
-                Promise.reject("not found")
+                return Promise.reject("not found")
             }
         }).then((no) => {
-            return common.log_project_record("confirm_quotation/confirmQuotation", no, req.session.userInfo.name)
+            return common.log_project_record("confirm_quotation_boss/confirmQuotation", no, req.session.userInfo.name)
         })
     } else {
         return Promise.reject("not found")

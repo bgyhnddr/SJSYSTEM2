@@ -39,6 +39,9 @@ module.exports = (app) => {
                     case "confirm_quotation":
                         require('./confirm_quotation')(req, res, next)
                         break
+                    case "confirm_quotation_boss":
+                        require('./confirm_quotation_boss')(req, res, next)
+                        break
 
                 }
             }, function(error) {

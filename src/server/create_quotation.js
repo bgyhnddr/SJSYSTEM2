@@ -78,6 +78,7 @@ var createQuotation = function(req, res, next) {
 
 var saveDraft = function(req, res, next) {
     var no = req.body.no
+
     if (no) {
         var common = require('./common')
         var quotation = require('../db/models/quotation')
@@ -110,8 +111,8 @@ var saveDraft = function(req, res, next) {
                 result.property_management_co_name_en = req.body.property_management_co_name_en
                 result.project_name = req.body.project_name
                 result.manager = req.body.manager
-                if (result.project.project_state.boss_edit) {
-                    result.quotation_date = new Date()
+                if (!result.project.project_state.boss_edit) {
+                    result.quotation_date = req.body.quotation_date
                 }
                 result.building_id = req.body.building_id
                 return result

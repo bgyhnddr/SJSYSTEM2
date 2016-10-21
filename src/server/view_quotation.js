@@ -148,7 +148,8 @@ var getProjectConfirmInfo = function(req, res, next) {
                 totalCost,
                 overtotalprofit: settingObj.totalprofit < totalCost,
                 belowprofitability,
-                quotation_no: result[1].quotation.no
+                quotation_no: result[1].quotation.no,
+                manager: result[1].quotation.manager
             }
         })
     } else {
