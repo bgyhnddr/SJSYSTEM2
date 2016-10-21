@@ -6,6 +6,19 @@
 				<vue-strap-table :has-filter="false" :err-msg.sync="errMsg" :data.sync="data" :get-data-event="getData" :columns.sync="columns"></vue-strap-table>
 			</div>
 		</div>
+		<modal :show.sync="showViewModel" effect="fade" width="400">
+			<div slot="modal-header" class="modal-header">
+				<h4 class="modal-title">
+					報價單
+				</h4>
+			</div>
+			<div slot="modal-body" class="modal-body">
+				<quotation-view :quotation.sync="viewQuotation"></quotation-view>
+			</div>
+			<div slot="modal-footer" class="modal-footer">
+				<button type="button" class="btn btn-default" @click="showViewModel=false">关闭</button>
+			</div>
+		</modal>
 	</div>
 </template>
 <script>
@@ -24,7 +37,8 @@
     export default {
         components: {
             QuotationView,
-            VueStrapTable
+            VueStrapTable,
+            modal
         },
         props: {
             quotation: {
@@ -63,6 +77,8 @@
                 getData: "getData",
                 data: {},
                 columns: columns,
+                viewQuotation: {},
+                showViewModel: false
             }
         },
         computed: {
@@ -124,6 +140,15 @@
                         that.editing = false
                     })
                 }
+            },
+            'view': function(row) {
+                var that = this
+                view_quotation.getQuotation({
+                    no: row.no
+                }).then((result) => {
+                    that.viewQuotation = result
+                    that.showViewModel = true
+                })
             }
         },
         ready() {

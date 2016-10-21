@@ -441,10 +441,12 @@ var editQuotation = function(req, res, next) {
                     quotation.create(newQuotation),
                     result.project.save(),
                     result.project.project_state.save()
-                ])
+                ]).then(function() {
+                    return qno
+                })
             })
         }).then(function(result) {
-            common.log_project_record("edit_quotation/editQuotation", no, req.session.userInfo.name)
+            common.log_project_record("edit_quotation/editQuotation", result, req.session.userInfo.name)
             return 'success'
         })
     } else {
