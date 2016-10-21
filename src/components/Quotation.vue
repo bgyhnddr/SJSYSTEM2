@@ -15,6 +15,7 @@
 			<p>毛利率低於：{{profitSetting.profitability}}%</p>
 			<p>項目總價高於：{{profitSetting.totalprofit}}</p>
 		</div>
+        <quotation-history :quotation.sync="quotation"></quotation-history>
 	</div>
 </template>
 
@@ -22,6 +23,7 @@
     import checkPermission from '../extend/check-permission'
     import QuotationEditor from './QuotationEditor'
     import QuotationView from './QuotationView'
+    import QuotationHistory from './QuotationHistory'
     import ViewQuotation from '../api/view_quotation'
     import {
         alert
@@ -37,6 +39,7 @@
         components: {
             QuotationEditor,
             QuotationView,
+            QuotationHistory,
             alert
         },
         data() {

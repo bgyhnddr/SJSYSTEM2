@@ -1,6 +1,11 @@
 <template>
 	<div v-if="checkPermission()">
-		<vue-strap-table :has-filter="false" :err-msg.sync="errMsg" :data.sync="data" :get-data-event="getData" :columns.sync="columns"></vue-strap-table>
+		<div class="panel panel-default">
+			<div class="panel-heading">報價方案</div>
+			<div class="panel-body">
+				<vue-strap-table :has-filter="false" :err-msg.sync="errMsg" :data.sync="data" :get-data-event="getData" :columns.sync="columns"></vue-strap-table>
+			</div>
+		</div>
 	</div>
 </template>
 <script>
@@ -18,7 +23,8 @@
 
     export default {
         components: {
-            QuotationView
+            QuotationView,
+            VueStrapTable
         },
         props: {
             quotation: {
@@ -30,10 +36,10 @@
             var that = this
             let columns = [{
                 "header": "報價單編號",
-                "type": "no"
+                "bind": "no"
             }, {
                 "header": "報價日期",
-                "bind": "quoation_date"
+                "bind": "quotation_date"
             }, {
                 "header": "操作",
                 "type": "action",
@@ -43,7 +49,7 @@
                     class: "btn-xs",
                     text: "更換報價",
                     filter(row) {
-                        return that.allowEdit && row.no != this.quotaton.no
+                        return that.allowEdit && row.no != that.quotation.no
                     }
                 }, {
                     eventName: "view",
@@ -61,9 +67,9 @@
         },
         computed: {
             allowEdit() {
-                if (this.quotaton.project) {
-                    if (this.quotaton.project.project_state.state == "quotation_save") {
-                        if (!this.quotaton.project.project_state.manager_approve && !this.quotaton.project.project_state.boss_approve) {
+                if (this.quotation.project) {
+                    if (this.quotation.project.project_state.state == "quotation_save") {
+                        if (!this.quotation.project.project_state.manager_approve && !this.quotation.project.project_state.boss_approve) {
                             return this.checkPermission(["create_quotation"])
                         } else {
                             return this.checkPermission(["edit_quotation"])
@@ -76,31 +82,32 @@
         methods: {
             checkPermission,
             getQuotationHistory(id) {
+                var that = this
                 view_quotation.getQuotationHistory({
                     id: id
-                }).then((result) {
-                    return {
+                }).then((result) => {
+                    that.data = {
                         end: true,
                         list: result
                     }
-                }).catch((err) {
+                }).catch((err) => {
                     window.alert(err)
                 })
             }
         },
         watch: {
-            'quotaton': function(val) {
-                if (this.quotaton.project) {
-                    this.getQuotationHistory(this.quotaton.project.id)
+            'quotation': function(val) {
+                if (this.quotation.project) {
+                    this.getQuotationHistory(this.quotation.project.id)
                 }
             }
         },
         events: {
             'change': function(row) {
                 var that = this
-                if (!that.quotaton.project.project_state.manager_approve && !that.quotaton.project.project_state.boss_approve) {
+                if (!that.quotation.project.project_state.manager_approve && !that.quotation.project.project_state.boss_approve) {
                     create_quotation.editQuotation({
-                        id: that.projectId
+                        no: row.no
                     }).then(function() {
                         that.$dispatch("refreshProject")
                         that.editing = false
@@ -109,7 +116,7 @@
                     })
                 } else {
                     edit_quotation.editQuotation({
-                        id: that.projectId
+                        no: row.no
                     }).then(function() {
                         that.$dispatch("refreshProject")
                         that.editing = false
@@ -120,8 +127,8 @@
             }
         },
         ready() {
-            if (this.quotaton.project) {
-                this.getQuotationHistory(this.quotaton.project.id)
+            if (this.quotation.project) {
+                this.getQuotationHistory(this.quotation.project.id)
             }
         }
     }

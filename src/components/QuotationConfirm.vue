@@ -107,7 +107,6 @@
                 var that = this
                 return view_quotation.getProjectConfirmInfo(id).then(function(result) {
                     that.projectInfo = result
-                    console.log(result)
                 })
             }
         },

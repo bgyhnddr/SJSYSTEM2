@@ -164,7 +164,8 @@ var getQuotationHistory = function(req, res, next) {
         return quotation.findAll({
             where: {
                 project_id: id
-            }
+            },
+            order: ["id"]
         })
     }
 }
