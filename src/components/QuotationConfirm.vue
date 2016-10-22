@@ -1,9 +1,14 @@
 <template>
 	<div v-if="checkPermission()">
+
+		<project-contract></project-contract>
+
+
+
 		<button v-if="showConfirm" @click="confirmQuotation" class="btn btn-default">確認報價</button>
 		<p>報價單確認狀態：{{confirmText}}</p>
-        <p v-if="projectInfo.belowprofitability">利潤率不達標，需要BOSS確認</p>
-        <p v-if="projectInfo.overtotalprofit">工程總額過高，需要BOSS確認</p>
+		<p v-if="projectInfo.belowprofitability">利潤率不達標，需要BOSS確認</p>
+		<p v-if="projectInfo.overtotalprofit">工程總額過高，需要BOSS確認</p>
 		<button :disabled="editing" v-if="allowEdit" @click="editQuotation" class="btn btn-default">{{editing?'loading':'修改報價'}}</button>
 	</div>
 </template>
@@ -14,7 +19,12 @@
     import edit_quotation from '../api/edit_quotation'
     import confirm_quotation from '../api/confirm_quotation'
     import confirm_quotation_boss from '../api/confirm_quotation_boss'
+    import ProjectContract from './ProjectContract'
+
     export default {
+        components: {
+            ProjectContract
+        },
         props: {
             projectState: {
                 type: Object,

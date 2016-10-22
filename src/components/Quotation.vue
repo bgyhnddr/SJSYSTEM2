@@ -7,7 +7,7 @@
 			<quotation-editor :quotation.sync="quotation"></quotation-editor>
 		</div>
 		<div v-if="!editable">
-            <button class="btn btn-default">下載報價單</button>
+			<button class="btn btn-default">下載報價單</button>
 			<quotation-view :quotation.sync="quotation"></quotation-view>
 		</div>
 		<div>
@@ -15,7 +15,9 @@
 			<p>毛利率低於：{{profitSetting.profitability}}%</p>
 			<p>項目總價高於：{{profitSetting.totalprofit}}</p>
 		</div>
-        <quotation-history :quotation.sync="quotation"></quotation-history>
+		<div class="col-sm-12">
+			<quotation-history :quotation.sync="quotation"></quotation-history>
+		</div>
 	</div>
 </template>
 

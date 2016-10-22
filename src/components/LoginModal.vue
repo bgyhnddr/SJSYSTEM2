@@ -1,22 +1,27 @@
 <template>
-    <spinner class="login_loading_zindex" size="md" text="loading..."></spinner>
-    <modal @keyup.enter="submitLogin" class="login_zindex" backdrop="false" :show.sync="state.showLoginModal" effect="fade" width="400">
-        <div slot="modal-header" class="modal-header">
-            <h4 class="modal-title">
-                用户登录
-            </h4>
-        </div>
-        <div slot="modal-body" class="modal-body">
-            <alert :type="alertType">
-                {{alertText}}
-            </alert>
-            <bs-input :value.sync="loginInfo.account" label="账号"></bs-input>
-            <bs-input :value.sync="loginInfo.password" label="密码" type="password"></bs-input>
-        </div>
-        <div slot="modal-footer" class="modal-footer">
-            <button type="button" class="btn btn-success" @click="submitLogin">登录</button>
-        </div>
-    </modal>
+	<div @keyup.enter="submitLogin">
+		<spinner class="login_loading_zindex" size="md" text="loading..."></spinner>
+		<modal class="login_zindex" backdrop="false" :show.sync="state.showLoginModal" effect="fade" width="400">
+			<div slot="modal-header" class="modal-header">
+				<h4 class="modal-title">
+					用户登录
+				</h4>
+			</div>
+			<div slot="modal-body" class="modal-body">
+				<alert :type="alertType">
+					{{alertText}}
+				</alert>
+				<div class="form-group">
+					<label class="control-label">账号</label>
+					<input v-el:account v-model="loginInfo.account" class="form-control"  type="text">
+                </div>
+				<bs-input :value.sync="loginInfo.password" label="密码" type="password"></bs-input>
+			</div>
+			<div slot="modal-footer" class="modal-footer">
+				<button type="button" class="btn btn-success" @click="submitLogin">登录</button>
+			</div>
+		</modal>
+	</div>
 </template>
 
 <script>
@@ -77,11 +82,20 @@
                         that.state.showLoginModal = false
                         that.$broadcast('hide::spinner')
                     }).catch(function(err) {
+                        console.log(err)
                         that.serverMsg = err
                         that.$broadcast('hide::spinner')
                     })
                 }
             }
+        },
+        watch: {
+            'state.showLoginModal': function(val) {
+                this.$els.account.focus()
+            }
+        },
+        ready() {
+            this.$els.account.focus()
         }
     }
 </script>

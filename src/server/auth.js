@@ -11,16 +11,10 @@ var login = function(req, res, next) {
         }
     }).then(function(result) {
         if (result == null) {
-            return Promise.reject({
-                "code": "error",
-                "msg": '賬號不存在'
-            })
+            return Promise.reject("賬號不存在")
         } else {
             if (result.password != password) {
-                return Promise.reject({
-                    "code": "error",
-                    "msg": '密碼錯誤'
-                })
+                return Promise.reject("密碼錯誤")
             } else {
                 var user_role = require('../db/models/user_role')
                 var role_permission = require('../db/models/role_permission')

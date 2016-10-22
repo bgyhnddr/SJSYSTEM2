@@ -44,7 +44,7 @@
 			<p>{{quotation.project_type}} {{quotation.project_item}}<button @click="project_type_setting.show = true" class="btn btn-default btn-xs">選擇</button>
 				<button @click="project_type_setting.show = false" v-if="project_type_setting.show" class="btn btn-default btn-xs">關閉</button>
 			</p>
-			<div v-if="project_type_setting.show">
+			<div v-if="project_type_setting.show" class="col-sm-12">
 				<div class="col-sm-6">
 					<project-type-setting :breadcrumb="project_type_setting.breadcrumb" :selectable="project_type_setting.selectable" :select-event="project_type_setting.selectEvent"></project-type-setting>
 				</div>

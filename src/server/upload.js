@@ -2,6 +2,22 @@ var formidable = require('formidable')
 var util = require('util')
 var fs = require('fs')
 
+var dealFile = function(fileInfo) {
+    var file = require('../db/models/file')
+    var attachment = require('../db/models/attachment')
+    return file.upsert({
+        hash: fileInfo.hash,
+        size: fileInfo.size,
+        path: "upload/files/" + fileInfo.hash,
+        type: fileInfo.type
+    }).then(() => {
+        return attachment.create({
+            file_hash: fileInfo.hash,
+            name: fileInfo.name
+        })
+    })
+}
+
 var file = function(req) {
     return new Promise(function(resolve, reject) {
         if (req.method.toLowerCase() == 'post') {
@@ -9,24 +25,30 @@ var file = function(req) {
             form.uploadDir = "upload/temp";
             form.maxFieldsSize = 2; //10G
             form.hash = "md5"
+
+            if (!fs.existsSync("upload")) {
+                fs.mkdirSync("upload")
+            }
+
+            if (!fs.existsSync("upload/files")) {
+                fs.mkdirSync("upload/files")
+            }
+            if (!fs.existsSync("upload/temp")) {
+                fs.mkdirSync("upload/temp")
+            }
+
             form.on('file', function(name, file) {
-                fs.exists("upload/files/" + file.hash, function(result) {
-                    console.log(result)
-                })
                 fs.rename(file.path, "upload/files/" + file.hash, function(result) {
-                    console.log("rename" + result)
-                });
+                    console.log(file)
+                    dealFile(file).then((result) => {
+                        resolve(result)
+                    })
+                })
             })
             form.on('error', function(err) {
                 console.log('error' + err)
             })
-            form.parse(req, function(err, fields, files) {
-                console.log(err)
-                resolve('received upload:\n\n' + util.inspect(files))
-                    //rename the incoming file to the file's name
-
-                console.log("all end")
-            })
+            form.parse(req)
         } else {
             reject("please post")
         }
