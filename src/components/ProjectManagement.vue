@@ -1,6 +1,7 @@
 <template>
     <div v-if="checkPermission()">
         <navbar type="default">
+            <a slot="brand" class="navbar-brand">工程管理</a>
             <li v-if="checkPermission()">
                 <a v-link="{ path: '/index/ProjectManagement/Project' }">新建報價單</a>
             </li>

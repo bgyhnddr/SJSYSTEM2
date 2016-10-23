@@ -1,10 +1,11 @@
 <template>
     <div>
+        <a target="_blank" href="{{href}}">{{filename}}</a>
         <input v-model="file" v-el:uploadinput v-show="false" type="file" />
         <button @click="chooseFile" class="btn btn-default btn-xs">選擇文件</button>
-        <label>{{file}}</label>
+        {{file}}
         <label v-if="uploading">{{percent+"%"}}</label>
-        <button @click="upload" class="btn btn-default btn-xs">開始上傳</button>
+        <button v-if="file" @click="upload" class="btn btn-default btn-xs">開始上傳</button>
         <button v-if="uploading" @click="cancelUpload" class="btn btn-default btn-xs">取消</button>
     </div>
 </template>
@@ -13,10 +14,6 @@
 
     export default {
         props: {
-            filename: {
-                type: String,
-                default: ""
-            },
             fileId: {
                 type: String,
                 default: ""
@@ -37,7 +34,13 @@
         data() {
             return {
                 file: "",
+                filename: "",
                 uploadRequest: undefined
+            }
+        },
+        computed: {
+            href() {
+                return "/service/private/view_quotation/getAttachment?id=" + this.fileId
             }
         },
         methods: {
@@ -59,6 +62,10 @@
                 }).then(function(result) {
                     that.clear()
                     console.log(result)
+                    if (result.body) {
+                        that.fileId = result.body.id
+                        that.filename = result.body.name
+                    }
                 }).catch(function(error) {
                     that.clear()
                     console.log(error)
@@ -74,6 +81,7 @@
                 this.uploading = false
                 this.percent = 0
                 this.uploadRequest = undefined
+                this.file = ""
             }
         }
     }

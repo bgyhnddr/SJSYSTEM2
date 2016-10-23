@@ -1,6 +1,7 @@
 <template>
     <div v-if="checkPermission()">
         <navbar type="default">
+            <a slot="brand" class="navbar-brand">數據管理</a>
             <li v-if="checkPermission()">
                 <a v-link="{ path: '/index/DataManagement/ProjectType' }">工程類型管理</a>
             </li>

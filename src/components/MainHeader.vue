@@ -16,7 +16,7 @@
             <a href="link">報表</a>
         </li>
         <li v-if="checkPermission()">
-            <a v-link="{ path: '/index/RBACManagement' }">权限管理</a>
+            <a v-link="{ path: '/index/RBACManagement' }">權限管理</a>
         </li>
         <li v-if="checkPermission()">
             <a href="link">設定</a>

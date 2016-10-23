@@ -39,7 +39,6 @@ var file = function(req) {
 
             form.on('file', function(name, file) {
                 fs.rename(file.path, "upload/files/" + file.hash, function(result) {
-                    console.log(file)
                     dealFile(file).then((result) => {
                         resolve(result)
                     })
