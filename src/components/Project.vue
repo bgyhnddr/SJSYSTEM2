@@ -13,7 +13,7 @@
 					</div>
 					<div class="panel-collapse collapse in">
 						<div class="panel-body">
-							<quotation-confirm v-if="showQuotationConfirm" :project-id.sync="project.id" :project-state="project.project_state"></quotation-confirm>
+							<quotation-confirm v-if="showQuotationConfirm" :project.sync="project"></quotation-confirm>
 							<quotation :quotation_no.sync="project.quotation_no"></quotation>
 						</div>
 					</div>

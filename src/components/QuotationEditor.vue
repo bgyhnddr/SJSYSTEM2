@@ -57,7 +57,8 @@
 		<div class="col-sm-12">
 			<quotation-job :quotation-no="quotation.no"></quotation-job>
 		</div>
-		<button :disabled="finishing" @click="finish" class="btn btn-primary fixed-save">{{finishing?'loading':'完成報價'}}</button>
+		<button v-if="vaild()" :disabled="finishing" @click="finish" class="btn btn-primary fixed-save">{{finishing?'loading':'完成報價'}}</button>
+		<label v-if="!vaild()">完成填寫報價信息后才能完成報價</label>
 	</div>
 </template>
 <script>

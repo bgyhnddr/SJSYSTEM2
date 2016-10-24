@@ -1,15 +1,16 @@
 <template>
 	<div v-if="checkPermission()">
-
-		<project-contract></project-contract>
-
-
-
-		<button v-if="showConfirm" @click="confirmQuotation" class="btn btn-default">確認報價</button>
-		<p>報價單確認狀態：{{confirmText}}</p>
-		<p v-if="projectInfo.belowprofitability">利潤率不達標，需要BOSS確認</p>
-		<p v-if="projectInfo.overtotalprofit">工程總額過高，需要BOSS確認</p>
-		<button :disabled="editing" v-if="allowEdit" @click="editQuotation" class="btn btn-default">{{editing?'loading':'修改報價'}}</button>
+		<project-contract v-if="project.project_state.state!='draft'" :project.sync="project" :project-info="projectInfo"></project-contract>
+        <div class="panel panel-default">
+			<div class="panel-heading">報價單確認</div>
+			<div class="panel-body">
+				<button v-if="showConfirm" @click="confirmQuotation" class="btn btn-default">確認報價</button>
+				<button :disabled="editing" v-if="allowEdit" @click="editQuotation" class="btn btn-default">{{editing?'loading':'修改報價'}}</button>
+				<p>報價單確認狀態：{{confirmText}}</p>
+				<p v-if="projectInfo.belowprofitability">利潤率不達標</p>
+				<p v-if="projectInfo.overtotalprofit">工程總額過高</p>
+			</div>
+		</div>
 	</div>
 </template>
 <script>
@@ -26,17 +27,8 @@
             ProjectContract
         },
         props: {
-            projectState: {
-                type: Object,
-                default: {
-                    state: "",
-                    manager_approve: false,
-                    boss_approve: false
-                }
-            },
-            projectId: {
-                type: Number,
-                default: undefined
+            project: {
+                type: Object
             }
         },
         data() {
@@ -48,9 +40,9 @@
         },
         computed: {
             allowEdit() {
-                if (this.projectState) {
-                    if (this.projectState.state == "quotation_save") {
-                        if (!this.projectState.manager_approve && !this.projectState.boss_approve) {
+                if (this.project.project_state) {
+                    if (this.project.project_state.state == "quotation_save") {
+                        if (!this.project.project_state.manager_approve && !this.project.project_state.boss_approve) {
                             return this.checkPermission(["create_quotation"])
                         } else {
                             return this.checkPermission(["edit_quotation"])
@@ -60,12 +52,12 @@
                 return false
             },
             confirmText() {
-                if (this.projectState) {
-                    switch (this.projectState.state) {
+                if (this.project.project_state) {
+                    switch (this.project.project_state.state) {
                         case "quotation_save":
-                            if (this.projectState.boss_approve) {
+                            if (this.project.project_state.boss_approve) {
                                 return "BOSS已確認"
-                            } else if (this.projectState.manager_approve) {
+                            } else if (this.project.project_state.manager_approve) {
                                 if (this.projectInfo.belowprofitability || this.projectInfo.overtotalprofit) {
                                     return "等待BOSS確認"
                                 } else {
@@ -85,13 +77,13 @@
                 return ""
             },
             showConfirm() {
-                if (this.projectState) {
-                    if (this.projectState.state == "quotation_save") {
+                if (this.project.project_state) {
+                    if (this.project.project_state.state == "quotation_save") {
                         if (this.checkPermission(["confirm_quotation_boss"])) {
-                            return !this.projectState.boss_approve
+                            return !this.project.project_state.boss_approve
                         } else {
                             if (!this.projectInfo.belowprofitability && !this.projectInfo.overtotalprofit) {
-                                return this.projectInfo.manager == this.state.userInfo.name && !this.projectState.manager_approve
+                                return this.projectInfo.manager == this.state.userInfo.name && !this.project.project_state.manager_approve
                             }
                         }
                     }
@@ -104,7 +96,7 @@
             editQuotation() {
                 var that = this
                 that.editing = true
-                if (!that.projectState.manager_approve && !that.projectState.boss_approve) {
+                if (!that.project.project_state.manager_approve && !that.project.project_state.boss_approve) {
                     create_quotation.editQuotation({
                         no: that.projectInfo.quotation_no
                     }).then(function() {
@@ -135,36 +127,42 @@
             confirmQuotation() {
                 var that = this
                 that.reqConfirm().then((result) => {
-                    that.getProjectConfirmInfo(that.projectId)
+                    that.getProjectConfirmInfo(that.project.id)
                     that.$dispatch("refreshProject")
                 }).catch((err) => {
                     window.alert(err)
                 })
             },
             reqConfirm() {
-                if (this.checkPermission(["confirm_quotation_boss"])) {
+                var that = this
+                if (that.checkPermission(["confirm_quotation_boss"])) {
                     return confirm_quotation_boss.confirmQuotation({
-                        id: this.projectId
+                        id: that.project.id
                     })
                 } else {
                     return confirm_quotation.confirmQuotation({
-                        id: this.projectId
+                        id: that.project.id
                     })
                 }
             }
         },
         watch: {
-            'projectId': {
+            'project': {
                 handler: function(val) {
-                    if (val) {
-                        this.getProjectConfirmInfo(val)
+                    if (val && val.id) {
+                        this.getProjectConfirmInfo(val.id)
                     }
                 }
             }
         },
+        events: {
+            'refreshConfirmInfo': function() {
+                that.getProjectConfirmInfo(this.project.id)
+            }
+        },
         ready() {
-            if (this.projectId) {
-                this.getProjectConfirmInfo(this.projectId)
+            if (this.project && this.project.id) {
+                this.getProjectConfirmInfo(this.project.id)
             }
         }
     }

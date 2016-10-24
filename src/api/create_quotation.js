@@ -24,5 +24,8 @@ export default {
     },
     editQuotation(params) {
         return request.post(path + 'editQuotation', params)
+    },
+    saveContract(params) {
+        return request.post(path + 'saveContract', params)
     }
 }

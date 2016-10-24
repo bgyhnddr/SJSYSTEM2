@@ -30,13 +30,13 @@ var getProject = function(req, res, next) {
     if (id) {
         var project = require('../db/models/project')
         var project_state = require('../db/models/project_state')
+        var quotation = require('../db/models/quotation')
 
         project.hasOne(project_state)
+        project.belongsTo(quotation)
 
         return project.findOne({
-            include: [{
-                model: project_state
-            }],
+            include: [project_state, quotation],
             where: { id: id }
         }).then(function(result) {
             if (result == null) {
@@ -200,6 +200,35 @@ var getAttachment = function(req, res, next) {
     }
 }
 
+var getProjectContract = function(req, res, next) {
+    var id = req.query.id
+    if (id) {
+        var attachment = require('../db/models/attachment')
+        var project_contract = require('../db/models/project_contract')
+        project_contract.belongsTo(attachment)
+        return project_contract.findOne({
+            include: attachment,
+            where: {
+                project_id: id
+            }
+        }).then((result) => {
+            if (result == null) {
+                return {
+                    id: "",
+                    name: ""
+                }
+            } else {
+                return {
+                    id: result.attachment_id,
+                    name: result.attachment.name
+                }
+            }
+        })
+    } else {
+        return Promise.reject("no projectId")
+    }
+}
+
 module.exports = (req, res, next) => {
     var action = req.params.action
     Promise.resolve(action).then(function(result) {
@@ -221,6 +250,8 @@ module.exports = (req, res, next) => {
                     return getQuotationHistory(req, res, next)
                 case "getAttachment":
                     return getAttachment(req, res, next)
+                case "getProjectContract":
+                    return getProjectContract(req, res, next)
             }
         } catch (e) {
             console.log(e)

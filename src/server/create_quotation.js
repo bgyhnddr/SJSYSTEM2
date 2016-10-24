@@ -447,11 +447,48 @@ var editQuotation = function(req, res, next) {
                 })
             })
         }).then(function(result) {
-            common.log_project_record("edit_quotation/editQuotation", result, req.session.userInfo.name)
+            common.log_project_record("create_quotation/editQuotation", result, req.session.userInfo.name)
             return 'success'
         })
     } else {
         return Promise.reject("not found")
+    }
+}
+
+var saveContract = function(req, res, next) {
+    var projectId = req.body.project_id
+    if (projectId) {
+        var common = require('./common')
+        var project = require('../db/models/project')
+        var project_state = require('../db/models/project_state')
+        var project_contract = require('../db/models/project_contract')
+        project.hasOne(project_state)
+        return project.findOne({
+            include: [project_state],
+            where: {
+                id: projectId
+            }
+        }).then((result) => {
+            if (result != null) {
+                if (result.project_state.state != "quotation_save") {
+                    return Promise.reject("not allow")
+                } else {
+                    return result
+                }
+            } else {
+                return Promise.reject("no project")
+            }
+        }).then((result) => {
+            return project_contract.upsert({
+                project_id: projectId,
+                attachment_id: req.body.attachment_id
+            })
+        }).then(function(result) {
+            common.log_project_record("create_quotation/saveContract", projectId + ":" + req.body.attachment_id, req.session.userInfo.name)
+            return 'success'
+        })
+    } else {
+        return Promise.reject("no project id")
     }
 }
 
@@ -476,6 +513,9 @@ module.exports = (req, res, next) => {
                     return saveQuotation(req, res, next)
                 case "editQuotation":
                     return editQuotation(req, res, next)
+                case "saveContract":
+                    return saveContract(req, res, next)
+
             }
         } catch (e) {
             console.log(e)

@@ -1,13 +1,14 @@
 <template>
-    <div>
-        <a target="_blank" href="{{href}}">{{filename}}</a>
-        <input v-model="file" v-el:uploadinput v-show="false" type="file" />
-        <button @click="chooseFile" class="btn btn-default btn-xs">選擇文件</button>
-        {{file}}
-        <label v-if="uploading">{{percent+"%"}}</label>
-        <button v-if="file" @click="upload" class="btn btn-default btn-xs">開始上傳</button>
-        <button v-if="uploading" @click="cancelUpload" class="btn btn-default btn-xs">取消</button>
-    </div>
+	<div>
+		<a target="_blank" href="{{href}}">{{fileName}}</a>
+		<input v-model="file" v-el:uploadinput v-show="false" type="file" />
+		<div v-if="!readonly">
+			<button @click="chooseFile" class="btn btn-default btn-xs">選擇文件</button> {{file}}
+			<label v-if="uploading">{{percent+"%"}}</label>
+			<button v-if="file" @click="upload" class="btn btn-default btn-xs">開始上傳</button>
+			<button v-if="uploading" @click="cancelUpload" class="btn btn-default btn-xs">取消</button>
+		</div>
+	</div>
 </template>
 <script>
     import Vue from 'vue'
@@ -15,6 +16,9 @@
     export default {
         props: {
             fileId: {
+                type: Number
+            },
+            fileName: {
                 type: String,
                 default: ""
             },
@@ -29,12 +33,15 @@
             uploading: {
                 type: Boolean,
                 default: false
+            },
+            readonly: {
+                type: Boolean,
+                default: false
             }
         },
         data() {
             return {
                 file: "",
-                filename: "",
                 uploadRequest: undefined
             }
         },
@@ -64,7 +71,7 @@
                     console.log(result)
                     if (result.body) {
                         that.fileId = result.body.id
-                        that.filename = result.body.name
+                        that.fileName = result.body.name
                     }
                 }).catch(function(error) {
                     that.clear()

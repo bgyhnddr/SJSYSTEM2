@@ -25,5 +25,8 @@ export default {
     },
     getQuotationHistory(params) {
         return request.get(path + 'getQuotationHistory', params)
+    },
+    getProjectContract(params) {
+        return request.get(path + 'getProjectContract', params)
     }
 }
