@@ -1,6 +1,5 @@
 <template>
 	<div v-if="checkPermission()">
-		<project-contract v-if="project.project_state.state!='draft'" :project.sync="project" :project-info="projectInfo"></project-contract>
         <div class="panel panel-default">
 			<div class="panel-heading">報價單確認</div>
 			<div class="panel-body">
@@ -20,21 +19,20 @@
     import edit_quotation from '../api/edit_quotation'
     import confirm_quotation from '../api/confirm_quotation'
     import confirm_quotation_boss from '../api/confirm_quotation_boss'
-    import ProjectContract from './ProjectContract'
 
     export default {
-        components: {
-            ProjectContract
-        },
+        components: {},
         props: {
             project: {
+                type: Object
+            },
+            projectInfo: {
                 type: Object
             }
         },
         data() {
             return {
                 state: window.state,
-                projectInfo: {},
                 editing: false
             }
         },
@@ -118,16 +116,9 @@
                     })
                 }
             },
-            getProjectConfirmInfo(id) {
-                var that = this
-                return view_quotation.getProjectConfirmInfo(id).then(function(result) {
-                    that.projectInfo = result
-                })
-            },
             confirmQuotation() {
                 var that = this
                 that.reqConfirm().then((result) => {
-                    that.getProjectConfirmInfo(that.project.id)
                     that.$dispatch("refreshProject")
                 }).catch((err) => {
                     window.alert(err)
@@ -146,24 +137,8 @@
                 }
             }
         },
-        watch: {
-            'project': {
-                handler: function(val) {
-                    if (val && val.id) {
-                        this.getProjectConfirmInfo(val.id)
-                    }
-                }
-            }
-        },
-        events: {
-            'refreshConfirmInfo': function() {
-                that.getProjectConfirmInfo(this.project.id)
-            }
-        },
-        ready() {
-            if (this.project && this.project.id) {
-                this.getProjectConfirmInfo(this.project.id)
-            }
-        }
+        watch: {},
+        events: {},
+        ready() {}
     }
 </script>

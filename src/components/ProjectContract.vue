@@ -3,7 +3,7 @@
 		<div class="panel panel-default">
 			<div class="panel-heading">合同</div>
 			<div class="panel-body">
-                <button v-if="showConfirm" class="btn btn-default">確認合同</button>
+                <button v-if="showConfirm" :disabled="editing" @click="confirmContract" class="btn btn-default">{{editing?'loading':'確認合同'}}</button>
 				<vue-strap-upload :file-id.sync="id" :file-name.sync="fileName" :readonly="project.project_state.state!='quotation_save'"></vue-strap-upload>
 			</div>
 		</div>
@@ -14,6 +14,7 @@
     import VueStrapUpload from './extend/vue-strap-upload'
     import view_quotation from '../api/view_quotation'
     import create_quotation from '../api/create_quotation'
+    import confirm_quotation from '../api/confirm_quotation'
 
     export default {
         components: {
@@ -31,29 +32,31 @@
             return {
                 id: undefined,
                 fileName: "",
-                state: window.state
+                state: window.state,
+                editing: false
             }
         },
         computed: {
             showConfirm() {
-                console.log(this.projectInfo.belowprofitability)
-                console.log(this.projectInfo.overtotalprofit)
                 var isManager = () => {
                     return this.projectInfo.manager == state.userInfo.name || checkPermission(["confirm_quotation_boss"])
                 }
-
-                if (this.projectInfo.belowprofitability == true || this.projectInfo.overtotalprofit == true) {
-                    if (this.project.project_state.boss_approve == true) {
-                        return isManager()
+                if (this.project.project_state.state == "quotation_save") {
+                    if (this.projectInfo.belowprofitability == true || this.projectInfo.overtotalprofit == true) {
+                        if (this.project.project_state.boss_approve == true) {
+                            return isManager()
+                        } else {
+                            return false
+                        }
                     } else {
-                        return false
+                        if (this.project.project_state.boss_approve == true || this.project.project_state.manager_approve == true) {
+                            return isManager()
+                        } else {
+                            return false
+                        }
                     }
                 } else {
-                    if (this.project.project_state.boss_approve == true || this.project.project_state.manager_approve == true) {
-                        return isManager()
-                    } else {
-                        return false
-                    }
+                    return false
                 }
             }
         },
@@ -73,6 +76,19 @@
                     project_id: this.project.id,
                     attachment_id: id
                 })
+            },
+            confirmContract() {
+                var that = this
+                that.editing = true
+                confirm_quotation.confirmContract({
+                    id: that.project.id
+                }).then(function(result) {
+                    that.$dispatch("refreshProject")
+                    that.editing = false
+                }).catch((err) => {
+                    that.editing = false
+                    window.alert(err)
+                })
             }
         },
         watch: {
@@ -82,8 +98,8 @@
                     that.getProjectContract(that.project.id)
                 }
             },
-            'id': function(val) {
-                if (val) {
+            'id': function(val, oldval) {
+                if (oldval != undefined) {
                     this.saveProjectContract(val)
                 }
             }

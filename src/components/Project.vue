@@ -13,7 +13,8 @@
 					</div>
 					<div class="panel-collapse collapse in">
 						<div class="panel-body">
-							<quotation-confirm v-if="showQuotationConfirm" :project.sync="project"></quotation-confirm>
+							<project-contract v-if="project.project_state.state!='draft'" :project.sync="project" :project-info="projectInfo"></project-contract>
+							<quotation-confirm v-if="showQuotationConfirm" :project.sync="project" :project-info="projectInfo"></quotation-confirm>
 							<quotation :quotation_no.sync="project.quotation_no"></quotation>
 						</div>
 					</div>
@@ -27,6 +28,7 @@
     import Quotation from './Quotation'
     import QuotationConfirm from './QuotationConfirm'
     import view_quotation from '../api/view_quotation'
+    import ProjectContract from './ProjectContract'
     import {
         alert
     } from 'vue-strap'
@@ -35,6 +37,7 @@
             return {
                 alertText: "",
                 project: {},
+                projectInfo: {},
                 state: window.state
             }
         },
@@ -46,6 +49,7 @@
         components: {
             Quotation,
             QuotationConfirm,
+            ProjectContract,
             alert
         },
         methods: {
@@ -61,6 +65,12 @@
                 }).catch((err) => {
                     that.alertText = err
                 })
+            },
+            getProjectConfirmInfo(id) {
+                var that = this
+                return view_quotation.getProjectConfirmInfo(id).then(function(result) {
+                    that.projectInfo = result
+                })
             }
         },
         ready() {
@@ -70,6 +80,7 @@
         events: {
             'refreshProject': function() {
                 this.getProject(this.$route.params.id)
+                this.getProjectConfirmInfo(this.$route.params.id)
             }
         },
         route: {

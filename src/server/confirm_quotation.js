@@ -41,7 +41,7 @@ var confirmQuotation = function(req, res, next) {
 }
 
 var confirmContract = function(req, res, next) {
-    var id = req.query.id
+    var id = req.body.id
     if (id) {
         var project_setting = require('../db/models/project_setting')
         var project = require('../db/models/project')
@@ -86,12 +86,12 @@ var confirmContract = function(req, res, next) {
                 quotation_no: result[1].quotation.no,
                 manager: result[1].quotation.manager
             }
-            if (checkData.manager == req.session.userInfo.name || req.session.userInfo.permissions.some(o => o == "confirm_quotation_boss")) {
+            if (checkData.manager == req.session.userInfo.name || req.session.userInfo.permissions.some(o => o == "confirm_quotation_boss" || o == "admin")) {
                 if ((checkData.belowprofitability || checkData.overtotalprofit)) {
                     if (result[1].project_state.boss_approve) {
-                        Promise.reject("需要BOSS確認")
-                    } else {
                         return result[1]
+                    } else {
+                        Promise.reject("需要BOSS確認")
                     }
                 } else {
                     if (result[1].project_state.boss_approve || result[1].project_state.manager_approve) {
@@ -104,8 +104,12 @@ var confirmContract = function(req, res, next) {
                 return Promise.reject("not allow")
             }
         }).then((result) => {
-            result.project_state.state = "quotation_contract"
-            return result.save()
+            if (result.project_state.state != "quotation_save") {
+                return Promise.reject("not allow")
+            } else {
+                result.project_state.state = "quotation_contract"
+                return result.project_state.save()
+            }
         }).then(() => {
             return common.log_project_record("confirm_quotation/confirmContract", id, req.session.userInfo.name)
         })
