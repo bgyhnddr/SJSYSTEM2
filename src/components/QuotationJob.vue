@@ -1,35 +1,37 @@
 <template>
-	<div v-if="checkPermission()">
-		<button v-if="editable" @click="addQuotationJob" class="btn btn-default">添加工作内容</button>
-		<div style="position:relative">
-			<spinner size="md" text="loading..."></spinner>
-			<vue-strap-table :has-filter="hasFilter" :err-msg.sync="errMsg" :data.sync="data" :get-data-event="getData" :columns.sync="columns"></vue-strap-table>
+	<div>
+		<div v-if="checkPermission()">
+			<button v-if="editable" @click="addQuotationJob" class="btn btn-default">添加工作内容</button>
+			<div style="position:relative">
+				<spinner size="md" text="loading..."></spinner>
+				<vue-strap-table :has-filter="hasFilter" :err-msg.sync="errMsg" :data.sync="data" :get-data-event="getData" :columns.sync="columns"></vue-strap-table>
+			</div>
+			<modal :show.sync="showQuotationJobModel" effect="fade" width="400">
+				<div slot="modal-header" class="modal-header">
+					<h4 class="modal-title">
+						工作内容
+					</h4>
+				</div>
+				<div slot="modal-body" class="modal-body">
+					<alert :type="alertType">
+						{{alertText}}
+					</alert>
+					<bs-input :value.sync="submitData.content" label="内容"></bs-input>
+					<bs-input type="number" :value.sync="submitData.cost" label="成本單價"></bs-input>
+					<bs-input type="number" :value.sync="submitData.retail" label="出街單價"></bs-input>
+					<bs-input type="number" :value.sync="submitData.count" label="數量"></bs-input>
+				</div>
+				<div slot="modal-footer" class="modal-footer">
+					<button type="button" class="btn btn-default" @click="showQuotationJobModel=false">关闭</button>
+					<button :disabled="submitting" type="button" class="btn btn-success" @click="submitQuotationJob">確認</button>
+				</div>
+			</modal>
+			<p>
+				<label>成本總價：{{totalCost}}</label>
+				<label>出街總價：{{totalRetail}}</label>
+				<label>利潤率：{{profitPercent}}%</label>
+			</p>
 		</div>
-		<modal :show.sync="showQuotationJobModel" effect="fade" width="400">
-			<div slot="modal-header" class="modal-header">
-				<h4 class="modal-title">
-					工作内容
-				</h4>
-			</div>
-			<div slot="modal-body" class="modal-body">
-				<alert :type="alertType">
-					{{alertText}}
-				</alert>
-				<bs-input :value.sync="submitData.content" label="内容"></bs-input>
-				<bs-input type="number" :value.sync="submitData.cost" label="成本單價"></bs-input>
-				<bs-input type="number" :value.sync="submitData.retail" label="出街單價"></bs-input>
-				<bs-input type="number" :value.sync="submitData.count" label="數量"></bs-input>
-			</div>
-			<div slot="modal-footer" class="modal-footer">
-				<button type="button" class="btn btn-default" @click="showQuotationJobModel=false">关闭</button>
-				<button :disabled="submitting" type="button" class="btn btn-success" @click="submitQuotationJob">確認</button>
-			</div>
-		</modal>
-		<p>
-			<label>成本總價：{{totalCost}}</label>
-			<label>出街總價：{{totalRetail}}</label>
-			<label>利潤率：{{profitPercent}}%</label>
-		</p>
 	</div>
 </template>
 

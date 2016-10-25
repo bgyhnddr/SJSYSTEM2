@@ -1,33 +1,35 @@
 <template>
-    <div v-if="checkPermission()">
-        <ol v-if="breadcrumb" class="breadcrumb">
-            <li class="active">工程類別</li>
-        </ol>
-        <div>
-            <button @click="addProjectType" class="btn btn-default">添加工程類別</button>
-            <div style="position:relative">
-                <spinner size="md" text="loading..."></spinner>
-                <vue-strap-table :err-msg.sync="errMsg" :data.sync="data" :get-data-event="getData" :columns="columns"></vue-strap-table>
-            </div>
-            <modal :show.sync="showProjectTypeModel" effect="fade" width="400">
-                <div slot="modal-header" class="modal-header">
-                    <h4 class="modal-title">
-                        工程類別
-                    </h4>
-                </div>
-                <div slot="modal-body" class="modal-body">
-                    <alert :type="alertType">
-                        {{alertText}}
-                    </alert>
-                    <bs-input :value.sync="submitData.name" label="名稱"></bs-input>
-                </div>
-                <div slot="modal-footer" class="modal-footer">
-                    <button type="button" class="btn btn-default" @click="showProjectTypeModel=false">关闭</button>
-                    <button :disabled="submitting" type="button" class="btn btn-success" @click="submitProjectType">確認</button>
-                </div>
-            </modal>
-        </div>
-    </div>
+	<div>
+		<div v-if="checkPermission()">
+			<ol v-if="breadcrumb" class="breadcrumb">
+				<li class="active">工程類別</li>
+			</ol>
+			<div>
+				<button @click="addProjectType" class="btn btn-default">添加工程類別</button>
+				<div style="position:relative">
+					<spinner size="md" text="loading..."></spinner>
+					<vue-strap-table :err-msg.sync="errMsg" :data.sync="data" :get-data-event="getData" :columns="columns"></vue-strap-table>
+				</div>
+				<modal :show.sync="showProjectTypeModel" effect="fade" width="400">
+					<div slot="modal-header" class="modal-header">
+						<h4 class="modal-title">
+							工程類別
+						</h4>
+					</div>
+					<div slot="modal-body" class="modal-body">
+						<alert :type="alertType">
+							{{alertText}}
+						</alert>
+						<bs-input :value.sync="submitData.name" label="名稱"></bs-input>
+					</div>
+					<div slot="modal-footer" class="modal-footer">
+						<button type="button" class="btn btn-default" @click="showProjectTypeModel=false">关闭</button>
+						<button :disabled="submitting" type="button" class="btn btn-success" @click="submitProjectType">確認</button>
+					</div>
+				</modal>
+			</div>
+		</div>
+	</div>
 </template>
 
 <script>

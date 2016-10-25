@@ -1,15 +1,17 @@
 <template>
-	<div v-if="checkPermission()">
-		<p>報價單編號：{{quotation.no}}</p>
-		<p>物業公司：{{quotation.property_management_co_name}}</p>
-		<p>工程名稱：{{quotation.project_name}}</p>
-		<p>工程負責人：{{quotation.manager}}</p>
-		<p>報價日期：{{quotation.quotation_date}}</p>
-		<p>盤</p>
-		<vue-strap-table :has-filter="false" :data.sync="building_setting.data" :columns.sync="building_setting.columns"></vue-strap-table>
-		<p>工程類型與項目：{{quotation.project_type}} {{quotation.project_item}}</p>
-		<p>工作内容</p>
-		<quotation-job :editable="false" :quotation-no="quotation.no"></quotation-job>
+	<div>
+		<div v-if="checkPermission()">
+			<p>報價單編號：{{quotation.no}}</p>
+			<p>物業公司：{{quotation.property_management_co_name}}</p>
+			<p>工程名稱：{{quotation.project_name}}</p>
+			<p>工程負責人：{{quotation.manager}}</p>
+			<p>報價日期：{{quotation.quotation_date}}</p>
+			<p>盤</p>
+			<vue-strap-table :has-filter="false" :data.sync="building_setting.data" :columns.sync="building_setting.columns"></vue-strap-table>
+			<p>工程類型與項目：{{quotation.project_type}} {{quotation.project_item}}</p>
+			<p>工作内容</p>
+			<quotation-job :editable="false" :quotation-no="quotation.no"></quotation-job>
+		</div>
 	</div>
 </template>
 <script>

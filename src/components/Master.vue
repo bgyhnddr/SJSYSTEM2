@@ -1,6 +1,8 @@
 <template>
-	<main-header></main-header>
-	<router-view></router-view>
+	<div>
+		<main-header></main-header>
+		<router-view class="view" transition="fate" transition-mode="out-in"></router-view>
+	</div>
 </template>
 
 <script>

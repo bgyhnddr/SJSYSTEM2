@@ -1,35 +1,37 @@
 <template>
-    <div v-if="checkPermission()">
-        <ol class="breadcrumb">
-            <li><a v-link="{ path: '/index/DataManagement/ProjectType' }">工程類別</a></li>
-            <li><a v-link="{ path: '/index/DataManagement/ProjectType/'+$route.params.type }">{{$route.params.type}}</a></li>
-            <li class="active">{{$route.params.item}}:上傳内容模板</li>
-        </ol>
-        <div>
-            <button @click="addUploadTemplate" class="btn btn-default">添加上傳内容</button>
-            <div style="position:relative">
-                <spinner size="md" text="loading..."></spinner>
-                <vue-strap-table :has-filter="hasFilter" :err-msg.sync="errMsg" :data.sync="data" :get-data-event="getData" :columns.sync="columns"></vue-strap-table>
-            </div>
-            <modal :show.sync="showUploadTemplateModel" effect="fade" width="400">
-                <div slot="modal-header" class="modal-header">
-                    <h4 class="modal-title">
-                        上傳内容
-                    </h4>
-                </div>
-                <div slot="modal-body" class="modal-body">
-                    <alert :type="alertType">
-                        {{alertText}}
-                    </alert>
-                    <bs-input :value.sync="submitData.content" label="内容"></bs-input>
-                </div>
-                <div slot="modal-footer" class="modal-footer">
-                    <button type="button" class="btn btn-default" @click="showUploadTemplateModel=false">关闭</button>
-                    <button :disabled="submitting" type="button" class="btn btn-success" @click="submitUploadTemplate">確認</button>
-                </div>
-            </modal>
-        </div>
-    </div>
+	<div>
+		<div v-if="checkPermission()">
+			<ol class="breadcrumb">
+				<li><a v-link="{ path: '/index/DataManagement/ProjectType' }">工程類別</a></li>
+				<li><a v-link="{ path: '/index/DataManagement/ProjectType/'+$route.params.type }">{{$route.params.type}}</a></li>
+				<li class="active">{{$route.params.item}}:上傳内容模板</li>
+			</ol>
+			<div>
+				<button @click="addUploadTemplate" class="btn btn-default">添加上傳内容</button>
+				<div style="position:relative">
+					<spinner size="md" text="loading..."></spinner>
+					<vue-strap-table :has-filter="hasFilter" :err-msg.sync="errMsg" :data.sync="data" :get-data-event="getData" :columns.sync="columns"></vue-strap-table>
+				</div>
+				<modal :show.sync="showUploadTemplateModel" effect="fade" width="400">
+					<div slot="modal-header" class="modal-header">
+						<h4 class="modal-title">
+							上傳内容
+						</h4>
+					</div>
+					<div slot="modal-body" class="modal-body">
+						<alert :type="alertType">
+							{{alertText}}
+						</alert>
+						<bs-input :value.sync="submitData.content" label="内容"></bs-input>
+					</div>
+					<div slot="modal-footer" class="modal-footer">
+						<button type="button" class="btn btn-default" @click="showUploadTemplateModel=false">关闭</button>
+						<button :disabled="submitting" type="button" class="btn btn-success" @click="submitUploadTemplate">確認</button>
+					</div>
+				</modal>
+			</div>
+		</div>
+	</div>
 </template>
 
 <script>

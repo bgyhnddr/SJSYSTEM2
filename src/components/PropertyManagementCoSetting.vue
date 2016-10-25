@@ -1,30 +1,32 @@
 <template>
-    <div v-if="checkPermission()">
-        <button @click="addPropertyManagementCo" class="btn btn-default">添加物業公司</button>
-        <div style="position:relative">
-            <spinner size="md" text="loading..."></spinner>
-            <vue-strap-table :err-msg.sync="errMsg" :data.sync="data" :get-data-event="getData" :columns.sync="columns"></vue-strap-table>
-        </div>
-        <modal :show.sync="showPropertyManagementCoModel" effect="fade" width="400">
-            <div slot="modal-header" class="modal-header">
-                <h4 class="modal-title">
-                    物業公司
-                </h4>
-            </div>
-            <div slot="modal-body" class="modal-body">
-                <alert :type="alertType">
-                    {{alertText}}
-                </alert>
-                <bs-input :value.sync="submitData.code" label="代號" required></bs-input>
-                <bs-input :value.sync="submitData.name" label="名稱" required></bs-input>
-                <bs-input :value.sync="submitData.name_en" label="英文名" pattern=""></bs-input>
-            </div>
-            <div slot="modal-footer" class="modal-footer">
-                <button type="button" class="btn btn-default" @click="showPropertyManagementCoModel=false">关闭</button>
-                <button :disabled="submitting" type="button" class="btn btn-success" @click="submitPropertyManagementCo">確認</button>
-            </div>
-        </modal>
-    </div>
+	<div>
+		<div v-if="checkPermission()">
+			<button @click="addPropertyManagementCo" class="btn btn-default">添加物業公司</button>
+			<div style="position:relative">
+				<spinner size="md" text="loading..."></spinner>
+				<vue-strap-table :err-msg.sync="errMsg" :data.sync="data" :get-data-event="getData" :columns.sync="columns"></vue-strap-table>
+			</div>
+			<modal :show.sync="showPropertyManagementCoModel" effect="fade" width="400">
+				<div slot="modal-header" class="modal-header">
+					<h4 class="modal-title">
+						物業公司
+					</h4>
+				</div>
+				<div slot="modal-body" class="modal-body">
+					<alert :type="alertType">
+						{{alertText}}
+					</alert>
+					<bs-input :value.sync="submitData.code" label="代號" required></bs-input>
+					<bs-input :value.sync="submitData.name" label="名稱" required></bs-input>
+					<bs-input :value.sync="submitData.name_en" label="英文名" pattern=""></bs-input>
+				</div>
+				<div slot="modal-footer" class="modal-footer">
+					<button type="button" class="btn btn-default" @click="showPropertyManagementCoModel=false">关闭</button>
+					<button :disabled="submitting" type="button" class="btn btn-success" @click="submitPropertyManagementCo">確認</button>
+				</div>
+			</modal>
+		</div>
+	</div>
 </template>
 <script>
     import VueStrapTable from './extend/vue-strap-table'

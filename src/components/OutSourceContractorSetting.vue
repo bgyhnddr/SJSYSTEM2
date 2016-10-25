@@ -1,37 +1,39 @@
 <template>
-	<div v-if="checkPermission()">
-		<button @click="addOutSourceContractor" class="btn btn-default">添加外判資料</button>
-		<div style="position:relative">
-			<spinner size="md" text="loading..."></spinner>
-			<vue-strap-table :err-msg.sync="errMsg" :data.sync="data" :get-data-event="getData" :columns.sync="columns"></vue-strap-table>
+	<div>
+		<div v-if="checkPermission()">
+			<button @click="addOutSourceContractor" class="btn btn-default">添加外判資料</button>
+			<div style="position:relative">
+				<spinner size="md" text="loading..."></spinner>
+				<vue-strap-table :err-msg.sync="errMsg" :data.sync="data" :get-data-event="getData" :columns.sync="columns"></vue-strap-table>
+			</div>
+			<modal :show.sync="showOutSourceContractorModel" effect="fade" width="400">
+				<div slot="modal-header" class="modal-header">
+					<h4 class="modal-title">
+						外判資料
+					</h4>
+				</div>
+				<div slot="modal-body" class="modal-body">
+					<alert :type="alertType">{{alertText}}</alert>
+					<bs-input v-show="false" :value.sync="submitData.id"></bs-input>
+					<bs-input :value.sync="submitData.code" label="盤頭編號"></bs-input>
+					<bs-input :value.sync="submitData.company" label="盤頭公司名"></bs-input>
+					<bs-input :value.sync="submitData.address" label="地址"></bs-input>
+					<bs-input :value.sync="submitData.address_en" label="地址（英文）"></bs-input>
+					<bs-input :value.sync="submitData.bill_address" label="賬單地址"></bs-input>
+					<bs-input :value.sync="submitData.bill_address_en" label="賬單地址（英文）"></bs-input>
+					<bs-input :value.sync="submitData.attn" label="聯繫人"></bs-input>
+					<bs-input :value.sync="submitData.attn_en" label="聯繫人（英文）"></bs-input>
+					<bs-input :value.sync="submitData.tel" label="電話"></bs-input>
+					<bs-input :value.sync="submitData.fax" label="傳真"></bs-input>
+					<bs-input :value.sync="submitData.email" label="電郵"></bs-input>
+					<bs-input :value.sync="submitData.comments" type="textarea" label="備註"></bs-input>
+				</div>
+				<div slot="modal-footer" class="modal-footer">
+					<button type="button" class="btn btn-default" @click="showOutSourceContractorModel=false">关闭</button>
+					<button :disabled="submitting" type="button" class="btn btn-success" @click="submitOutSourceContractor">確認</button>
+				</div>
+			</modal>
 		</div>
-		<modal :show.sync="showOutSourceContractorModel" effect="fade" width="400">
-			<div slot="modal-header" class="modal-header">
-				<h4 class="modal-title">
-					外判資料
-				</h4>
-			</div>
-			<div slot="modal-body" class="modal-body">
-				<alert :type="alertType">{{alertText}}</alert>
-				<bs-input v-show="false" :value.sync="submitData.id"></bs-input>
-				<bs-input :value.sync="submitData.code" label="盤頭編號"></bs-input>
-				<bs-input :value.sync="submitData.company" label="盤頭公司名"></bs-input>
-				<bs-input :value.sync="submitData.address" label="地址"></bs-input>
-				<bs-input :value.sync="submitData.address_en" label="地址（英文）"></bs-input>
-				<bs-input :value.sync="submitData.bill_address" label="賬單地址"></bs-input>
-				<bs-input :value.sync="submitData.bill_address_en" label="賬單地址（英文）"></bs-input>
-				<bs-input :value.sync="submitData.attn" label="聯繫人"></bs-input>
-				<bs-input :value.sync="submitData.attn_en" label="聯繫人（英文）"></bs-input>
-				<bs-input :value.sync="submitData.tel" label="電話"></bs-input>
-				<bs-input :value.sync="submitData.fax" label="傳真"></bs-input>
-				<bs-input :value.sync="submitData.email" label="電郵"></bs-input>
-				<bs-input :value.sync="submitData.comments" type="textarea" label="備註"></bs-input>
-			</div>
-			<div slot="modal-footer" class="modal-footer">
-				<button type="button" class="btn btn-default" @click="showOutSourceContractorModel=false">关闭</button>
-				<button :disabled="submitting" type="button" class="btn btn-success" @click="submitOutSourceContractor">確認</button>
-			</div>
-		</modal>
 	</div>
 </template>
 <script>

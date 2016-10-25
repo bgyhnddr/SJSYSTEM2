@@ -1,21 +1,23 @@
 <template>
-	<div v-if="checkPermission()">
-		<alert v-if="alertText" type="success">
-			{{alertText}}
-		</alert>
-		<div v-if="project.id">
-			<div class="panel-group">
-				<div class="panel panel-default">
-					<div class="panel-heading">
-						<h4 class="panel-title">
-							<a v-link="{ path: '/index/ProjectManagement/Project/'+$route.params.id + '/quotation' }">报价单</a>
-						</h4>
-					</div>
-					<div class="panel-collapse collapse in">
-						<div class="panel-body">
-							<project-contract v-if="project.project_state.state!='draft'" :project.sync="project" :project-info="projectInfo"></project-contract>
-							<quotation-confirm v-if="showQuotationConfirm" :project.sync="project" :project-info="projectInfo"></quotation-confirm>
-							<quotation :quotation_no.sync="project.quotation_no"></quotation>
+	<div>
+		<div v-if="checkPermission()">
+			<alert v-if="alertText" type="success">
+				{{alertText}}
+			</alert>
+			<div v-if="project.id">
+				<div class="panel-group">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h4 class="panel-title">
+								<a v-link="{ path: '/index/ProjectManagement/Project/'+$route.params.id + '/quotation' }">报价单</a>
+							</h4>
+						</div>
+						<div class="panel-collapse collapse in">
+							<div class="panel-body">
+								<project-contract v-if="project.project_state.state!='draft'" :project.sync="project" :project-info="projectInfo"></project-contract>
+								<quotation-confirm v-if="showQuotationConfirm" :project.sync="project" :project-info="projectInfo"></quotation-confirm>
+								<quotation :quotation_no.sync="project.quotation_no"></quotation>
+							</div>
 						</div>
 					</div>
 				</div>

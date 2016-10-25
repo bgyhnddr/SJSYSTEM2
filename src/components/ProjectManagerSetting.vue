@@ -1,25 +1,26 @@
 <template>
-	<div v-if="checkPermission()">
-		<button @click="addProjectManager" class="btn btn-default">添加工程負責人</button>
-		<div style="position:relative">
-			<spinner size="md" text="loading..."></spinner>
-			<vue-strap-table :err-msg.sync="errMsg" :data.sync="data" :get-data-event="getData" :columns.sync="columns"></vue-strap-table>
-		</div>
-		<div :class="{'in':showProjectManagerModel}" class="modal fade" :style="{zIndex:(showProjectManagerModel?undefined:-1)}"
-			style="display:block;overflow-y:auto;">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h4 class="modal-title">
-							工程負責人
-						</h4>
-					</div>
-					<div class="modal-body">
-						<label>{{account}}</label>
-						<button type="button" class="btn btn-default" @click="showUserModel=true">選擇用戶</button>
-					</div>
-					<div class="modal-footer">
-						<label>{{serverMsg}}<label>
+	<div>
+		<div v-if="checkPermission()">
+			<button @click="addProjectManager" class="btn btn-default">添加工程負責人</button>
+			<div style="position:relative">
+				<spinner size="md" text="loading..."></spinner>
+				<vue-strap-table :err-msg.sync="errMsg" :data.sync="data" :get-data-event="getData" :columns.sync="columns"></vue-strap-table>
+			</div>
+			<div :class="{'in':showProjectManagerModel}" class="modal fade" :style="{zIndex:(showProjectManagerModel?undefined:-1)}"
+				style="display:block;overflow-y:auto;">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h4 class="modal-title">
+								工程負責人
+							</h4>
+						</div>
+						<div class="modal-body">
+							<label>{{account}}</label>
+							<button type="button" class="btn btn-default" @click="showUserModel=true">選擇用戶</button>
+						</div>
+						<div class="modal-footer">
+							<label>{{serverMsg}}<label>
                         <button type="button" class="btn btn-default" @click="showProjectManagerModel=false">关闭</button>
                         <button :disabled="submitting" type="button" class="btn btn-success" @click="submitProjectManager">確認</button>
                     </div>

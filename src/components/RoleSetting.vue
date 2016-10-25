@@ -1,43 +1,45 @@
 <template>
-    <div v-if="checkPermission()">
-        <button @click="addRole" class="btn btn-default">添加角色</button>
-        <div style="position:relative">
-            <spinner size="md" text="loading..."></spinner>
-            <vue-strap-table :err-msg.sync="errMsg" :data.sync="data" :get-data-event="getData" :columns.sync="columns"></vue-strap-table>
-        </div>
-        <modal :show.sync="showRoleModel" effect="fade" width="400">
-            <div slot="modal-header" class="modal-header">
-                <h4 class="modal-title">
-                    角色
-                </h4>
-            </div>
-            <div slot="modal-body" class="modal-body">
-                <alert :type="alertType">
-                    {{alertText}}
-                </alert>
-                <bs-input v-if="!edit" :value.sync="submitData.code" label="編碼"></bs-input>
-                <bs-input v-else :value.sync="submitData.code" label="編碼" readonly></bs-input>
-                <bs-input :value.sync="submitData.name" label="名稱" required></bs-input>
-            </div>
-            <div slot="modal-footer" class="modal-footer">
-                <button type="button" class="btn btn-default" @click="showRoleModel=false">关闭</button>
-                <button :disabled="submitting" type="button" class="btn btn-success" @click="submitRole">確認</button>
-            </div>
-        </modal>
-        <modal width="100%" :show.sync="showRolePermissionModel" effect="fade">
-            <div slot="modal-header" class="modal-header">
-                <h4 class="modal-title">
-                    角色權限
-                </h4>
-            </div>
-            <div slot="modal-body" class="modal-body">
-                <role-permission-setting :role="role"></role-permission-setting>
-            </div>
-            <div slot="modal-footer" class="modal-footer">
-                <button type="button" class="btn btn-default" @click="showRolePermissionModel=false">关闭</button>
-            </div>
-        </modal>
-    </div>
+	<div>
+		<div v-if="checkPermission()">
+			<button @click="addRole" class="btn btn-default">添加角色</button>
+			<div style="position:relative">
+				<spinner size="md" text="loading..."></spinner>
+				<vue-strap-table :err-msg.sync="errMsg" :data.sync="data" :get-data-event="getData" :columns.sync="columns"></vue-strap-table>
+			</div>
+			<modal :show.sync="showRoleModel" effect="fade" width="400">
+				<div slot="modal-header" class="modal-header">
+					<h4 class="modal-title">
+						角色
+					</h4>
+				</div>
+				<div slot="modal-body" class="modal-body">
+					<alert :type="alertType">
+						{{alertText}}
+					</alert>
+					<bs-input v-if="!edit" :value.sync="submitData.code" label="編碼"></bs-input>
+					<bs-input v-else :value.sync="submitData.code" label="編碼" readonly></bs-input>
+					<bs-input :value.sync="submitData.name" label="名稱" required></bs-input>
+				</div>
+				<div slot="modal-footer" class="modal-footer">
+					<button type="button" class="btn btn-default" @click="showRoleModel=false">关闭</button>
+					<button :disabled="submitting" type="button" class="btn btn-success" @click="submitRole">確認</button>
+				</div>
+			</modal>
+			<modal width="100%" :show.sync="showRolePermissionModel" effect="fade">
+				<div slot="modal-header" class="modal-header">
+					<h4 class="modal-title">
+						角色權限
+					</h4>
+				</div>
+				<div slot="modal-body" class="modal-body">
+					<role-permission-setting :role="role"></role-permission-setting>
+				</div>
+				<div slot="modal-footer" class="modal-footer">
+					<button type="button" class="btn btn-default" @click="showRolePermissionModel=false">关闭</button>
+				</div>
+			</modal>
+		</div>
+	</div>
 </template>
 <script>
     import VueStrapTable from './extend/vue-strap-table'

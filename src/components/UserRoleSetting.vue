@@ -1,51 +1,53 @@
 <template>
-    <div v-if="checkPermission()">
-        <button @click="addUserRole" class="btn btn-default">添加用戶角色</button>
-        <div style="position:relative">
-            <spinner size="md" text="loading..."></spinner>
-            <vue-strap-table :err-msg.sync="errMsg" :data.sync="data" :get-data-event="getData" :columns.sync="columns"></vue-strap-table>
-        </div>
-        <div :class="{'in':showUserRoleModel}" class="modal fade" :style="{zIndex:(showUserRoleModel?undefined:-1)}" style="display:block;overflow-y:auto;">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 class="modal-title">
-                            用戶角色
-                        </h4>
-                    </div>
-                    <div class="modal-body">
-                        <label>{{role_name}}</label>
-                        <button type="button" class="btn btn-default" @click="showRoleModel=true">選擇角色</button>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" @click="showUserRoleModel=false">关闭</button>
-                        <button :disabled="submitting" type="button" class="btn btn-success" @click="submitUserRole">確認</button>
-                    </div>
-                </div>
-                <!-- /.modal-content -->
-            </div>
-            <!-- /.modal-dialog -->
-        </div>
-        <div :class="{'in':showRoleModel}" class="modal fade" :style="{zIndex:(showRoleModel?undefined:-1)}" style="display:block;overflow-y:auto;">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 class="modal-title">
-                            選擇角色
-                        </h4>
-                    </div>
-                    <div class="modal-body">
-                        <role-setting :selectable="selectable"></role-setting>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" @click="showRoleModel=false">关闭</button>
-                    </div>
-                </div>
-                <!-- /.modal-content -->
-            </div>
-            <!-- /.modal-dialog -->
-        </div>
-    </div>
+	<div>
+		<div v-if="checkPermission()">
+			<button @click="addUserRole" class="btn btn-default">添加用戶角色</button>
+			<div style="position:relative">
+				<spinner size="md" text="loading..."></spinner>
+				<vue-strap-table :err-msg.sync="errMsg" :data.sync="data" :get-data-event="getData" :columns.sync="columns"></vue-strap-table>
+			</div>
+			<div :class="{'in':showUserRoleModel}" class="modal fade" :style="{zIndex:(showUserRoleModel?undefined:-1)}" style="display:block;overflow-y:auto;">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h4 class="modal-title">
+								用戶角色
+							</h4>
+						</div>
+						<div class="modal-body">
+							<label>{{role_name}}</label>
+							<button type="button" class="btn btn-default" @click="showRoleModel=true">選擇角色</button>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default" @click="showUserRoleModel=false">关闭</button>
+							<button :disabled="submitting" type="button" class="btn btn-success" @click="submitUserRole">確認</button>
+						</div>
+					</div>
+					<!-- /.modal-content -->
+				</div>
+				<!-- /.modal-dialog -->
+			</div>
+			<div :class="{'in':showRoleModel}" class="modal fade" :style="{zIndex:(showRoleModel?undefined:-1)}" style="display:block;overflow-y:auto;">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h4 class="modal-title">
+								選擇角色
+							</h4>
+						</div>
+						<div class="modal-body">
+							<role-setting :selectable="selectable"></role-setting>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default" @click="showRoleModel=false">关闭</button>
+						</div>
+					</div>
+					<!-- /.modal-content -->
+				</div>
+				<!-- /.modal-dialog -->
+			</div>
+		</div>
+	</div>
 </template>
 <script>
     import VueStrapTable from './extend/vue-strap-table'

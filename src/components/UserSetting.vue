@@ -1,41 +1,43 @@
 <template>
-    <div v-if="checkPermission()">
-        <button @click="addUser" class="btn btn-default">添加用戶</button>
-        <div style="position:relative">
-            <spinner size="md" text="loading..."></spinner>
-            <vue-strap-table :err-msg.sync="errMsg" :data.sync="data" :get-data-event="getData" :columns="columns"></vue-strap-table>
-        </div>
-        <modal :show.sync="showUserModel" effect="fade" width="400">
-            <div slot="modal-header" class="modal-header">
-                <h4 class="modal-title">
-                    用戶
-                </h4>
-            </div>
-            <div slot="modal-body" class="modal-body">
-                <alert :type="alertType">
-                    {{alertText}}
-                </alert>
-                <bs-input :value.sync="account" label="账号"></bs-input>
-            </div>
-            <div slot="modal-footer" class="modal-footer">
-                <button type="button" class="btn btn-default" @click="showUserModel=false">关闭</button>
-                <button :disabled="submitting" type="button" class="btn btn-success" @click="submitAddAccount">創建</button>
-            </div>
-        </modal>
-        <modal width="100%" :show.sync="showUserRoleModel" effect="fade">
-            <div slot="modal-header" class="modal-header">
-                <h4 class="modal-title">
-                    用戶角色
-                </h4>
-            </div>
-            <div slot="modal-body" class="modal-body">
-                <user-role-setting :user="user"></user-role-setting>
-            </div>
-            <div slot="modal-footer" class="modal-footer">
-                <button type="button" class="btn btn-default" @click="showUserRoleModel=false">关闭</button>
-            </div>
-        </modal>
-    </div>
+	<div>
+		<div v-if="checkPermission()">
+			<button @click="addUser" class="btn btn-default">添加用戶</button>
+			<div style="position:relative">
+				<spinner size="md" text="loading..."></spinner>
+				<vue-strap-table :err-msg.sync="errMsg" :data.sync="data" :get-data-event="getData" :columns="columns"></vue-strap-table>
+			</div>
+			<modal :show.sync="showUserModel" effect="fade" width="400">
+				<div slot="modal-header" class="modal-header">
+					<h4 class="modal-title">
+						用戶
+					</h4>
+				</div>
+				<div slot="modal-body" class="modal-body">
+					<alert :type="alertType">
+						{{alertText}}
+					</alert>
+					<bs-input :value.sync="account" label="账号"></bs-input>
+				</div>
+				<div slot="modal-footer" class="modal-footer">
+					<button type="button" class="btn btn-default" @click="showUserModel=false">关闭</button>
+					<button :disabled="submitting" type="button" class="btn btn-success" @click="submitAddAccount">創建</button>
+				</div>
+			</modal>
+			<modal width="100%" :show.sync="showUserRoleModel" effect="fade">
+				<div slot="modal-header" class="modal-header">
+					<h4 class="modal-title">
+						用戶角色
+					</h4>
+				</div>
+				<div slot="modal-body" class="modal-body">
+					<user-role-setting :user="user"></user-role-setting>
+				</div>
+				<div slot="modal-footer" class="modal-footer">
+					<button type="button" class="btn btn-default" @click="showUserRoleModel=false">关闭</button>
+				</div>
+			</modal>
+		</div>
+	</div>
 </template>
 <script>
     import VueStrapTable from './extend/vue-strap-table'

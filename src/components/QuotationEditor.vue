@@ -1,64 +1,66 @@
 <template>
-	<div v-if="checkPermission()">
-		<button @click="save" v-if="state.quotation_change" class="btn btn-primary fixed-save">保存報價</button>
-		<div class="form-group">
-			<label class="control-label">報價單編號</label>
-			<p>{{quotation.no}}</p>
-		</div>
-		<div class="form-group">
-			<label class="control-label">物業公司</label>
-			<p>{{quotation.property_management_co_name}}</p>
-		</div>
-		<div class="form-group">
-			<bs-input :value.sync="quotation.project_name" label="工程名稱"></bs-input>
-		</div>
-		<div class="form-group">
-			<label class="control-label">工程負責人</label>
-			<p>{{quotation.manager}}<button @click="project_manager_select_setting.show = true" class="btn btn-default btn-xs">選擇</button>
-				<button @click="project_manager_select_setting.show = false" v-if="project_manager_select_setting.show" class="btn btn-default btn-xs">關閉</button></p>
-			<p v-if="project_manager_select_setting.show">
-				<project-manager-setting :selectable="project_manager_select_setting.selectable" :select-event="project_manager_select_setting.selectEvent"></project-manager-setting>
-			</p>
-		</div>
-		<div class="form-group">
-			<label class="control-label">報價日期</label>
-            <p v-if="quotation.project.project_state.boss_edit">{{new Date().Format("yyyy-MM-dd")}}</p>
-			<p v-else>
-				<datepicker v-ref:dp :value.sync="datepickerSetting.value" format="yyyy-MM-dd" :clear-button="datepickerSetting.clear" width="370px"></datepicker>
-			</p>
-		</div>
-		<div class="form-group">
-			<label class="control-label">盤</label><button @click="building_setting.show = true" class="btn btn-default btn-xs">選擇</button>
-			<p>
-				<button @click="building_setting.show = false" v-if="building_setting.show" class="btn btn-default btn-xs">關閉</button>
-				<div v-if="building_setting.show">
-					<building-setting :selectable="building_setting.selectable" :select-event="building_setting.selectEvent"></building-setting>
-				</div>
-				<div v-if="!building_setting.show">
-					<vue-strap-table :has-filter="false" :data.sync="building_setting.data" :columns.sync="building_setting.columns"></vue-strap-table>
-				</div>
-			</p>
-		</div>
-		<div class="form-group">
-			<label class="control-label">工程類型與項目</label>
-			<p>{{quotation.project_type}} {{quotation.project_item}}<button @click="project_type_setting.show = true" class="btn btn-default btn-xs">選擇</button>
-				<button @click="project_type_setting.show = false" v-if="project_type_setting.show" class="btn btn-default btn-xs">關閉</button>
-			</p>
-			<div v-if="project_type_setting.show" class="col-sm-12">
-				<div class="col-sm-6">
-					<project-type-setting :breadcrumb="project_type_setting.breadcrumb" :selectable="project_type_setting.selectable" :select-event="project_type_setting.selectEvent"></project-type-setting>
-				</div>
-				<div v-if="project_item_setting.show" class="col-sm-6">
-					<project-item-setting :breadcrumb="project_item_setting.breadcrumb" :project-type="project_item_setting.type" :selectable="project_item_setting.selectable"
-						:select-event="project_item_setting.selectEvent"></project-item-setting>
+	<div>
+		<div v-if="checkPermission()">
+			<button @click="save" v-if="state.quotation_change" class="btn btn-primary fixed-save">保存報價</button>
+			<div class="form-group">
+				<label class="control-label">報價單編號</label>
+				<p>{{quotation.no}}</p>
+			</div>
+			<div class="form-group">
+				<label class="control-label">物業公司</label>
+				<p>{{quotation.property_management_co_name}}</p>
+			</div>
+			<div class="form-group">
+				<bs-input :value.sync="quotation.project_name" label="工程名稱"></bs-input>
+			</div>
+			<div class="form-group">
+				<label class="control-label">工程負責人</label>
+				<p>{{quotation.manager}}<button @click="project_manager_select_setting.show = true" class="btn btn-default btn-xs">選擇</button>
+					<button @click="project_manager_select_setting.show = false" v-if="project_manager_select_setting.show" class="btn btn-default btn-xs">關閉</button></p>
+				<p v-if="project_manager_select_setting.show">
+					<project-manager-setting :selectable="project_manager_select_setting.selectable" :select-event="project_manager_select_setting.selectEvent"></project-manager-setting>
+				</p>
+			</div>
+			<div class="form-group">
+				<label class="control-label">報價日期</label>
+				<p v-if="quotation.project.project_state.boss_edit">{{new Date().Format("yyyy-MM-dd")}}</p>
+				<p v-else>
+					<datepicker v-ref:dp :value.sync="datepickerSetting.value" format="yyyy-MM-dd" :clear-button="datepickerSetting.clear" width="370px"></datepicker>
+				</p>
+			</div>
+			<div class="form-group">
+				<label class="control-label">盤</label><button @click="building_setting.show = true" class="btn btn-default btn-xs">選擇</button>
+				<p>
+					<button @click="building_setting.show = false" v-if="building_setting.show" class="btn btn-default btn-xs">關閉</button>
+					<div v-if="building_setting.show">
+						<building-setting :selectable="building_setting.selectable" :select-event="building_setting.selectEvent"></building-setting>
+					</div>
+					<div v-if="!building_setting.show">
+						<vue-strap-table :has-filter="false" :data.sync="building_setting.data" :columns.sync="building_setting.columns"></vue-strap-table>
+					</div>
+				</p>
+			</div>
+			<div class="form-group">
+				<label class="control-label">工程類型與項目</label>
+				<p>{{quotation.project_type}} {{quotation.project_item}}<button @click="project_type_setting.show = true" class="btn btn-default btn-xs">選擇</button>
+					<button @click="project_type_setting.show = false" v-if="project_type_setting.show" class="btn btn-default btn-xs">關閉</button>
+				</p>
+				<div v-if="project_type_setting.show" class="col-sm-12">
+					<div class="col-sm-6">
+						<project-type-setting :breadcrumb="project_type_setting.breadcrumb" :selectable="project_type_setting.selectable" :select-event="project_type_setting.selectEvent"></project-type-setting>
+					</div>
+					<div v-if="project_item_setting.show" class="col-sm-6">
+						<project-item-setting :breadcrumb="project_item_setting.breadcrumb" :project-type="project_item_setting.type" :selectable="project_item_setting.selectable"
+							:select-event="project_item_setting.selectEvent"></project-item-setting>
+					</div>
 				</div>
 			</div>
+			<div class="col-sm-12">
+				<quotation-job :quotation-no="quotation.no"></quotation-job>
+			</div>
+			<button v-if="vaild()" :disabled="finishing" @click="finish" class="btn btn-primary fixed-save">{{finishing?'loading':'完成報價'}}</button>
+			<label v-if="!vaild()">完成填寫報價信息后才能完成報價</label>
 		</div>
-		<div class="col-sm-12">
-			<quotation-job :quotation-no="quotation.no"></quotation-job>
-		</div>
-		<button v-if="vaild()" :disabled="finishing" @click="finish" class="btn btn-primary fixed-save">{{finishing?'loading':'完成報價'}}</button>
-		<label v-if="!vaild()">完成填寫報價信息后才能完成報價</label>
 	</div>
 </template>
 <script>

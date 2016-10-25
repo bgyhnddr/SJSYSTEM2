@@ -1,10 +1,12 @@
 <template>
-	<div v-if="checkPermission()">
-		<div class="panel panel-default">
-			<div class="panel-heading">合同</div>
-			<div class="panel-body">
-                <button v-if="showConfirm" :disabled="editing" @click="confirmContract" class="btn btn-default">{{editing?'loading':'確認合同'}}</button>
-				<vue-strap-upload :file-id.sync="id" :file-name.sync="fileName" :readonly="project.project_state.state!='quotation_save'"></vue-strap-upload>
+	<div>
+		<div v-if="checkPermission()">
+			<div class="panel panel-default">
+				<div class="panel-heading">合同</div>
+				<div class="panel-body">
+					<button v-if="showConfirm" :disabled="editing" @click="confirmContract" class="btn btn-default">{{editing?'loading':'確認合同'}}</button>
+					<vue-strap-upload :file-id.sync="id" :file-name.sync="fileName" :readonly="project.project_state.state!='quotation_save'"></vue-strap-upload>
+				</div>
 			</div>
 		</div>
 	</div>

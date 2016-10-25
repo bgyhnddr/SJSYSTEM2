@@ -1,13 +1,15 @@
 <template>
-	<div v-if="checkPermission()">
-        <div class="panel panel-default">
-			<div class="panel-heading">報價單確認</div>
-			<div class="panel-body">
-				<button v-if="showConfirm" @click="confirmQuotation" class="btn btn-default">確認報價</button>
-				<button :disabled="editing" v-if="allowEdit" @click="editQuotation" class="btn btn-default">{{editing?'loading':'修改報價'}}</button>
-				<p>報價單確認狀態：{{confirmText}}</p>
-				<p v-if="projectInfo.belowprofitability">利潤率不達標</p>
-				<p v-if="projectInfo.overtotalprofit">工程總額過高</p>
+	<div>
+		<div v-if="checkPermission()">
+			<div class="panel panel-default">
+				<div class="panel-heading">報價單確認</div>
+				<div class="panel-body">
+					<button v-if="showConfirm" @click="confirmQuotation" class="btn btn-default">確認報價</button>
+					<button :disabled="editing" v-if="allowEdit" @click="editQuotation" class="btn btn-default">{{editing?'loading':'修改報價'}}</button>
+					<p>報價單確認狀態：{{confirmText}}</p>
+					<p v-if="projectInfo.belowprofitability">利潤率不達標</p>
+					<p v-if="projectInfo.overtotalprofit">工程總額過高</p>
+				</div>
 			</div>
 		</div>
 	</div>

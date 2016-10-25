@@ -1,6 +1,8 @@
 <template>
-	<h3>選擇物業公司</h3>
-	<property-management-co-setting :selectable="selectable"></property-management-co-setting>
+	<div>
+		<h3>選擇物業公司</h3>
+		<property-management-co-setting :selectable="selectable"></property-management-co-setting>
+	</div>
 </template>
 <script>
     import PropertyManagementCoSetting from './PropertyManagementCoSetting'
