@@ -1,65 +1,103 @@
 export function configRouter(router) {
     router.map({
         '/index': {
-            component: require('../components/Master.vue'),
+            component: function(resolve) {
+                require(['../components/Master.vue'], resolve)
+            },
             subRoutes: {
                 'ProjectManagement': {
-                    component: require('../components/ProjectManagement.vue'),
+                    component: function(resolve) {
+                        require(['../components/ProjectManagement.vue'], resolve)
+                    },
                     subRoutes: {
                         'Project': {
-                            component: require('../components/CreateProject.vue')
+                            component: function(resolve) {
+                                require(['../components/CreateProject.vue'], resolve)
+                            }
                         },
                         'Project/:id': {
-                            component: require('../components/Project.vue')
+                            component: function(resolve) {
+                                require(['../components/Project.vue'], resolve)
+                            }
                         },
                         'Project/:id/:mode': {
-                            component: require('../components/Project.vue')
+                            component: function(resolve) {
+                                require(['../components/Project.vue'], resolve)
+                            }
                         }
                     }
                 },
                 'DataManagement': {
-                    component: require('../components/DataManagement.vue'),
+                    component: function(resolve) {
+                        require(['../components/DataManagement.vue'], resolve)
+                    },
                     subRoutes: {
                         'PropertyManagementCo': {
-                            component: require('../components/PropertyManagementCoSetting.vue')
+                            component: function(resolve) {
+                                require(['../components/PropertyManagementCoSetting.vue'], resolve)
+                            }
                         },
                         'Staff': {
-                            component: require('../components/StaffSetting.vue')
+                            component: function(resolve) {
+                                require(['../components/StaffSetting.vue'], resolve)
+                            }
                         },
                         'Building': {
-                            component: require('../components/BuildingSetting.vue')
+                            component: function(resolve) {
+                                require(['../components/BuildingSetting.vue'], resolve)
+                            }
                         },
                         'ProjectManager': {
-                            component: require('../components/ProjectManagerSetting.vue')
+                            component: function(resolve) {
+                                require(['../components/ProjectManagerSetting.vue'], resolve)
+                            }
                         },
                         'ProjectType': {
-                            component: require('../components/ProjectTypeSetting.vue')
+                            component: function(resolve) {
+                                require(['../components/ProjectTypeSetting.vue'], resolve)
+                            }
                         },
                         'ProjectType/:type': {
-                            component: require('../components/ProjectItemSetting.vue')
+                            component: function(resolve) {
+                                require(['../components/ProjectItemSetting.vue'], resolve)
+                            }
                         },
                         'ProjectType/:type/:item/upload': {
-                            component: require('../components/ProjectUploadTemplateSetting.vue')
+                            component: function(resolve) {
+                                require(['../components/ProjectUploadTemplateSetting.vue'], resolve)
+                            }
                         },
                         'ProjectType/:type/:item/job': {
-                            component: require('../components/ProjectJobTemplateSetting.vue')
+                            component: function(resolve) {
+                                require(['../components/ProjectJobTemplateSetting.vue'], resolve)
+                            }
                         },
                         'OutSourceContractor': {
-                            component: require('../components/OutSourceContractorSetting.vue')
+                            component: function(resolve) {
+                                require(['../components/OutSourceContractorSetting.vue'], resolve)
+                            }
                         }
                     }
                 },
                 'RBACManagement': {
-                    component: require('../components/RBACManagement.vue'),
+                    component: function(resolve) {
+                        require(['../components/RBACManagement.vue'], resolve)
+                    },
                     subRoutes: {
                         'User': {
-                            component: require('../components/UserSetting.vue')
+                            component: function(resolve) {
+                                require(['../components/UserSetting.vue'], resolve)
+                            }
                         },
                         'Role': {
-                            component: require('../components/RoleSetting.vue')
+                            component: function(resolve) {
+                                require(['../components/RoleSetting.vue'], resolve)
+                            }
                         },
                         'Permission': {
-                            component: require('../components/PermissionSetting.vue')
+                            component: function(resolve) {
+                                require(['../components/PermissionSetting.vue'], resolve)
+                            }
                         }
                     }
                 }
