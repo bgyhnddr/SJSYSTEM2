@@ -3,8 +3,8 @@ var util = require('util')
 var fs = require('fs')
 
 var dealFile = function(fileInfo) {
-    var file = require('../db/models/file')
-    var attachment = require('../db/models/attachment')
+    var file = require('../../db/models/file')
+    var attachment = require('../../db/models/attachment')
     return file.upsert({
         hash: fileInfo.hash,
         size: fileInfo.size,
