@@ -1,36 +1,36 @@
-var exec = {
-    checkQuotationDraftAndActive(no) {
-        return Promise.resolve().then(function() {
-            var quotation = require('../../db/models/quotation')
-            var project = require('../../db/models/project')
-            var project_state = require('../../db/models/project_state')
+var checkQuotationDraftAndActive = (no) => {
+    return Promise.resolve().then(function() {
+        var quotation = require('../../db/models/quotation')
+        var project = require('../../db/models/project')
+        var project_state = require('../../db/models/project_state')
 
-            quotation.belongsTo(project)
-            project.hasOne(project_state)
+        quotation.belongsTo(project)
+        project.hasOne(project_state)
 
-            return quotation.findOne({
+        return quotation.findOne({
+            include: [{
+                model: project,
                 include: [{
-                    model: project,
-                    include: [{
-                        model: project_state,
-                    }]
-                }],
-                where: {
-                    no: no
-                }
-            }).then(function(result) {
-                if (result == null) {
-                    return Promise.reject("quotation not found")
+                    model: project_state,
+                }]
+            }],
+            where: {
+                no: no
+            }
+        }).then(function(result) {
+            if (result == null) {
+                return Promise.reject("quotation not found")
+            } else {
+                if (result.project.project_state.state == "draft" && result.project.quotation_no == result.no) {
+                    return "OK"
                 } else {
-                    if (result.project.project_state.state == "draft" && result.project.quotation_no == result.no) {
-                        return "OK"
-                    } else {
-                        return Promise.reject("該報價單不能進行此項操作")
-                    }
+                    return Promise.reject("該報價單不能進行此項操作")
                 }
-            })
+            }
         })
-    },
+    })
+}
+var exec = {
     createQuotation(req, res, next) {
         var co_id = req.body.co_id
         if (co_id) {

@@ -217,12 +217,10 @@
                 })
             },
             "editUploadDetail": function(row) {
-                var router = new VueRouter();
-                router.go("/index/DataManagement/ProjectType/" + this.type + "/" + row.name + "/upload")
+                this.$router.go("/index/DataManagement/ProjectType/" + this.type + "/" + row.name + "/upload")
             },
             "editContentDetail": function(row) {
-                var router = new VueRouter();
-                router.go("/index/DataManagement/ProjectType/" + this.type + "/" + row.name + "/job")
+                this.$router.go("/index/DataManagement/ProjectType/" + this.type + "/" + row.name + "/job")
             }
         },
         ready() {

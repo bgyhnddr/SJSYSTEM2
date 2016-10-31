@@ -200,8 +200,7 @@
                 })
             },
             "editDetail": function(row) {
-                var router = new VueRouter();
-                router.go("/index/DataManagement/ProjectType/" + row.name)
+                this.$router.go("/index/DataManagement/ProjectType/" + row.name)
             }
         },
         ready() {
