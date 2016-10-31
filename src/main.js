@@ -29,8 +29,7 @@ window.actions = {
 Vue.use(VueRouter)
 
 const router = new VueRouter({
-    saveScrollPosition: true,
-    transitionOnLoad: true
+    history: true
 })
 
 configRouter(router)

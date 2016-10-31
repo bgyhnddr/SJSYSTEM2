@@ -10,7 +10,7 @@ export function configRouter(router) {
                             component: require('../components/CreateProject.vue')
                         },
                         'Project/:id': {
-                            component: require(['../components/Project.vue'])
+                            component: require('../components/Project.vue')
                         },
                         'Project/:id/:mode': {
                             component: require('../components/Project.vue')
