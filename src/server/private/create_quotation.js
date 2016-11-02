@@ -598,6 +598,34 @@ var exec = {
                 }
             })
         })
+    },
+    submitProjectHour(req, res, next) {
+        var project_hour = require('../../db/models/project_hour')
+        return checkProjectWorking(req.body.project_id).then(() => {
+            return project_hour.findOne({
+                where: {
+                    id: req.body.id
+                }
+            })
+        }).then((result) => {
+            if (result != null) {
+                return result.update(req.body)
+            } else {
+                return result.create(req.body)
+            }
+        })
+    },
+    deleteProjectHour(req, res, next) {
+        var project_hour = require('../../db/models/project_hour')
+        return checkProjectWorking(req.body.project_id).then(() => {
+            return project_hour.destroy({
+                where: {
+                    id: req.body.id
+                }
+            })
+        }).then(() => {
+            return "success"
+        })
     }
 }
 

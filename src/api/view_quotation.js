@@ -31,5 +31,8 @@ export default {
     },
     getProjectAttachments(params) {
         return request.get(path + 'getProjectAttachments', params)
+    },
+    getProjectHours(params) {
+        return request.get(path + 'getProjectHours', params)
     }
 }

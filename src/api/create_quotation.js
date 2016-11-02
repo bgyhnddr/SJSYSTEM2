@@ -36,5 +36,11 @@ export default {
     },
     saveProjectAttachment(params) {
         return request.post(path + 'saveProjectAttachment', params)
+    },
+    submitProjectHour(params) {
+        return request.post(path + 'submitProjectHour', params)
+    },
+    deleteProjectHour(params) {
+        return request.post(path + 'deleteProjectHour', params)
     }
 }

@@ -236,6 +236,20 @@ var exec = {
             }, attachment],
             order: ['index']
         })
+    },
+    getProjectHours(req, res, next) {
+        var id = req.query.id
+        var project = require('../../db/models/project')
+        var project_hour = require('../../db/models/project_hour')
+        project_hour.belongsTo(project)
+        return project_hour.findAll({
+            include: [{
+                model: project,
+                where: {
+                    id: id
+                }
+            }]
+        })
     }
 }
 
