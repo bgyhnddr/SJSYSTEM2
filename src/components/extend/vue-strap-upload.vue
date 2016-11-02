@@ -68,10 +68,10 @@
                     }
                 }).then(function(result) {
                     that.clear()
-                    console.log(result)
                     if (result.body) {
                         that.fileId = result.body.id
                         that.fileName = result.body.name
+                        that.$emit("uploaded")
                     }
                 }).catch(function(error) {
                     that.clear()

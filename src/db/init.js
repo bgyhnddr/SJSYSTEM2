@@ -24,7 +24,8 @@ module.exports = function(req, res, next) {
         require('./models/quotation_version'),
         require('./models/serial_number'),
         require('./models/attachment'),
-        require('./models/file')
+        require('./models/file'),
+        require('./models/project_attachment')
     ].map((o) => o.sync({ force: true }))).then(function() {
         return require('./init_data')()
     }).then(function() {

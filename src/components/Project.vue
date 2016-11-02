@@ -6,8 +6,20 @@
 			</alert>
 			<div v-if="project.id">
 				<div class="panel-group">
+					<div v-if="showProjectProgress" class="panel panel-default">
+						<div @click="toggerShow" class="panel-heading">
+							<h4 class="panel-title">
+								<a v-link="{ path: '/index/ProjectManagement/Project/'+$route.params.id + '/progress' }">工程進度</a>
+							</h4>
+						</div>
+						<div class="panel-collapse collapse in">
+							<div class="panel-body">
+								<project-progress :project.sync="project"></project-progress>
+							</div>
+						</div>
+					</div>
 					<div class="panel panel-default">
-						<div class="panel-heading">
+						<div @click="toggerShow" class="panel-heading">
 							<h4 class="panel-title">
 								<a v-link="{ path: '/index/ProjectManagement/Project/'+$route.params.id + '/quotation' }">报价单</a>
 							</h4>
@@ -31,6 +43,7 @@
     import QuotationConfirm from './QuotationConfirm'
     import view_quotation from '../api/view_quotation'
     import ProjectContract from './ProjectContract'
+    import ProjectProgress from './ProjectProgress'
     import {
         alert
     } from 'vue-strap'
@@ -46,12 +59,16 @@
         computed: {
             showQuotationConfirm() {
                 return (this.project.project_state && this.project.project_state.state == "quotation_save")
+            },
+            showProjectProgress() {
+                return (this.project.project_state && this.project.project_state.state != "quotation_save" && this.project.project_state.state != "draft")
             }
         },
         components: {
             Quotation,
             QuotationConfirm,
             ProjectContract,
+            ProjectProgress,
             alert
         },
         methods: {
@@ -73,6 +90,15 @@
                 return view_quotation.getProjectConfirmInfo(id).then(function(result) {
                     that.projectInfo = result
                 })
+            },
+            toggerShow(e) {
+                var node = e.currentTarget.parentNode.getElementsByClassName("panel-collapse collapse")[0]
+                console.log(node.className)
+                if (node.className.indexOf("in") >= 0) {
+                    node.className = "panel-collapse collapse"
+                } else {
+                    node.className = "panel-collapse collapse in"
+                }
             }
         },
         ready() {

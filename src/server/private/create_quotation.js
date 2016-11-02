@@ -30,6 +30,32 @@ var checkQuotationDraftAndActive = (no) => {
         })
     })
 }
+
+var checkProjectWorking = (id) => {
+    return Promise.resolve().then(function() {
+        var project = require('../../db/models/project')
+        var project_state = require('../../db/models/project_state')
+
+        project.hasOne(project_state)
+
+        return project.findOne({
+            include: project_state,
+            where: {
+                id: id
+            }
+        }).then(function(result) {
+            if (result == null) {
+                return Promise.reject("project not found")
+            } else {
+                if (result.project_state.state == "working") {
+                    return "OK"
+                } else {
+                    return Promise.reject("not allow")
+                }
+            }
+        })
+    })
+}
 var exec = {
     createQuotation(req, res, next) {
         var co_id = req.body.co_id
@@ -85,9 +111,12 @@ var exec = {
             var project_state = require('../../db/models/project_state')
             var project_item = require('../../db/models/project_item')
             var job_content_template = require('../../db/models/job_content_template')
+            var upload_content_template = require('../../db/models/upload_content_template')
             var quotation_job = require('../../db/models/quotation_job')
+            var project_attachment = require('../../db/models/project_attachment')
 
             project_item.hasMany(job_content_template)
+            project_item.hasMany(upload_content_template)
             project.hasOne(project_state)
             quotation.belongsTo(project)
 
@@ -120,24 +149,46 @@ var exec = {
                 }
             }).then(function(result) {
                 if (result.project_item != req.body.project_item && req.body.project_item) {
-                    return quotation_job.destroy({
-                        where: {
-                            quotation_no: result.no
-                        }
-                    }).then(function() {
+                    return Promise.all([
+                        quotation_job.destroy({
+                            where: {
+                                quotation_no: result.no
+                            }
+                        }),
+                        project_attachment.destroy({
+                            where: {
+                                project_id: result.project.id
+                            }
+                        })
+                    ]).then(function() {
                         return project_item.findOne({
-                            include: [job_content_template]
+                            include: [job_content_template, upload_content_template]
                         })
                     }).then(function(pi) {
                         if (pi) {
-                            var createList = pi.job_content_templates.map((o) => {
-                                return {
-                                    quotation_no: result.no,
-                                    index: o.index,
-                                    content: o.content
-                                }
-                            })
-                            return quotation_job.bulkCreate(createList)
+                            return Promise.all([
+                                quotation_job.bulkCreate(pi.job_content_templates.map((o) => {
+                                    return {
+                                        quotation_no: result.no,
+                                        index: o.index,
+                                        content: o.content
+                                    }
+                                })),
+                                project_attachment.bulkCreate(pi.upload_content_templates.map((o => {
+                                    console.log({
+                                        project_id: result.project.id,
+                                        index: o.index,
+                                        content: o.content
+                                    })
+                                    return {
+                                        project_id: result.project.id,
+                                        index: o.index,
+                                        content: o.content
+                                    }
+                                })))
+                            ])
+
+
                         } else {
                             return "done"
                         }
@@ -146,6 +197,8 @@ var exec = {
                         result.project_item = req.body.project_item
                         return result
                     })
+
+
                 } else {
                     return result
                 }
@@ -482,6 +535,69 @@ var exec = {
         } else {
             return Promise.reject("no project id")
         }
+    },
+    beginWork(req, res, next) {
+        var id = req.body.id
+        var common = require('../common')
+        var project_state = require('../../db/models/project_state')
+        var project = require('../../db/models/project')
+        var project_attachment = require('../../db/models/project_attachment')
+
+        project.hasOne(project_state)
+
+        return project.findOne({
+            include: project_state,
+            where: {
+                id: id
+            }
+        }).then((result) => {
+            if (result != null) {
+                return result
+            } else {
+                return Promise.reject("project not found")
+            }
+        }).then((result) => {
+            if (result.project_state.state != "quotation_contract") {
+                return Promise.reject("not allow")
+            } else {
+                result.project_state.state = "working"
+                return result.project_state.save().then(() => {
+                    return result
+                })
+            }
+        }).then((result) => {
+            common.log_project_record("view_quotation/beginWork", result.id, req.session.userInfo.name)
+            return "success"
+        })
+    },
+    addProjectAttachment(req, res, next) {
+        var project_attachment = require('../../db/models/project_attachment')
+
+        return checkProjectWorking(req.body.project_id).then(() => {
+            return project_attachment.create(req.body)
+        })
+    },
+    deleteProjectAttachment(req, res, next) {
+        var project_attachment = require('../../db/models/project_attachment')
+
+        return checkProjectWorking(req.body.project_id).then(() => {
+            return project_attachment.destroy({ where: { id: req.body.id } }).then((result) => {
+                return "success"
+            })
+        })
+    },
+    saveProjectAttachment(req, res, next) {
+        var project_attachment = require('../../db/models/project_attachment')
+
+        return checkProjectWorking(req.body.project_id).then(() => {
+            return project_attachment.update({
+                attachment_id: req.body.attachment_id
+            }, {
+                where: {
+                    id: req.body.id
+                }
+            })
+        })
     }
 }
 

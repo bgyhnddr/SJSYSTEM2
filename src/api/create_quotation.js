@@ -27,5 +27,14 @@ export default {
     },
     saveContract(params) {
         return request.post(path + 'saveContract', params)
+    },
+    addProjectAttachment(params) {
+        return request.post(path + 'addProjectAttachment', params)
+    },
+    deleteProjectAttachment(params) {
+        return request.post(path + 'deleteProjectAttachment', params)
+    },
+    saveProjectAttachment(params) {
+        return request.post(path + 'saveProjectAttachment', params)
     }
 }

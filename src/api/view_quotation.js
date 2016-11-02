@@ -28,5 +28,8 @@ export default {
     },
     getProjectContract(params) {
         return request.get(path + 'getProjectContract', params)
+    },
+    getProjectAttachments(params) {
+        return request.get(path + 'getProjectAttachments', params)
     }
 }

@@ -1,224 +1,590 @@
-var exec = {
-    getQuotation(req, res, next) {
-        var no = req.query.no
-        if (no) {
-            var quotation = require('../../db/models/quotation')
-            var project = require('../../db/models/project')
-            var project_state = require('../../db/models/project_state')
-            quotation.belongsTo(project)
-            project.hasOne(project_state)
+var checkQuotationDraftAndActive = (no) => {
+    return Promise.resolve().then(function() {
+        var quotation = require('../../db/models/quotation')
+        var project = require('../../db/models/project')
+        var project_state = require('../../db/models/project_state')
 
-            return quotation.findOne({
-                include: {
-                    model: project,
-                    include: project_state
-                },
-                where: { no: no }
-            }).then(function(result) {
-                if (result == null) {
-                    return Promise.reject("沒有找到報價單")
-                } else {
-                    return result
-                }
-            })
-        } else {
-            return Promise.reject("沒有找到報價單")
-        }
-    },
-    getProject(req, res, next) {
-        var id = req.query.id
-        if (id) {
-            var project = require('../../db/models/project')
-            var project_state = require('../../db/models/project_state')
-            var quotation = require('../../db/models/quotation')
+        quotation.belongsTo(project)
+        project.hasOne(project_state)
 
-            project.hasOne(project_state)
-            project.belongsTo(quotation)
-
-            return project.findOne({
-                include: [project_state, quotation],
-                where: { id: id }
-            }).then(function(result) {
-                if (result == null) {
-                    return Promise.reject("沒有找到工程")
-                } else {
-                    return result
-                }
-            })
-        } else {
-            return Promise.reject("沒有找到工程")
-        }
-    },
-    getQuotationJobs(req, res, next) {
-        var quotation_job = require('../../db/models/quotation_job')
-        var quotationNo = req.query.quotationNo
-        if (quotationNo) {
-            return quotation_job.findAll({
-                where: {
-                    quotation_no: quotationNo
-                },
-                order: ['index']
-            }).then(function(result) {
-                return {
-                    end: true,
-                    list: result
-                }
-            })
-        } else {
-            Promise.reject("no qno")
-        }
-    },
-    getBuilding(req, res, next) {
-        var building = require('../../db/models/building')
-
-        var id = req.query.id == undefined ? "" : req.query.id
-
-        if (id) {
-            return building.findOne({
-                where: {
-                    id: id
-                }
-            }).then((result) => {
-                if (result == null) {
-                    return Promise.reject("not found")
-                } else {
-                    return result
-                }
-            })
-        } else {
-            return Promise.reject("not found")
-        }
-    },
-    getProfitSetting(req, res, next) {
-        var project_setting = require('../../db/models/project_setting')
-        var returnObj = {
-            totalprofit: "0",
-            profitability: "20"
-        }
-        return project_setting.findAll().then((result) => {
-            if (result.length != 0) {
-                result.forEach((o) => {
-                    result[o.code] = o.value
-                })
+        return quotation.findOne({
+            include: [{
+                model: project,
+                include: [{
+                    model: project_state,
+                }]
+            }],
+            where: {
+                no: no
             }
-            return returnObj
+        }).then(function(result) {
+            if (result == null) {
+                return Promise.reject("quotation not found")
+            } else {
+                if (result.project.project_state.state == "draft" && result.project.quotation_no == result.no) {
+                    return "OK"
+                } else {
+                    return Promise.reject("該報價單不能進行此項操作")
+                }
+            }
         })
-    },
-    getProjectConfirmInfo(req, res, next) {
-        var id = req.query.id
-        if (id) {
-            var project_setting = require('../../db/models/project_setting')
+    })
+}
+
+var checkProjectWorking = (id) => {
+    return Promise.resolve().then(function() {
+        var project = require('../../db/models/project')
+        var project_state = require('../../db/models/project_state')
+
+        project.hasOne(project_state)
+
+        return project.findOne({
+            include: project_state,
+            where: {
+                id: id
+            }
+        }).then(function(result) {
+            if (result == null) {
+                return Promise.reject("project not found")
+            } else {
+                if (result.project.project_state.state == "working") {
+                    return "OK"
+                } else {
+                    return Promise.reject("not allow")
+                }
+            }
+        })
+    })
+}
+var exec = {
+    createQuotation(req, res, next) {
+        var co_id = req.body.co_id
+        if (co_id) {
+            var property_management_co = require('../../db/models/property_management_co')
             var project = require('../../db/models/project')
+            var project_state = require('../../db/models/project_state')
             var quotation = require('../../db/models/quotation')
+            var common = require('../common')
+
+            return property_management_co.findOne({
+                where: { id: co_id }
+            }).then(function(result) {
+                if (result == null) {
+                    return Promise.reject("沒有找到物業公司")
+                } else {
+                    return common.generate_serial_no("Q").then(function(serial_no) {
+                        return project.create({
+                            quotation_no: serial_no,
+                            ori_quotation_no: serial_no
+                        }).then(function(project_result) {
+                            return Promise.all([
+                                quotation.create({
+                                    no: serial_no,
+                                    project_id: project_result.id,
+                                    property_management_co_name: result.name,
+                                    property_management_co_name_en: result.name_en
+                                }),
+                                project_state.upsert({
+                                    project_id: project_result.id,
+                                    state: "draft"
+                                })
+                            ]).then(function() {
+                                console.log(serial_no + req.session.userInfo.name)
+                                common.log_project_record("create_quotation/createQuotation", serial_no, req.session.userInfo.name)
+                                return { project_id: project_result.id }
+                            })
+                        })
+                    })
+                }
+            })
+        } else {
+            return Promise.reject("沒有指定物業公司")
+        }
+    },
+    saveDraft(req, res, next) {
+        var no = req.body.no
+
+        if (no) {
+            var common = require('../common')
+            var quotation = require('../../db/models/quotation')
+            var project = require('../../db/models/project')
+            var project_state = require('../../db/models/project_state')
+            var project_item = require('../../db/models/project_item')
+            var job_content_template = require('../../db/models/job_content_template')
+            var upload_content_template = require('../../db/models/upload_content_template')
             var quotation_job = require('../../db/models/quotation_job')
+            var project_attachment = require('../../db/models/project_attachment')
 
-            project.belongsTo(quotation)
-            quotation.hasMany(quotation_job)
+            project_item.hasMany(job_content_template)
+            project_item.hasMany(upload_content_template)
+            project.hasOne(project_state)
+            quotation.belongsTo(project)
 
-            return Promise.all([
-                project_setting.findAll(),
-                project.findOne({
+            return checkQuotationDraftAndActive(no).then(function() {
+                return quotation.findOne({
                     include: [{
-                        model: quotation,
-                        include: quotation_job
+                        model: project,
+                        include: [{
+                            model: project_state,
+                        }]
                     }],
                     where: {
-                        id: id
+                        no: no
                     }
                 })
-            ]).then((result) => {
-                var settingObj = {}
-                result[0].forEach(o => settingObj[o.code] = parseInt(o.value))
-                var totalRetail = result[1].quotation.quotation_jobs.reduce((sum, o) => {
-                    return sum + o.retail
-                }, 0)
-                var totalCost = result[1].quotation.quotation_jobs.reduce((sum, o) => {
-                    return sum + o.cost
-                }, 0)
-                var belowprofitability = settingObj.profitability > ((totalRetail - totalCost) / totalCost) * 100
-
-                return {
-                    settingObj,
-                    totalRetail,
-                    totalCost,
-                    overtotalprofit: settingObj.totalprofit < totalCost,
-                    belowprofitability,
-                    quotation_no: result[1].quotation.no,
-                    manager: result[1].quotation.manager
+            }).then(function(result) {
+                if (result) {
+                    result.no = req.body.no
+                    result.property_management_co_name = req.body.property_management_co_name
+                    result.property_management_co_name_en = req.body.property_management_co_name_en
+                    result.project_name = req.body.project_name
+                    result.manager = req.body.manager
+                    if (!result.project.project_state.boss_edit) {
+                        result.quotation_date = req.body.quotation_date
+                    }
+                    result.building_id = req.body.building_id
+                    return result
+                } else {
+                    return Promise.reject("找不到報價單")
                 }
+            }).then(function(result) {
+                if (result.project_item != req.body.project_item && req.body.project_item) {
+                    return Promise.all([
+                        quotation_job.destroy({
+                            where: {
+                                quotation_no: result.no
+                            }
+                        }),
+                        project_attachment.destroy({
+                            where: {
+                                project_id: result.project.id
+                            }
+                        })
+                    ]).then(function() {
+                        return project_item.findOne({
+                            include: [job_content_template, upload_content_template]
+                        })
+                    }).then(function(pi) {
+                        if (pi) {
+                            return Promise.all([
+                                quotation_job.bulkCreate(pi.job_content_templates.map((o) => {
+                                    return {
+                                        quotation_no: result.no,
+                                        index: o.index,
+                                        content: o.content
+                                    }
+                                })),
+                                project_attachment.bulkCreate(pi.upload_content_templates.map((o => {
+                                    console.log({
+                                        project_id: result.project.id,
+                                        index: o.index,
+                                        content: o.content
+                                    })
+                                    return {
+                                        project_id: result.project.id,
+                                        index: o.index,
+                                        content: o.content
+                                    }
+                                })))
+                            ])
+
+
+                        } else {
+                            return "done"
+                        }
+                    }).then(function() {
+                        result.project_type = req.body.project_type
+                        result.project_item = req.body.project_item
+                        return result
+                    })
+
+
+                } else {
+                    return result
+                }
+            }).then(function(result) {
+                return result.save().then(function() {
+                    return "success"
+                })
+            })
+        } else {
+            return Promise.reject("沒有報價單號")
+        }
+    },
+    submitQuotationJob(req, res, next) {
+        var quotation_job = require('../../db/models/quotation_job')
+        var quotation = require('../../db/models/quotation')
+
+        if (req.body.id) {
+            return checkQuotationDraftAndActive(req.body.quotation_no).then(function() {
+                return quotation_job.findOne({
+                    where: {
+                        id: req.body.id
+                    }
+                })
+            }).then(function(result) {
+                return result.update({
+                    content: req.body.content,
+                    cost: req.body.cost,
+                    retail: req.body.retail,
+                    count: req.body.count
+                })
+            }).catch(function(error) {
+                if (error.name == "SequelizeUniqueConstraintError") {
+                    return Promise.reject("數據不能重複")
+                }
+                return Promise.reject(error.name)
+            })
+        } else {
+            return quotation.findOne({
+                where: {
+                    no: req.body.quotation_no
+                }
+            }).then(function(result) {
+                return quotation_job.count({
+                    where: {
+                        quotation_no: req.body.quotation_no
+                    }
+                }).then(function(count) {
+                    return quotation_job.create({
+                        content: req.body.content,
+                        cost: req.body.cost,
+                        retail: req.body.retail,
+                        count: req.body.count,
+                        quotation_no: req.body.quotation_no,
+                        index: count + 1
+                    })
+                })
+            }).catch(function(error) {
+                if (error.name == "SequelizeUniqueConstraintError") {
+                    return Promise.reject("數據不能重複")
+                } else {
+                    if (error.name) {
+                        return Promise.reject(error.name)
+                    } else {
+                        return error
+                    }
+                }
+            })
+        }
+    },
+    deleteQuotationJob(req, res, next) {
+        var quotation_job = require('../../db/models/quotation_job')
+
+        return quotation_job.findOne({
+            where: {
+                id: req.body.id
+            }
+        }).then(function(result) {
+            return checkQuotationDraftAndActive(result.quotation_no)
+        }).then(function() {
+            quotation_job.destroy({
+                where: {
+                    id: req.body.id
+                }
+            })
+        }).then(function(result) {
+            return "success"
+        })
+    },
+    upQuotationJob(req, res, next) {
+        var quotation_job = require('../../db/models/quotation_job')
+        return quotation_job.findOne({
+            where: { id: req.body.id }
+        }).then((result) => {
+            return quotation_job.findOne({
+                where: {
+                    $and: {
+                        index: {
+                            $lt: result.index
+                        },
+                        quotation_no: result.quotation_no
+                    }
+                },
+                order: [
+                    ["index", "DESC"]
+                ]
+            }).then((o) => {
+                return [o, result]
+            })
+        }).then(function(result) {
+            if (result[0] != null) {
+                var tempIndex = result[0].index
+                result[0].index = result[1].index
+                result[1].index = tempIndex
+
+                return Promise.all([
+                    result[0].save(),
+                    result[1].save()
+                ])
+            } else {
+                return "do nothing"
+            }
+        })
+    },
+    downQuotationJob(req, res, next) {
+        var quotation_job = require('../../db/models/quotation_job')
+        return quotation_job.findOne({
+            where: { id: req.body.id }
+        }).then((result) => {
+            return quotation_job.findOne({
+                where: {
+                    $and: {
+                        index: {
+                            $gt: result.index
+                        },
+                        quotation_no: result.quotation_no
+                    }
+                },
+                order: [
+                    ["index"]
+                ]
+            }).then((o) => {
+                return [o, result]
+            })
+        }).then(function(result) {
+            if (result[0] != null) {
+                var tempIndex = result[0].index
+                result[0].index = result[1].index
+                result[1].index = tempIndex
+
+                return Promise.all([
+                    result[0].save(),
+                    result[1].save()
+                ])
+            } else {
+                return "do nothing"
+            }
+        })
+    },
+    saveQuotation(req, res, next) {
+        var no = req.body.no
+        if (no) {
+            var common = require('../common')
+            var quotation = require('../../db/models/quotation')
+            var project = require('../../db/models/project')
+            var project_state = require('../../db/models/project_state')
+            var quotation_job = require('../../db/models/quotation_job')
+
+            quotation.belongsTo(project)
+            project.hasOne(project_state)
+            quotation.hasMany(quotation_job)
+
+
+            return checkQuotationDraftAndActive(no).then(function() {
+                return quotation.findOne({
+                    include: [{
+                        model: project,
+                        include: [{
+                            model: project_state,
+                        }]
+                    }, {
+                        model: quotation_job
+                    }],
+                    where: {
+                        no: no
+                    }
+                })
+            }).then(function(result) {
+                if (result) {
+                    if (result.quotation_jobs.length == 0) {
+                        return Promise.reject("至少需要添加一條工作内容")
+                    } else {
+                        if (
+                            result.no &&
+                            result.property_management_co_name &&
+                            result.property_management_co_name_en &&
+                            result.project_name &&
+                            result.manager &&
+                            result.quotation_date &&
+                            result.building_id &&
+                            result.project_type &&
+                            result.project_item) {
+                            result.project.project_state.state = "quotation_save"
+                            return Promise.all([result.save(), result.project.project_state.save()])
+                        } else {
+                            return Promise.reject("報價單信息不全無法完成")
+                        }
+                    }
+
+                } else {
+                    return Promise.reject("找不到報價單")
+                }
+            }).then(function(result) {
+                common.log_project_record("create_quotation/saveQuotation", no, req.session.userInfo.name)
+                return 'success'
+            })
+        } else {
+            return Promise.reject("沒有報價單號")
+        }
+    },
+    editQuotation(req, res, next) {
+        var no = req.body.no
+        if (no) {
+            var common = require('../common')
+            var quotation = require('../../db/models/quotation')
+            var project = require('../../db/models/project')
+            var project_state = require('../../db/models/project_state')
+            var quotation_job = require('../../db/models/quotation_job')
+
+            quotation.belongsTo(project)
+            project.hasOne(project_state)
+            quotation.hasMany(quotation_job)
+
+
+            return quotation.findOne({
+                include: [{
+                    model: project,
+                    include: [{
+                        model: project_state,
+                    }]
+                }, {
+                    model: quotation_job,
+                }],
+                where: {
+                    no: no
+                }
+            }).then(function(result) {
+                if (result) {
+                    if (result.project.project_state.state != "quotation_save") {
+                        return Promise.reject("not allow")
+                    } else {
+                        return result
+                    }
+                } else {
+                    return Promise.reject("not found")
+                }
+            }).then(function(result) {
+                result.project.project_state.state = "draft"
+                result.project.project_state.manager_approve = false
+                result.project.project_state.boss_approve = false
+                result.project.project_state.boss_edit = false
+                return common.get_next_quotation_no(result.project.ori_quotation_no).then(function(qno) {
+                    var newQuotation = {}
+                    result.project.quotation_no = qno
+                    newQuotation.no = qno
+                    newQuotation.project_id = result.project_id
+                    newQuotation.project_item = result.project_item
+                    newQuotation.project_type = result.project_type
+                    newQuotation.property_management_co_name = result.property_management_co_name
+                    newQuotation.property_management_co_name_en = result.property_management_co_name_en
+                    newQuotation.project_name = result.project_name
+                    newQuotation.manager = result.manager
+                    newQuotation.quotation_date = result.quotation_date
+                    newQuotation.building_id = result.building_id
+
+                    var newJobs = result.quotation_jobs.map((o) => {
+                        return {
+                            content: o.content,
+                            cost: o.cost,
+                            retail: o.retail,
+                            count: o.count,
+                            quotation_no: qno,
+                            index: o.index
+                        }
+                    })
+                    return Promise.all([
+                        quotation_job.bulkCreate(newJobs),
+                        quotation.create(newQuotation),
+                        result.project.save(),
+                        result.project.project_state.save()
+                    ]).then(function() {
+                        return qno
+                    })
+                })
+            }).then(function(result) {
+                common.log_project_record("create_quotation/editQuotation", result, req.session.userInfo.name)
+                return 'success'
             })
         } else {
             return Promise.reject("not found")
         }
     },
-    getQuotationHistory(req, res, next) {
-        var id = req.query.id
-        if (id) {
-            var quotation = require('../../db/models/quotation')
-
-            return quotation.findAll({
+    saveContract(req, res, next) {
+        var projectId = req.body.project_id
+        if (projectId) {
+            var common = require('../common')
+            var project = require('../../db/models/project')
+            var project_state = require('../../db/models/project_state')
+            var project_contract = require('../../db/models/project_contract')
+            project.hasOne(project_state)
+            return project.findOne({
+                include: [project_state],
                 where: {
-                    project_id: id
-                },
-                order: ["id"]
-            })
-        }
-    },
-    getAttachment(req, res, next) {
-        var id = req.query.id
-        if (id) {
-            var fs = require('fs')
-            var file = require('../../db/models/file')
-            var attachment = require('../../db/models/attachment')
-            attachment.belongsTo(file)
-            attachment.findOne({
-                include: file,
-                where: {
-                    id: id
+                    id: projectId
                 }
             }).then((result) => {
                 if (result != null) {
-                    var localFile = fs.readFileSync("upload/files/" + result.file_hash, 'binary')
-                    res.setHeader('Content-disposition', 'inline; filename=' + encodeURIComponent(result.name))
-                    res.setHeader('Content-Type', result.file.type)
-                    res.setHeader('Content-Length', result.file.size)
-                    res.write(localFile, 'binary')
-                    res.end()
+                    if (result.project_state.state != "quotation_save") {
+                        return Promise.reject("not allow")
+                    } else {
+                        return result
+                    }
                 } else {
-                    return Promise.reject("no file record")
-                }
-            })
-        } else {
-            return Promise.reject("no file id")
-        }
-    },
-    getProjectContract(req, res, next) {
-        var id = req.query.id
-        if (id) {
-            var attachment = require('../../db/models/attachment')
-            var project_contract = require('../../db/models/project_contract')
-            project_contract.belongsTo(attachment)
-            return project_contract.findOne({
-                include: attachment,
-                where: {
-                    project_id: id
+                    return Promise.reject("no project")
                 }
             }).then((result) => {
-                if (result == null) {
-                    return {
-                        id: "",
-                        name: ""
-                    }
-                } else {
-                    return {
-                        id: result.attachment_id,
-                        name: result.attachment.name
-                    }
-                }
+                return project_contract.upsert({
+                    project_id: projectId,
+                    attachment_id: req.body.attachment_id
+                })
+            }).then(function(result) {
+                common.log_project_record("create_quotation/saveContract", projectId + ":" + req.body.attachment_id, req.session.userInfo.name)
+                return 'success'
             })
         } else {
-            return Promise.reject("no projectId")
+            return Promise.reject("no project id")
         }
+    },
+    beginWork(req, res, next) {
+        var id = req.body.id
+        var common = require('../common')
+        var project_state = require('../../db/models/project_state')
+        var project = require('../../db/models/project')
+        var project_attachment = require('../../db/models/project_attachment')
+
+        project.hasOne(project_state)
+
+        return project.findOne({
+            include: project_state,
+            where: {
+                id: id
+            }
+        }).then((result) => {
+            if (result != null) {
+                return result
+            } else {
+                return Promise.reject("project not found")
+            }
+        }).then((result) => {
+            if (result.project_state.state != "quotation_contract") {
+                return Promise.reject("not allow")
+            } else {
+                result.project_state.state = "working"
+                return result.project_state.save().then(() => {
+                    return result
+                })
+            }
+        }).then((result) => {
+            common.log_project_record("view_quotation/beginWork", result.id, req.session.userInfo.name)
+            return "success"
+        })
+    },
+    addProjectAttachment(req, res, next) {
+        var project_attachment = require('../../db/models/project_attachment')
+
+        return checkProjectWorking(req.body.project_id).then(() => {
+            return project_attachment.create(req.body)
+        })
+    },
+    deleteProjectAttachment(req, res, next) {
+        var project_attachment = require('../../db/models/project_attachment')
+
+        return checkProjectWorking(req.body.project_id).then(() => {
+            return project_attachment.destroy({ where: { id: req.body.id } }).then((result) => {
+
+            })
+        })
     }
 }
 
@@ -227,9 +593,7 @@ module.exports = (req, res, next) => {
     Promise.resolve(action).then(function(result) {
         return exec[result](req, res, next)
     }).then(function(result) {
-        if (req.params.action != "getAttachment") {
-            res.send(result)
-        }
+        res.send(result)
     }).catch(function(error) {
         res.status(500).send(error.toString())
     })

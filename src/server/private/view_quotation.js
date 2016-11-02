@@ -219,6 +219,23 @@ var exec = {
         } else {
             return Promise.reject("no projectId")
         }
+    },
+    getProjectAttachments(req, res, next) {
+        var id = req.query.id
+        var project = require('../../db/models/project')
+        var project_attachment = require('../../db/models/project_attachment')
+        var attachment = require('../../db/models/attachment')
+        project_attachment.belongsTo(project)
+        project_attachment.belongsTo(attachment)
+        return project_attachment.findAll({
+            include: [{
+                model: project,
+                where: {
+                    id: id
+                }
+            }, attachment],
+            order: ['index']
+        })
     }
 }
 

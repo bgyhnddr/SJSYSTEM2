@@ -5,6 +5,11 @@ var user_role = require('./models/user_role')
 var role_permission = require('./models/role_permission')
 var project_setting = require('./models/project_setting')
 
+var project_type = require('./models/project_type')
+var project_item = require('./models/project_item')
+var job_content_template = require('./models/job_content_template')
+var upload_content_template = require('./models/upload_content_template')
+
 module.exports = function() {
     return Promise.all([
         user.create({ account: 'admin', password: "admin" }),
@@ -31,6 +36,12 @@ module.exports = function() {
         permission.create({ code: "view_po", name: "查閱PO" }),
         permission.create({ code: "moneylog", name: "付款記錄" }),
         project_setting.create({ code: "profitability", value: "20" }),
-        project_setting.create({ code: "totalprofit", value: "0" })
+        project_setting.create({ code: "totalprofit", value: "0" }),
+        project_type.create({ name: "測試工程類型" }),
+        project_item.create({ project_type_id: 1, name: "測試工程項目" }),
+        job_content_template.create({ content: "工作模板1", index: 1, project_item_id: 1 }),
+        job_content_template.create({ content: "工作模板2", index: 2, project_item_id: 1 }),
+        upload_content_template.create({ content: "上傳文件1", index: 1, project_item_id: 1 }),
+        upload_content_template.create({ content: "上傳文件2", index: 2, project_item_id: 1 })
     ])
 }
