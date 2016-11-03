@@ -42,5 +42,8 @@ export default {
     },
     deleteProjectHour(params) {
         return request.post(path + 'deleteProjectHour', params)
+    },
+    beginWork(params) {
+        return request.post(path + 'beginWork', params)
     }
 }
