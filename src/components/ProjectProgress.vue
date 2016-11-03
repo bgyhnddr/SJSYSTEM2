@@ -18,7 +18,6 @@
     import checkPermission from '../extend/check-permission'
     import create_quotation from '../api/create_quotation'
     import view_quotation from '../api/view_quotation'
-    import VueStrapUpload from './extend/vue-strap-upload'
     import ProjectHour from './ProjectHour'
     import ProjectOutSource from './ProjectOutSource'
     import ProjectAttachment from './ProjectAttachment'
@@ -30,9 +29,9 @@
             }
         },
         components: {
-            VueStrapUpload,
             ProjectAttachment,
-            ProjectHour
+            ProjectHour,
+            ProjectOutSource
         },
         data() {
             return {

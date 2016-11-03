@@ -255,14 +255,16 @@ var exec = {
         var id = req.query.id
         var project = require('../../db/models/project')
         var project_out_source = require('../../db/models/project_out_source')
+        var attachment = require('../../db/models/attachment')
         project_out_source.belongsTo(project)
+        project_out_source.belongsTo(attachment)
         return project_out_source.findAll({
             include: [{
                 model: project,
                 where: {
                     id: id
                 }
-            }]
+            }, attachment]
         })
     }
 }

@@ -17,12 +17,18 @@
 						</p>
 					</div>
 					<bs-input type="textarea" :value.sync="submitData.content" label="工程外判内容"></bs-input>
+					<bs-input type="number" :value.sync="submitData.cost" label="工程外判收費"></bs-input>
+
+					<div>
+						<label>附件</label>
+						<vue-strap-upload :file-id.sync="submitData.attachment_id" :file-name.sync="submitData.attachment"></vue-strap-upload>
+					</div>
 					<bs-input type="textarea" :value.sync="submitData.comments" label="外判資料備注"></bs-input>
 					<bs-input type="date" :value.sync="submitData.finish_date" label="開工日期"></bs-input>
 				</div>
 				<div slot="modal-footer" class="modal-footer">
 					<button type="button" class="btn btn-default" @click="ShowOutSourceModel=false">关闭</button>
-					<button :disabled="submittingOutSource" type="button" class="btn btn-success" @click="submitOutSource">確認</button>
+					<button :disabled="submittingOutSource" type="button" class="btn btn-success" @click="submitProjectOutSource">確認</button>
 				</div>
 			</modal>
 			<div :class="{'in':showOutSourceContractorModel}" class="modal fade" :style="{zIndex:(showOutSourceContractorModel?undefined:-1)}"
@@ -76,7 +82,7 @@
 						<td>{{row.out_source}}</td>
 						<td>{{row.content}}</td>
 						<td>{{row.cost}}</td>
-						<td>{{row.attachment_id}}</td>
+						<td><a target="_blank" href="{{'/service/private/view_quotation/getAttachment?id='+row.attachment_id}}">{{row.attachment.name}}</a></td>
 						<td>{{row.comments}}</td>
 						<td>{{row.finish_date}}</td>
 						<td>
@@ -104,6 +110,7 @@
 
     export default {
         components: {
+            VueStrapUpload,
             modal,
             bsInput,
             OutSourceContractorSetting
@@ -172,7 +179,16 @@
                 if (that.vaild()) {
                     that.submittingOutSource = true
                     that.submitData.project_id = that.project.id
-                    create_quotation.submitProjectOutSource(that.submitData).then((result) => {
+                    create_quotation.submitProjectOutSource({
+                        id: that.submitData.id,
+                        out_source: that.submitData.out_source,
+                        content: that.submitData.content,
+                        cost: that.submitData.cost,
+                        attachment_id: that.submitData.attachment_id,
+                        comments: that.submitData.comments,
+                        finish_date: that.submitData.finish_date,
+                        project_id: that.submitData.project_id
+                    }).then((result) => {
                         that.submittingOutSource = false
                         that.ShowOutSourceModel = false
                         that.getProjectOutSources(that.project.id)
@@ -204,14 +220,15 @@
                     attachment_id: row.attachment_id,
                     comments: row.comments,
                     finish_date: row.finish_date,
-                    project_id: row.project_id
+                    project_id: row.project_id,
+                    attachment: row.attachment == null ? "" : row.attachment.name
                 }
                 this.ShowOutSourceModel = true
             }
         },
         events: {
             "outSourceSelect": function(val) {
-                this.submitData.out_source = val.name
+                this.submitData.out_source = val.company
                 this.showOutSourceContractorModel = false
             }
         },
