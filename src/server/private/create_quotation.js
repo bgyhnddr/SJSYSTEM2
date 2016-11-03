@@ -611,7 +611,7 @@ var exec = {
             if (result != null) {
                 return result.update(req.body)
             } else {
-                return result.create(req.body)
+                return project_hour.create(req.body)
             }
         })
     },

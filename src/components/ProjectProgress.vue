@@ -5,7 +5,7 @@
 			<div v-else>
 				<label>工程負責人:{{project.quotation.manager}}</label>
                 <project-attachment :project="project"></project-attachment>
-                <project-hour :project="project"></project-hour>
+                <project-hour :count="hourCount" :project="project"></project-hour>
 				<div v-if="project.project_state.state=='working'">
 					<button @click="endWork" class="btn btn-default">完工</button>
 				</div>
@@ -33,7 +33,9 @@
             ProjectHour
         },
         data() {
-            return {}
+            return {
+                hourCount: 0
+            }
         },
         methods: {
             checkPermission,

@@ -78,7 +78,6 @@
                 return view_quotation.getProject({
                     id: id
                 }).then((result) => {
-                    console.log(that.project.quotation_no)
                     that.project = result
                     that.alertText = ""
                 }).catch((err) => {
