@@ -45,12 +45,14 @@ var exec = {
         if (id) {
             var project_setting = require('../../db/models/project_setting')
             var project = require('../../db/models/project')
+            var project_contract = require('../../db/models/project_contract')
             var project_state = require('../../db/models/project_state')
             var quotation = require('../../db/models/quotation')
             var quotation_job = require('../../db/models/quotation_job')
             var common = require('../common')
 
             project.belongsTo(quotation)
+            project.hasOne(project_contract)
             quotation.hasMany(quotation_job)
 
             return Promise.all([
@@ -61,12 +63,15 @@ var exec = {
                         include: quotation_job
                     }, {
                         model: project_state
-                    }],
+                    }, project_contract],
                     where: {
                         id: id
                     }
                 })
             ]).then((result) => {
+                if (result[1].project_contract == null || !result[1].project_contract.attachment_id) {
+                    return Promise.reject("合同未上传")
+                }
                 var settingObj = {}
                 result[0].forEach(o => settingObj[o.code] = parseInt(o.value))
                 var totalRetail = result[1].quotation.quotation_jobs.reduce((sum, o) => {

@@ -46,13 +46,13 @@
                 if (this.project.project_state.state == "quotation_save") {
                     if (this.projectInfo.belowprofitability == true || this.projectInfo.overtotalprofit == true) {
                         if (this.project.project_state.boss_approve == true) {
-                            return isManager()
+                            return isManager() && this.id
                         } else {
                             return false
                         }
                     } else {
                         if (this.project.project_state.boss_approve == true || this.project.project_state.manager_approve == true) {
-                            return isManager()
+                            return isManager() && this.id
                         } else {
                             return false
                         }
