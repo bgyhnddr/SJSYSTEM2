@@ -250,6 +250,20 @@ var exec = {
                 }
             }]
         })
+    },
+    getProjectOutSources(req, res, next) {
+        var id = req.query.id
+        var project = require('../../db/models/project')
+        var project_out_source = require('../../db/models/project_out_source')
+        project_out_source.belongsTo(project)
+        return project_out_source.findAll({
+            include: [{
+                model: project,
+                where: {
+                    id: id
+                }
+            }]
+        })
     }
 }
 

@@ -4,8 +4,9 @@
 			<button v-if="project.project_state.state=='quotation_contract'" @click="beginWork" class="btn btn-default">開工</button>
 			<div v-else>
 				<label>工程負責人:{{project.quotation.manager}}</label>
-                <project-attachment :project="project"></project-attachment>
-                <project-hour :count="hourCount" :project="project"></project-hour>
+				<project-attachment :project="project"></project-attachment>
+				<project-hour :count="outSourceCount" :project="project"></project-hour>
+				<project-out-source :count="hourCount" :project="project"></project-out-source>
 				<div v-if="project.project_state.state=='working'">
 					<button @click="endWork" class="btn btn-default">完工</button>
 				</div>
@@ -19,6 +20,7 @@
     import view_quotation from '../api/view_quotation'
     import VueStrapUpload from './extend/vue-strap-upload'
     import ProjectHour from './ProjectHour'
+    import ProjectOutSource from './ProjectOutSource'
     import ProjectAttachment from './ProjectAttachment'
 
     export default {
@@ -34,7 +36,8 @@
         },
         data() {
             return {
-                hourCount: 0
+                hourCount: 0,
+                outSourceCount: 0
             }
         },
         methods: {

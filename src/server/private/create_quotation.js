@@ -626,6 +626,34 @@ var exec = {
         }).then(() => {
             return "success"
         })
+    },
+    submitProjectOutSource(req, res, next) {
+        var project_out_source = require('../../db/models/project_out_source')
+        return checkProjectWorking(req.body.project_id).then(() => {
+            return project_out_source.findOne({
+                where: {
+                    id: req.body.id
+                }
+            })
+        }).then((result) => {
+            if (result != null) {
+                return result.update(req.body)
+            } else {
+                return project_out_source.create(req.body)
+            }
+        })
+    },
+    deleteProjectOutSource(req, res, next) {
+        var project_out_source = require('../../db/models/project_out_source')
+        return checkProjectWorking(req.body.project_id).then(() => {
+            return project_out_source.destroy({
+                where: {
+                    id: req.body.id
+                }
+            })
+        }).then(() => {
+            return "success"
+        })
     }
 }
 

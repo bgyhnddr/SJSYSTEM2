@@ -34,5 +34,8 @@ export default {
     },
     getProjectHours(params) {
         return request.get(path + 'getProjectHours', params)
+    },
+    getProjectOutSources(params) {
+        return request.get(path + 'getProjectOutSources', params)
     }
 }

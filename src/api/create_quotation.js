@@ -37,13 +37,19 @@ export default {
     saveProjectAttachment(params) {
         return request.post(path + 'saveProjectAttachment', params)
     },
+    beginWork(params) {
+        return request.post(path + 'beginWork', params)
+    },
     submitProjectHour(params) {
         return request.post(path + 'submitProjectHour', params)
     },
     deleteProjectHour(params) {
         return request.post(path + 'deleteProjectHour', params)
     },
-    beginWork(params) {
-        return request.post(path + 'beginWork', params)
+    submitProjectOutSource(params) {
+        return request.post(path + 'submitProjectOutSource', params)
+    },
+    deleteProjectOutSource(params) {
+        return request.post(path + 'deleteProjectOutSource', params)
     }
 }

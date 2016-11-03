@@ -4,7 +4,7 @@ var sequelize = require('../sequelize')
 var project_out_source = sequelize.define(
     'project_out_source', {
         id: { type: Sequelize.INTEGER, autoIncrement: true, primaryKey: true },
-        out_source_contractor_id: { type: Sequelize.INTEGER },
+        out_source: Sequelize.STRING,
         content: Sequelize.STRING,
         cost: Sequelize.DECIMAL,
         attachment_id: Sequelize.INTEGER,

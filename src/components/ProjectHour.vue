@@ -134,7 +134,7 @@
                     id: id
                 }).then((result) => {
                     that.hours = result
-                    that.hourCount = that.hours.length
+                    that.count = that.hours.length
                 })
             },
             submitProjectHour(obj) {

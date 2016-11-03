@@ -3,7 +3,6 @@
 		<div v-if="checkPermission()">
 			<button @click="addOutSourceContractor" class="btn btn-default">添加外判資料</button>
 			<div style="position:relative">
-				<spinner size="md" text="loading..."></spinner>
 				<vue-strap-table :err-msg.sync="errMsg" :data.sync="data" :get-data-event="getData" :columns.sync="columns"></vue-strap-table>
 			</div>
 			<modal :show.sync="showOutSourceContractorModel" effect="fade" width="400">
@@ -222,9 +221,7 @@
             },
             "getData": function(pageNum, countPerPage, filterKey, append) {
                 let that = this
-                that.$broadcast('show::spinner')
                 datasource.getOutSourceContractors(pageNum, countPerPage, filterKey).then(function(result) {
-                    that.$broadcast('hide::spinner')
                     if (append) {
                         that.data.end = result.end
                         that.data.list = that.data.list.concat(result.list)
@@ -233,7 +230,6 @@
                     }
                 }).catch(function(err) {
                     that.errMsg = err
-                    that.$broadcast('hide::spinner')
                 })
             }
         },
