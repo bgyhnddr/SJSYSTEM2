@@ -541,7 +541,6 @@ var exec = {
         var common = require('../common')
         var project_state = require('../../db/models/project_state')
         var project = require('../../db/models/project')
-        var project_attachment = require('../../db/models/project_attachment')
 
         project.hasOne(project_state)
 
@@ -652,6 +651,39 @@ var exec = {
                 }
             })
         }).then(() => {
+            return "success"
+        })
+    },
+    endWork(req, res, next) {
+        var id = req.body.id
+        var common = require('../common')
+        var project_state = require('../../db/models/project_state')
+        var project = require('../../db/models/project')
+
+        project.hasOne(project_state)
+
+        return project.findOne({
+            include: project_state,
+            where: {
+                id: id
+            }
+        }).then((result) => {
+            if (result != null) {
+                return result
+            } else {
+                return Promise.reject("project not found")
+            }
+        }).then((result) => {
+            if (result.project_state.state != "working") {
+                return Promise.reject("not allow")
+            } else {
+                result.project_state.state = "counting"
+                return result.project_state.save().then(() => {
+                    return result
+                })
+            }
+        }).then((result) => {
+            common.log_project_record("view_quotation/endWork", result.id, req.session.userInfo.name)
             return "success"
         })
     }

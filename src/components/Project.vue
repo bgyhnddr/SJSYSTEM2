@@ -1,11 +1,25 @@
 <template>
-	<div>
+	<div class="container-fluid container-limited">
 		<div v-if="checkPermission()">
 			<alert v-if="alertText" type="success">
 				{{alertText}}
 			</alert>
 			<div v-if="project.id">
+                <h4>報價單：{{project.quotation_no}}</h4>
+                <h4>工程名稱：{{project.quotation.project_name}}</h4>
 				<div class="panel-group">
+                    <div v-if="showprojectAccounting" class="panel panel-default">
+						<div @click="toggerShow" class="panel-heading">
+							<h4 class="panel-title">
+								<a v-link="{ path: '/index/ProjectManagement/Project/'+$route.params.id + '/accounting' }">賬務信息</a>
+							</h4>
+						</div>
+						<div class="panel-collapse collapse in">
+							<div class="panel-body">
+								<project-accounting :project.sync="project"></project-accounting>
+							</div>
+						</div>
+					</div>
 					<div v-if="showProjectProgress" class="panel panel-default">
 						<div @click="toggerShow" class="panel-heading">
 							<h4 class="panel-title">
@@ -44,6 +58,7 @@
     import view_quotation from '../api/view_quotation'
     import ProjectContract from './ProjectContract'
     import ProjectProgress from './ProjectProgress'
+    import ProjectAccounting from './ProjectAccounting'
     import {
         alert
     } from 'vue-strap'
@@ -58,10 +73,16 @@
         },
         computed: {
             showQuotationConfirm() {
-                return (this.project.project_state && this.project.project_state.state == "quotation_save")
+                var state = this.project.project_state ? this.project.project_state.state : ""
+                return !['quotation_save'].some(o => o == state)
             },
             showProjectProgress() {
-                return (this.project.project_state && this.project.project_state.state != "quotation_save" && this.project.project_state.state != "draft")
+                var state = this.project.project_state ? this.project.project_state.state : ""
+                return !['quotation_save', 'draft'].some(o => o == state)
+            },
+            showprojectAccounting() {
+                var state = this.project.project_state ? this.project.project_state.state : ""
+                return !['quotation_save', 'draft', 'quotation_contract', 'working'].some(o => o == state)
             }
         },
         components: {
@@ -69,6 +90,7 @@
             QuotationConfirm,
             ProjectContract,
             ProjectProgress,
+            ProjectAccounting,
             alert
         },
         methods: {

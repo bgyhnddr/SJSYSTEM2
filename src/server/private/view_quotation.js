@@ -266,6 +266,55 @@ var exec = {
                 }
             }, attachment]
         })
+    },
+    getProjectAccounting(req, res, next) {
+        var project_accounting = require('../../db/models/project_accounting')
+        return project_accounting.findOne({
+            where: {
+                project_id: req.query.project_id
+            }
+        }).then((result) => {
+            if (result != null) {
+                return result
+            } else {
+                return {
+                    ecost: 0,
+                    acost: 0,
+                    income: 0,
+                    project_id: req.query.project_id
+                }
+            }
+        })
+    },
+    saveProjectAcounting(req, res, next) {
+        var project_accounting = require('../../db/models/project_accounting')
+        var project = require('../../db/models/project')
+        var project_state = require('../../db/models/project_state')
+
+        project.hasOne(project_state)
+        project.hasOne(project_accounting)
+        req.session.userInfo.permissions.some(o => o == "confirm_quotation_boss" || o == "admin")
+        return project.findOne({
+            include: [project_accounting, project_state],
+            where: {
+                id: req.body.project_id
+            }
+        }).then((result) => {
+            if (result != null) {
+                return result
+            } else {
+                return Promise.reject("not found")
+            }
+        }).then((result) => {
+            if (result.project_state.state == "counting" ||
+                req.session.userInfo.permissions.some(o => o == "confirm_quotation_boss" || o == "admin")) {
+                return result
+            } else {
+                return Promise.reject("not allow")
+            }
+        }).then((result) => {
+            return project_accounting.upsert(req.body)
+        })
     }
 }
 

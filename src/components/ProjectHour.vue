@@ -2,7 +2,7 @@
 	<div class="panel panel-default">
 		<div class="panel-heading">工時錄入</div>
 		<div class="panel-body">
-			<button @click="addHours" class="btn btn-default">新增記錄</button>
+			<button v-if="project.project_state.state=='working'" @click="addHours" class="btn btn-default">新增記錄</button>
 			<modal :show.sync="ShowHourModel" effect="fade">
 				<div slot="modal-header" class="modal-header">
 					<h4 class="modal-title">
@@ -70,7 +70,7 @@
 						<td>{{row.staff}}</td>
 						<td>{{row.hour}}</td>
 						<td>{{row.comments}}</td>
-						<td>
+						<td v-if="project.project_state.state=='working'">
 							<button @click="editHour(row)" class="btn btn-default btn-xs">修改</button>
 							<button @click="deleteHour(row)" class="btn btn-default btn-xs">刪除</button>
 						</td>

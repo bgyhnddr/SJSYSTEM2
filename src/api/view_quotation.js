@@ -37,5 +37,11 @@ export default {
     },
     getProjectOutSources(params) {
         return request.get(path + 'getProjectOutSources', params)
+    },
+    getProjectAccounting(params) {
+        return request.get(path + 'getProjectAccounting', params)
+    },
+    saveProjectAcounting(params) {
+        return request.post(path + 'saveProjectAcounting', params)
     }
 }

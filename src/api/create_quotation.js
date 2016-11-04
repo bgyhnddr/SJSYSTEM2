@@ -51,5 +51,8 @@ export default {
     },
     deleteProjectOutSource(params) {
         return request.post(path + 'deleteProjectOutSource', params)
+    },
+    endWork(params) {
+        return request.post(path + 'endWork', params)
     }
 }

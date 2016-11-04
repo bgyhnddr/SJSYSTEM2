@@ -5,10 +5,10 @@
 			<div v-else>
 				<label>工程負責人:{{project.quotation.manager}}</label>
 				<project-attachment :project="project"></project-attachment>
-				<project-hour :count="outSourceCount" :project="project"></project-hour>
-				<project-out-source :count="hourCount" :project="project"></project-out-source>
+				<project-hour :count.sync="outSourceCount" :project="project"></project-hour>
+				<project-out-source :count.sync="hourCount" :project="project"></project-out-source>
 				<div v-if="project.project_state.state=='working'">
-					<button @click="endWork" class="btn btn-default">完工</button>
+					<button v-if="hourCount||outSourceCount" @click="endWork" class="btn btn-default">完工</button>
 				</div>
 			</div>
 		</div>
@@ -54,7 +54,16 @@
                 }
             },
             endWork() {
-
+                var that = this
+                if (confirm("是否確認完工？")) {
+                    create_quotation.endWork({
+                        id: that.project.id
+                    }).then((result) => {
+                        that.project.project_state.state = "counting"
+                    }).catch((err) => {
+                        window.alert(err)
+                    })
+                }
             }
         },
         ready() {}

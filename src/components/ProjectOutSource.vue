@@ -2,7 +2,7 @@
 	<div class="panel panel-default">
 		<div class="panel-heading">外判記錄</div>
 		<div class="panel-body">
-			<button @click="addOutSources" class="btn btn-default">新增外判記錄</button>
+			<button v-if="project.project_state.state=='working'" @click="addOutSources" class="btn btn-default">新增外判記錄</button>
 			<modal :show.sync="ShowOutSourceModel" effect="fade">
 				<div slot="modal-header" class="modal-header">
 					<h4 class="modal-title">
@@ -72,7 +72,7 @@
 						<th>
 							完工日期
 						</th>
-						<th>
+						<th v-if="project.project_state.state=='working'">
 							操作
 						</th>
 					</tr>
@@ -85,7 +85,7 @@
 						<td><a target="_blank" href="{{'/service/private/view_quotation/getAttachment?id='+row.attachment_id}}">{{row.attachment.name}}</a></td>
 						<td>{{row.comments}}</td>
 						<td>{{row.finish_date}}</td>
-						<td>
+						<td v-if="project.project_state.state=='working'">
 							<button @click="editOutSource(row)" class="btn btn-default btn-xs">修改</button>
 							<button @click="deleteOutSource(row)" class="btn btn-default btn-xs">刪除</button>
 						</td>
