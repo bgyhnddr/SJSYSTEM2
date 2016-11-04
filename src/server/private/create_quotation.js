@@ -565,7 +565,7 @@ var exec = {
                 })
             }
         }).then((result) => {
-            common.log_project_record("view_quotation/beginWork", result.id, req.session.userInfo.name)
+            common.log_project_record("create_quotation/beginWork", result.id, req.session.userInfo.name)
             return "success"
         })
     },
@@ -683,7 +683,7 @@ var exec = {
                 })
             }
         }).then((result) => {
-            common.log_project_record("view_quotation/endWork", result.id, req.session.userInfo.name)
+            common.log_project_record("create_quotation/endWork", result.id, req.session.userInfo.name)
             return "success"
         })
     }

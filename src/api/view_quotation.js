@@ -43,5 +43,8 @@ export default {
     },
     saveProjectAcounting(params) {
         return request.post(path + 'saveProjectAcounting', params)
+    },
+    confirmProjectAcounting(params) {
+        return request.post(path + 'confirmProjectAcounting', params)
     }
 }

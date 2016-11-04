@@ -2,14 +2,17 @@
 	<div>
 		<div v-if="isEdit">
 			<button @click="saveChange" v-if="changed" class="btn btn-default">保存修改</button>
-			<button class="btn btn-default">確認信息</button>
+			<button @click="confirmInfo" v-if="project.project_state.state == 'counting'" class="btn btn-default">確認信息</button>
 			<bs-input type="number" :value.sync="submitData.ecost" label="工程預計成本"></bs-input>
 			<bs-input type="number" :value.sync="submitData.acost" label="工程實際成本"></bs-input>
 			<bs-input type="number" :value.sync="submitData.income" label="工程實際收入"></bs-input>
 			工程實際綠潤：{{profit}}
 		</div>
 		<div v-else>
-			工程預計成本：{{submitData.ecost}} 工程實際成本：{{submitData.acost}} 工程實際收入：{{submitData.income}} 工程實際綠潤：{{profit}}
+			<p>工程預計成本：{{submitData.ecost}}</p>
+			<p>工程實際成本：{{submitData.acost}}</p>
+			<p>工程實際收入：{{submitData.income}}</p>
+			<p>工程實際綠潤：{{profit}}</p>
 		</div>
 	</div>
 </template>
@@ -45,7 +48,7 @@
         },
         computed: {
             isEdit() {
-                return this.checkPermission(['confirm_quotation_boss']) || (this.project && this.project.project_state.state != 'counting')
+                return this.checkPermission(['confirm_quotation_boss']) || (this.project && this.project.project_state.state == 'counting')
             },
             profit() {
                 return this.submitData.acost - this.submitData.income
@@ -74,6 +77,18 @@
                 }).catch((err) => {
                     window.alert(err)
                 })
+            },
+            confirmInfo() {
+                var that = this
+                if (confirm("一旦確認，衹能由BOSS再次更改")) {
+                    view_quotation.confirmProjectAcounting({
+                        id: that.project.id
+                    }).then((result) => {
+                        that.project.project_state.state = "paying"
+                    }).catch((err) => {
+                        window.alert(err)
+                    })
+                }
             }
         },
         watch: {
