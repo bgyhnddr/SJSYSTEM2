@@ -49,5 +49,8 @@ export default {
     },
     getProjectInvoices(params) {
         return request.get(path + 'getProjectInvoices', params)
+    },
+    getProjects(params) {
+        return request.get(path + 'getProjects', params)
     }
 }

@@ -14,6 +14,9 @@ export function configRouter(router) {
                         },
                         'Project/:id/:mode': {
                             component: require('../components/Project.vue')
+                        },
+                        'ProjectList/:type': {
+                            component: require('../components/ProjectList.vue')
                         }
                     }
                 },

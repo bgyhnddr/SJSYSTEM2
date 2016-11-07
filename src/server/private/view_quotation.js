@@ -394,6 +394,74 @@ var exec = {
                 return o
             })
         })
+    },
+    getProjects(req, res, next) {
+        var filterKey = req.query.filterKey == undefined ? "" : req.query.filterKey
+        var count = req.query.count == undefined ? 5 : parseInt(req.query.count)
+        var page = req.query.page == undefined ? 0 : parseInt(req.query.page)
+        var type = req.query.type
+
+        var project = require('../../db/models/project')
+        var project_state = require('../../db/models/project_state')
+        var quotation = require('../../db/models/quotation')
+
+        project.hasOne(project_state)
+        project.hasOne(quotation)
+        
+        // return exec.getProjectConfirmInfo(req).then((confirmInfo) => {
+
+        // })
+
+        return Promise.resolve().then(() => {
+            switch (type) {
+                case "draft":
+                    return Promise.all([project.findAll({
+                        include: [{
+                            model: project_state,
+                            where: {
+                                state: "draft"
+                            }
+                        }, {
+                            model: quotation,
+                            where: {
+                                $or: {
+                                    project_name: {
+                                        $like: "%" + filterKey + "%"
+                                    }
+                                }
+                            }
+                        }],
+                        offset: page * count,
+                        limit: count
+                    }), project.count({
+                        include: [{
+                            model: project_state,
+                            where: {
+                                state: "draft"
+                            }
+                        }, {
+                            model: quotation,
+                            where: {
+                                $or: {
+                                    project_name: {
+                                        $like: "%" + filterKey + "%"
+                                    }
+                                }
+                            }
+                        }],
+                        offset: page * count,
+                        limit: count
+                    })])
+
+            }
+        }).then(function(result) {
+            var list = result[0]
+            var rowCount = result[1]
+            return {
+                end: (list.length + page * count) >= rowCount,
+                list: list
+            }
+        })
     }
 }
 
