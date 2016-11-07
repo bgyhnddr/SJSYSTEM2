@@ -46,5 +46,8 @@ export default {
     },
     confirmProjectAcounting(params) {
         return request.post(path + 'confirmProjectAcounting', params)
+    },
+    getProjectInvoices(params) {
+        return request.get(path + 'getProjectInvoices', params)
     }
 }

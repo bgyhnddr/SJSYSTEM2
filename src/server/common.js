@@ -47,12 +47,12 @@ exports.get_next_quotation_no = function(quotation_no) {
                 quotation_no: quotation_no,
                 version: 1
             }).then(function() {
-                return quotation_no + "R1"
+                return quotation_no + "-R1"
             })
         } else {
             result.version += 1
             return result.save().then(function() {
-                return quotation_no + "R" + result.version
+                return quotation_no + "-R" + result.version
             })
         }
     })

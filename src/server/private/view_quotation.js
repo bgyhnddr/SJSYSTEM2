@@ -348,6 +348,52 @@ var exec = {
             common.log_project_record("view_quotation/endWork", result.id, req.session.userInfo.name)
             return "success"
         })
+    },
+    getProjectInvoices(req, res, next) {
+        var id = req.body.id
+        var project = require('../../db/models/project')
+
+        var project_invoice = require('../../db/models/project_invoice')
+        var project_invoice_detail = require('../../db/models/project_invoice_detail')
+        var quotation_job = require('../../db/models/quotation_job')
+        var attachment = require('../../db/models/attachment')
+
+        project_invoice.belongsTo(project)
+        project_invoice.belongsTo(attachment)
+        project_invoice.hasMany(project_invoice_detail)
+        project_invoice_detail.belongsTo(quotation_job)
+
+        return project_invoice.findAll({
+            include: [{
+                model: project_invoice_detail,
+                include: quotation_job
+            }, {
+                model: project,
+                where: {
+                    id: req.query.id
+                }
+            }, attachment]
+        }).then((result) => {
+            return result.map((obj) => {
+                var o = obj.toJSON()
+                o.invoice_money = o.project_invoice_details.reduce((sum, item) => {
+                    if (item.quotation_job != null) {
+                        var fnum = parseInt(item.quotation_job.retail * item.quotation_job.count)
+                        return sum + (fnum ? fnum : 0)
+                    } else {
+                        return sum
+                    }
+                }, 0)
+
+                if (o.attachment == null) {
+                    o.attachment = {
+                        id: 0,
+                        name: ""
+                    }
+                }
+                return o
+            })
+        })
     }
 }
 

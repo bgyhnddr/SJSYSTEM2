@@ -8,6 +8,18 @@
                 <h4>報價單：{{project.quotation_no}}</h4>
                 <h4>工程名稱：{{project.quotation.project_name}}</h4>
 				<div class="panel-group">
+                    <div v-if="showprojectInvoice" class="panel panel-default">
+						<div @click="toggerShow" class="panel-heading">
+							<h4 class="panel-title">
+								<a v-link="{ path: '/index/ProjectManagement/Project/'+$route.params.id + '/invoice' }">發票</a>
+							</h4>
+						</div>
+						<div class="panel-collapse collapse in">
+							<div class="panel-body">
+								<project-invoice :project.sync="project"></project-invoice>
+							</div>
+						</div>
+					</div>
                     <div v-if="showprojectAccounting" class="panel panel-default">
 						<div @click="toggerShow" class="panel-heading">
 							<h4 class="panel-title">
@@ -59,6 +71,7 @@
     import ProjectContract from './ProjectContract'
     import ProjectProgress from './ProjectProgress'
     import ProjectAccounting from './ProjectAccounting'
+    import ProjectInvoice from './ProjectInvoice'
     import {
         alert
     } from 'vue-strap'
@@ -74,7 +87,7 @@
         computed: {
             showQuotationConfirm() {
                 var state = this.project.project_state ? this.project.project_state.state : ""
-                return !['quotation_save'].some(o => o == state)
+                return ['quotation_save'].some(o => o == state)
             },
             showProjectProgress() {
                 var state = this.project.project_state ? this.project.project_state.state : ""
@@ -83,6 +96,11 @@
             showprojectAccounting() {
                 var state = this.project.project_state ? this.project.project_state.state : ""
                 return !['quotation_save', 'draft', 'quotation_contract', 'working'].some(o => o == state)
+            },
+            showprojectInvoice() {
+                var state = this.project.project_state ? this.project.project_state.state : ""
+                return !['quotation_save', 'draft', 'quotation_contract', 'working', 'counting'].some(o => o == state) &&
+                    this.checkPermission(['boss', 'invoice'])
             }
         },
         components: {
@@ -91,6 +109,7 @@
             ProjectContract,
             ProjectProgress,
             ProjectAccounting,
+            ProjectInvoice,
             alert
         },
         methods: {
@@ -125,6 +144,7 @@
         ready() {
             var that = this
             that.getProject(that.$route.params.id)
+            that.getProjectConfirmInfo(that.$route.params.id)
         },
         events: {
             'refreshProject': function() {

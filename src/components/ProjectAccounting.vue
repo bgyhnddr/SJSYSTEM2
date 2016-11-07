@@ -58,7 +58,6 @@
             checkPermission,
             getProjectAccounting(project_id) {
                 var that = this
-                console.log(project_id)
                 view_quotation.getProjectAccounting({
                     project_id: project_id
                 }).then((result) => {
