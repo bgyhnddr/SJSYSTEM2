@@ -703,6 +703,40 @@ var exec = {
                         offset: page * count,
                         limit: count
                     })])
+                case "counting":
+                    return Promise.all([project.findAll({
+                        include: [{
+                            model: project_state,
+                            where: {
+                                $or: [{
+                                        state: "counting"
+                                    },
+                                    { state: "paying" }
+                                ]
+                            }
+                        }, {
+                            model: quotation,
+                            include: building
+                        }],
+                        where: where,
+                        offset: page * count,
+                        limit: count,
+                        order: 'project.id DESC'
+                    }), project.count({
+                        include: [{
+                            model: project_state,
+                            where: {
+                                $or: [{
+                                        state: "counting"
+                                    },
+                                    { state: "paying" }
+                                ]
+                            }
+                        }],
+                        where: where,
+                        offset: page * count,
+                        limit: count
+                    })])
                 default:
                     return Promise.all([project.findAll({
                         include: [{
