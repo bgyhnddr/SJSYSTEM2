@@ -24,28 +24,28 @@
 						<td v-for="column of columns | filterBy undefiend in 'hide'">
 							<template v-if="column.type == undefined || column.type == 'string'">
 								<template v-if="column.format">{{ column.format(row[column.bind],row) }}</template>
-								<template v-else>{{ row[column.bind] }}</template>
-							</template>
-							<template v-if="column.type == 'action'">
+<template v-else>{{ row[column.bind] }}</template>
+</template>
+<template v-if="column.type == 'action'">
 								<template v-for="item in column.items">
 									<template v-if="item.tag=='button'">
 										<button v-if="item.filter?item.filter(row):true" @click="action(item.eventName,row)" class="{{item.class}} btn btn-default">{{item.text}}</button>
 									</template>
-								</template>
-							</template>
-							<template v-if="column.type == 'index'">
+</template>
+</template>
+<template v-if="column.type == 'index'">
 								{{$parent.$index+1}}
 							</template>
-						</td>
-					</tr>
-				</tbody>
-			</table>
-			<button type="button" v-if="data.end===false" class="btn btn-default" @click="addData">更多...</button>
-			<div v-if="errMsg">
-				{{errMsg}}
-			</div>
-		</div>
-	</div>
+</td>
+</tr>
+</tbody>
+</table>
+<button type="button" v-if="data.end===false" class="btn btn-default" @click="addData">更多...</button>
+<div v-if="errMsg">
+    {{errMsg}}
+</div>
+</div>
+</div>
 </template>
 <script>
     import {
@@ -102,15 +102,18 @@
                 this.pageNum = 0
                 this.errMsg = ""
                 this.$dispatch(this.getDataEvent, this.pageNum, this.countPerPage, this.filterKey)
+                this.$emit("getdata", this.pageNum, this.countPerPage, this.filterKey)
             },
             addData() {
                 let that = this
                 this.errMsg = ""
                 this.pageNum += 1
                 this.$dispatch(this.getDataEvent, this.pageNum, this.countPerPage, this.filterKey, true)
+                this.$emit("getdata", this.pageNum, this.countPerPage, this.filterKey)
             },
             action(event, row) {
                 this.$dispatch(event, row)
+                this.$emit("rowaction", this.pageNum, this.countPerPage, this.filterKey)
             },
             clearFilter() {
                 this.filterKey = ""
@@ -125,7 +128,7 @@
     }
 </script>
 <style>
-	.vue-strap-table {
-		position: relative;
-	}
+    .vue-strap-table {
+        position: relative;
+    }
 </style>

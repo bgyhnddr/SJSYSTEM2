@@ -1,3 +1,12 @@
+var getState = (state) => {
+    switch (state) {
+        case 'draft':
+            return "草稿"
+        default:
+            ""
+    }
+}
+
 var exec = {
     getQuotation(req, res, next) {
         var no = req.query.no
@@ -404,13 +413,48 @@ var exec = {
         var project = require('../../db/models/project')
         var project_state = require('../../db/models/project_state')
         var quotation = require('../../db/models/quotation')
+        var building = require('../../db/models/building')
 
         project.hasOne(project_state)
-        project.hasOne(quotation)
-        
+        project.belongsTo(quotation)
+        quotation.belongsTo(building)
+
         // return exec.getProjectConfirmInfo(req).then((confirmInfo) => {
 
         // })
+
+        var where = undefined
+        if (filterKey) {
+            where = {
+                $or: [{
+                        '$quotation.project_name$': {
+                            $like: "%" + filterKey + "%"
+                        }
+                    },
+                    {
+                        '$quotation.building.name$': {
+                            $like: "%" + filterKey + "%"
+                        }
+                    },
+                    {
+                        '$quotation.property_management_co_name$': {
+                            $like: "%" + filterKey + "%"
+                        }
+                    },
+                    {
+                        '$quotation.manager$': {
+                            $like: "%" + filterKey + "%"
+                        }
+                    },
+                    {
+                        '$quotation.project_type$': {
+                            $like: "%" + filterKey + "%"
+                        }
+                    }
+                ]
+            }
+        }
+        console.log(where)
 
         return Promise.resolve().then(() => {
             switch (type) {
@@ -423,16 +467,12 @@ var exec = {
                             }
                         }, {
                             model: quotation,
-                            where: {
-                                $or: {
-                                    project_name: {
-                                        $like: "%" + filterKey + "%"
-                                    }
-                                }
-                            }
+                            include: building
                         }],
+                        where: where,
                         offset: page * count,
-                        limit: count
+                        limit: count,
+                        order: 'project.id DESC'
                     }), project.count({
                         include: [{
                             model: project_state,
@@ -441,21 +481,44 @@ var exec = {
                             }
                         }, {
                             model: quotation,
-                            where: {
-                                $or: {
-                                    project_name: {
-                                        $like: "%" + filterKey + "%"
-                                    }
-                                }
-                            }
+                            include: building
                         }],
+                        where: where,
                         offset: page * count,
                         limit: count
                     })])
+                default:
+                    console.log("default")
+                    return Promise.all([project.findAll({
+                        include: [{
+                            model: project_state
+                        }, {
+                            model: quotation,
+                            include: building
+                        }],
+                        order: 'project.id DESC'
+                    }), project.count({
+                        include: [{
+                            model: project_state
+                        }, {
+                            model: quotation
+                        }]
+                    })])
 
             }
-        }).then(function(result) {
-            var list = result[0]
+        }).then((result) => {
+            var list = result[0].map((o) => {
+                return {
+                    id: o.id,
+                    quotation_no: o.quotation_no,
+                    property_management_co_name: o.quotation.property_management_co_name,
+                    building_name: o.quotation.building == null ? "" : o.quotation.building.name,
+                    project_name: o.quotation.project_name,
+                    project_type: o.quotation.project_type,
+                    state: getState(o.project_state.state),
+                    manager: o.manager
+                }
+            })
             var rowCount = result[1]
             return {
                 end: (list.length + page * count) >= rowCount,

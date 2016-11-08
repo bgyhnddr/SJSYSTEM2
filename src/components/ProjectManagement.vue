@@ -7,6 +7,9 @@
 					<a v-link="{ path: '/index/ProjectManagement/Project' }">新建報價單</a>
 				</li>
 				<li v-if="checkPermission()">
+					<a v-link="{ path: '/index/ProjectManagement/ProjectList/draft' }">報價單草稿</a>
+				</li>
+				<li v-if="checkPermission()">
 					<a v-link="{ path: '/index/ProjectManagement/ProjectList/1' }">待核准工程</a>
 				</li>
 				<li v-if="checkPermission()">
