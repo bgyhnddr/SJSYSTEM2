@@ -2,9 +2,37 @@ var getState = (state) => {
     switch (state) {
         case 'draft':
             return "草稿"
+        case "wait_approve":
+            return "等待確認"
+        case "wait_approve_boss":
+            return "等待BOSS確認"
+        case "wait_contract":
+            return "等待合同"
+        case "quotation_contract":
+            return "已報價工程"
+        case "working":
+            return "施工中"
+        case "counting":
+            return "已完成工程"
         default:
-            ""
+            return "已完成工程"
     }
+}
+
+var getProjectSetting = () => {
+    var project_setting = require('../../db/models/project_setting')
+    return project_setting.findAll().then((result) => {
+        var returnObj = {
+            totalprofit: "0",
+            profitability: "20"
+        }
+        if (result.length != 0) {
+            result.forEach((o) => {
+                returnObj[o.code] = o.value
+            })
+        }
+        return returnObj
+    })
 }
 
 var exec = {
@@ -99,19 +127,7 @@ var exec = {
         }
     },
     getProfitSetting(req, res, next) {
-        var project_setting = require('../../db/models/project_setting')
-        var returnObj = {
-            totalprofit: "0",
-            profitability: "20"
-        }
-        return project_setting.findAll().then((result) => {
-            if (result.length != 0) {
-                result.forEach((o) => {
-                    result[o.code] = o.value
-                })
-            }
-            return returnObj
-        })
+        return getProjectSetting()
     },
     getProjectConfirmInfo(req, res, next) {
         var id = req.query.id
@@ -139,10 +155,10 @@ var exec = {
                 var settingObj = {}
                 result[0].forEach(o => settingObj[o.code] = parseInt(o.value))
                 var totalRetail = result[1].quotation.quotation_jobs.reduce((sum, o) => {
-                    return sum + o.retail
+                    return sum + o.retail * o.count
                 }, 0)
                 var totalCost = result[1].quotation.quotation_jobs.reduce((sum, o) => {
-                    return sum + o.cost
+                    return sum + o.cost * o.count
                 }, 0)
                 var belowprofitability = settingObj.profitability > ((totalRetail - totalCost) / totalCost) * 100
 
@@ -413,11 +429,14 @@ var exec = {
         var project = require('../../db/models/project')
         var project_state = require('../../db/models/project_state')
         var quotation = require('../../db/models/quotation')
+        var quotation_job = require('../../db/models/quotation_job')
         var building = require('../../db/models/building')
+        var project_setting = require('../../db/models/project_setting')
 
         project.hasOne(project_state)
         project.belongsTo(quotation)
         quotation.belongsTo(building)
+        quotation.hasMany(quotation_job)
 
         // return exec.getProjectConfirmInfo(req).then((confirmInfo) => {
 
@@ -427,6 +446,10 @@ var exec = {
         if (filterKey) {
             where = {
                 $or: [{
+                        quotation_no: {
+                            $like: "%" + filterKey + "%"
+                        }
+                    }, {
                         '$quotation.project_name$': {
                             $like: "%" + filterKey + "%"
                         }
@@ -454,7 +477,6 @@ var exec = {
                 ]
             }
         }
-        console.log(where)
 
         return Promise.resolve().then(() => {
             switch (type) {
@@ -487,24 +509,247 @@ var exec = {
                         offset: page * count,
                         limit: count
                     })])
+                case 'wait_approve':
+                    return getProjectSetting().then((settingObj) => {
+                        return project.findAll({
+                            include: [{
+                                model: project_state,
+                                where: {
+                                    state: "quotation_save"
+                                }
+                            }, {
+                                model: quotation,
+                                include: [building, quotation_job]
+                            }],
+                            order: 'project.id DESC'
+                        }).then((result) => {
+                            var list = result.map((o) => {
+                                var obj = o.toJSON()
+                                obj.project_state.state = 'wait_approve'
+                                return obj
+                            })
+                            list = list.filter((pj) => {
+                                var totalRetail = pj.quotation.quotation_jobs.reduce((sum, o) => {
+                                    return sum + o.retail * o.count
+                                }, 0)
+                                var totalCost = pj.quotation.quotation_jobs.reduce((sum, o) => {
+                                    return sum + o.cost * o.count
+                                }, 0)
+                                var belowprofitability = settingObj.profitability > ((totalRetail - totalCost) / totalCost) * 100
+                                var overtotalprofit = settingObj.totalprofit < totalCost
+                                var needboss = belowprofitability || overtotalprofit
+                                if (pj.project_state.boss_approve) {
+                                    return false
+                                } else {
+                                    return !pj.project_state.manager_approve && !needboss
+                                }
+                            })
+                            if (filterKey) {
+                                list = list.filter((pj) => {
+                                    return pj.quotation_no.indexOf(filterKey) >= 0 ||
+                                        pj.quotation.project_name.indexOf(filterKey) >= 0 ||
+                                        pj.quotation.building.name.indexOf(filterKey) >= 0 ||
+                                        pj.quotation.property_management_co_name.indexOf(filterKey) >= 0 ||
+                                        pj.quotation.manager.indexOf(filterKey) >= 0 ||
+                                        pj.quotation.project_type.indexOf(filterKey) >= 0
+                                })
+                            }
+
+                            return [list, list.length]
+                        })
+                    })
+                case 'wait_approve_boss':
+                    return getProjectSetting().then((settingObj) => {
+                        return project.findAll({
+                            include: [{
+                                model: project_state,
+                                where: {
+                                    state: "quotation_save"
+                                }
+                            }, {
+                                model: quotation,
+                                include: [building, quotation_job]
+                            }],
+                            order: 'project.id DESC'
+                        }).then((result) => {
+                            var list = result.map((o) => {
+                                var obj = o.toJSON()
+                                obj.project_state.state = 'wait_approve'
+                                return obj
+                            })
+                            list = list.filter((pj) => {
+                                var totalRetail = pj.quotation.quotation_jobs.reduce((sum, o) => {
+                                    return sum + o.retail * o.count
+                                }, 0)
+                                var totalCost = pj.quotation.quotation_jobs.reduce((sum, o) => {
+                                    return sum + o.cost * o.count
+                                }, 0)
+                                var belowprofitability = settingObj.profitability > ((totalRetail - totalCost) / totalCost) * 100
+                                var overtotalprofit = settingObj.totalprofit < totalCost
+                                var needboss = belowprofitability || overtotalprofit
+                                return !pj.project_state.boss_approve && needboss
+                            })
+                            if (filterKey) {
+                                list = list.filter((pj) => {
+                                    return pj.quotation_no.indexOf(filterKey) >= 0 ||
+                                        pj.quotation.project_name.indexOf(filterKey) >= 0 ||
+                                        pj.quotation.building.name.indexOf(filterKey) >= 0 ||
+                                        pj.quotation.property_management_co_name.indexOf(filterKey) >= 0 ||
+                                        pj.quotation.manager.indexOf(filterKey) >= 0 ||
+                                        pj.quotation.project_type.indexOf(filterKey) >= 0
+                                })
+                            }
+
+                            return [list, list.length]
+                        })
+                    })
+                case 'wait_contract':
+                    return getProjectSetting().then((settingObj) => {
+                        return project.findAll({
+                            include: [{
+                                model: project_state,
+                                where: {
+                                    state: "quotation_save"
+                                }
+                            }, {
+                                model: quotation,
+                                include: [building, quotation_job]
+                            }],
+                            order: 'project.id DESC'
+                        }).then((result) => {
+                            var list = result.map((o) => {
+                                var obj = o.toJSON()
+                                obj.project_state.state = 'wait_contract'
+                                return obj
+                            })
+                            list = list.filter((pj) => {
+                                var totalRetail = pj.quotation.quotation_jobs.reduce((sum, o) => {
+                                    return sum + o.retail * o.count
+                                }, 0)
+                                var totalCost = pj.quotation.quotation_jobs.reduce((sum, o) => {
+                                    return sum + o.cost * o.count
+                                }, 0)
+                                var belowprofitability = settingObj.profitability > ((totalRetail - totalCost) / totalCost) * 100
+                                var overtotalprofit = settingObj.totalprofit < totalCost
+                                var needboss = belowprofitability || overtotalprofit
+                                return pj.project_state.boss_approve || (!needboss && pj.manager_approve)
+                            })
+                            if (filterKey) {
+                                list = list.filter((pj) => {
+                                    return pj.quotation_no.indexOf(filterKey) >= 0 ||
+                                        pj.quotation.project_name.indexOf(filterKey) >= 0 ||
+                                        pj.quotation.building.name.indexOf(filterKey) >= 0 ||
+                                        pj.quotation.property_management_co_name.indexOf(filterKey) >= 0 ||
+                                        pj.quotation.manager.indexOf(filterKey) >= 0 ||
+                                        pj.quotation.project_type.indexOf(filterKey) >= 0
+                                })
+                            }
+
+                            return [list, list.length]
+                        })
+                    })
+                case "quotation_contract":
+                    return Promise.all([project.findAll({
+                        include: [{
+                            model: project_state,
+                            where: {
+                                state: "quotation_contract"
+                            }
+                        }, {
+                            model: quotation,
+                            include: building
+                        }],
+                        where: where,
+                        offset: page * count,
+                        limit: count,
+                        order: 'project.id DESC'
+                    }), project.count({
+                        include: [{
+                            model: project_state,
+                            where: {
+                                state: "quotation_contract"
+                            }
+                        }, {
+                            model: quotation,
+                            include: building
+                        }],
+                        where: where,
+                        offset: page * count,
+                        limit: count
+                    })])
+                case "working":
+                    return Promise.all([project.findAll({
+                        include: [{
+                            model: project_state,
+                            where: {
+                                state: "working"
+                            }
+                        }, {
+                            model: quotation,
+                            include: building
+                        }],
+                        where: where,
+                        offset: page * count,
+                        limit: count,
+                        order: 'project.id DESC'
+                    }), project.count({
+                        include: [{
+                            model: project_state,
+                            where: {
+                                state: "working"
+                            }
+                        }],
+                        where: where,
+                        offset: page * count,
+                        limit: count
+                    })])
                 default:
-                    console.log("default")
                     return Promise.all([project.findAll({
                         include: [{
                             model: project_state
                         }, {
                             model: quotation,
-                            include: building
+                            include: [building, quotation_job]
                         }],
+                        where: where,
+                        offset: page * count,
+                        limit: count,
                         order: 'project.id DESC'
                     }), project.count({
-                        include: [{
-                            model: project_state
-                        }, {
-                            model: quotation
-                        }]
-                    })])
+                        where: where,
+                        offset: page * count,
+                        limit: count
+                    })]).then((result) => {
+                        return getProjectSetting().then((settingObj) => {
+                            var list = result[0].map((o) => {
+                                var pj = o.toJSON()
+                                if (pj.project_state.state == "quotation_save") {
+                                    var totalRetail = pj.quotation.quotation_jobs.reduce((sum, o) => {
+                                        return sum + o.retail * o.count
+                                    }, 0)
+                                    var totalCost = pj.quotation.quotation_jobs.reduce((sum, o) => {
+                                        return sum + o.cost * o.count
+                                    }, 0)
+                                    var belowprofitability = settingObj.profitability > ((totalRetail - totalCost) / totalCost) * 100
+                                    var overtotalprofit = settingObj.totalprofit < totalCost
+                                    var needboss = belowprofitability || overtotalprofit
 
+                                    if (pj.project_state.boss_approve) {
+                                        pj.project_state.state = "wait_contract"
+                                    } else {
+                                        if (needboss) {
+                                            pj.project_state.state = "wait_approve_boss"
+                                        } else {
+                                            pj.project_state.state = pj.project_state.manager_approve ? "wait_contract" : "wait_approve"
+                                        }
+                                    }
+
+                                }
+                                return pj
+                            })
+                            return [list, result[1]]
+                        })
+                    })
             }
         }).then((result) => {
             var list = result[0].map((o) => {

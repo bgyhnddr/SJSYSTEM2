@@ -64,6 +64,9 @@
             quotationNo: {
                 type: String,
                 default: ""
+            },
+            retail: {
+                type: Number
             }
         },
         components: {
@@ -280,6 +283,7 @@
                 }).then(function(result) {
                     that.$broadcast('hide::spinner')
                     that.data = result
+                    that.retail = that.totalRetail
                 }).catch(function(err) {
                     that.errMsg = err
                     that.$broadcast('hide::spinner')

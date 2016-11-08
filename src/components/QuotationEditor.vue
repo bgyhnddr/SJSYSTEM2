@@ -56,7 +56,7 @@
 				</div>
 			</div>
 			<div class="col-sm-12">
-				<quotation-job :quotation-no="quotation.no"></quotation-job>
+				<quotation-job :retail.sync="retail" :quotation-no="quotation.no"></quotation-job>
 			</div>
 			<button v-if="vaild()" :disabled="finishing" @click="finish" class="btn btn-primary fixed-save">{{finishing?'loading':'完成報價'}}</button>
 			<label v-if="!vaild()">完成填寫報價信息后才能完成報價</label>
@@ -189,6 +189,7 @@
                         "bind": "email"
                     }]
                 },
+                retail: 0,
                 finishing: false
             }
         },
@@ -202,7 +203,7 @@
                         check = false
                     }
                 }
-                return check
+                return check && this.retail
             },
             save() {
                 var that = this

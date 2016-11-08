@@ -10,25 +10,25 @@
 					<a v-link="{ path: '/index/ProjectManagement/ProjectList/draft' }">報價單草稿</a>
 				</li>
 				<li v-if="checkPermission()">
-					<a v-link="{ path: '/index/ProjectManagement/ProjectList/1' }">待核准工程</a>
+					<a v-link="{ path: '/index/ProjectManagement/ProjectList/wait_approve' }">待核准工程</a>
 				</li>
 				<li v-if="checkPermission()">
-					<a v-link="{ path: '/index/ProjectManagement/ProjectList/1' }">待boss確認工程</a>
+					<a v-link="{ path: '/index/ProjectManagement/ProjectList/wait_approve_boss' }">待boss核准工程</a>
 				</li>
 				<li v-if="checkPermission()">
-					<a v-link="{ path: '/index/ProjectManagement/ProjectList/1' }">等待合同工程</a>
+					<a v-link="{ path: '/index/ProjectManagement/ProjectList/wait_contract' }">等待合同工程</a>
 				</li>
 				<li v-if="checkPermission()">
-					<a v-link="{ path: '/index/ProjectManagement/ProjectList/1' }">已報價工程</a>
+					<a v-link="{ path: '/index/ProjectManagement/ProjectList/quotation_contract' }">已報價工程</a>
 				</li>
 				<li v-if="checkPermission()">
-					<a v-link="{ path: '/index/ProjectManagement/ProjectList/1' }">開工中工程</a>
+					<a v-link="{ path: '/index/ProjectManagement/ProjectList/working' }">施工中工程</a>
 				</li>
 				<li v-if="checkPermission()">
-					<a v-link="{ path: '/index/ProjectManagement/ProjectList/1' }">未付款工程</a>
+					<a v-link="{ path: '/index/ProjectManagement/ProjectList/counting' }">已完成工程</a>
 				</li>
 				<li v-if="checkPermission()">
-					<a v-link="{ path: '/index/ProjectManagement/ProjectList/1' }">已付款</a>
+					<a v-link="{ path: '/index/ProjectManagement/ProjectList/all' }">全部工程</a>
 				</li>
 			</navbar>
 			<router-view class="view" transition="fate" transition-mode="out-in"></router-view>

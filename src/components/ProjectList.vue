@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<vue-strap-table v-ref:table :data.sync="data" @getdata="getData" :columns.sync="columns"></vue-strap-table>
+		<vue-strap-table v-ref:table :data.sync="data" @rowaction="rowaction" @getdata="getData" :columns.sync="columns"></vue-strap-table>
 	</div>
 </template>
 <script>
@@ -60,7 +60,6 @@
                     filterKey,
                     type: that.$route.params.type
                 }).then(function(result) {
-                    console.log(result.list)
                     if (append) {
                         that.data.end = result.end
                         that.data.list = that.data.list.concat(result.list)
@@ -70,6 +69,9 @@
                 }).catch(function(err) {
                     that.errMsg = err
                 })
+            },
+            rowaction(event, row) {
+                this.$router.go("/index/ProjectManagement/Project/" + row.id)
             }
         },
         route: {

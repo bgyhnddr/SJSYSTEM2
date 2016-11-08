@@ -36,7 +36,7 @@ module.exports = function() {
         permission.create({ code: "view_po", name: "查閱PO" }),
         permission.create({ code: "moneylog", name: "付款記錄" }),
         project_setting.create({ code: "profitability", value: "20" }),
-        project_setting.create({ code: "totalprofit", value: "0" }),
+        project_setting.create({ code: "totalprofit", value: "10000" }),
         project_type.create({ name: "測試工程類型" }),
         project_item.create({ project_type_id: 1, name: "測試工程項目" }),
         job_content_template.create({ content: "工作模板1", index: 1, project_item_id: 1 }),

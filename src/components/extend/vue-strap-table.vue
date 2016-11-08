@@ -109,11 +109,11 @@
                 this.errMsg = ""
                 this.pageNum += 1
                 this.$dispatch(this.getDataEvent, this.pageNum, this.countPerPage, this.filterKey, true)
-                this.$emit("getdata", this.pageNum, this.countPerPage, this.filterKey)
+                this.$emit("getdata", this.pageNum, this.countPerPage, this.filterKey, true)
             },
             action(event, row) {
                 this.$dispatch(event, row)
-                this.$emit("rowaction", this.pageNum, this.countPerPage, this.filterKey)
+                this.$emit("rowaction", event, row)
             },
             clearFilter() {
                 this.filterKey = ""
