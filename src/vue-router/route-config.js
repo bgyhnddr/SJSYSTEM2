@@ -65,6 +65,20 @@ export function configRouter(router) {
                             component: require('../components/PermissionSetting.vue')
                         }
                     }
+                },
+                'POManagement': {
+                    component: require('../components/POManagement.vue'),
+                    subRoutes: {
+                        'PO': {
+                            component: require('../components/PO.vue')
+                        },
+                        'PO/:id': {
+                            component: require('../components/PO.vue')
+                        }
+                    }
+                },
+                'Setting': {
+                    component: require('../components/Setting.vue')
                 }
             }
         }

@@ -95,7 +95,8 @@
             },
             showprojectAccounting() {
                 var state = this.project.project_state ? this.project.project_state.state : ""
-                return !['quotation_save', 'draft', 'quotation_contract', 'working'].some(o => o == state)
+                return !['quotation_save', 'draft', 'quotation_contract', 'working'].some(o => o == state) ||
+                    checkPermission(["boss"])
             },
             showprojectInvoice() {
                 var state = this.project.project_state ? this.project.project_state.state : ""

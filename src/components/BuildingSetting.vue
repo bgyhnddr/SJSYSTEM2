@@ -6,7 +6,7 @@
 				<spinner size="md" text="loading..."></spinner>
 				<vue-strap-table :err-msg.sync="errMsg" :data.sync="data" :get-data-event="getData" :columns.sync="columns"></vue-strap-table>
 			</div>
-			<modal :show.sync="showBuildingModel" effect="fade" width="400">
+			<modal :show.sync="showBuildingModel" effect="fade" :large="true">
 				<div slot="modal-header" class="modal-header">
 					<h4 class="modal-title">
 						盤

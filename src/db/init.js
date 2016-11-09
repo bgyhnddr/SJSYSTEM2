@@ -30,7 +30,12 @@ module.exports = function(req, res, next) {
         require('./models/project_out_source'),
         require('./models/project_accounting'),
         require('./models/project_invoice'),
-        require('./models/project_invoice_detail')
+        require('./models/project_invoice_detail'),
+        require('./models/po'),
+        require('./models/po_payee'),
+        require('./models/po_quotation'),
+        require('./models/po_quotation_detail'),
+        require('./models/po_quotation_detail_attachment')
     ].map((o) => o.sync({ force: true }))).then(function() {
         return require('./init_data')()
     }).then(function() {

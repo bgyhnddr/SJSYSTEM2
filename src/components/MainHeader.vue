@@ -11,16 +11,19 @@
 				<a v-link="{ path: '/index/ProjectManagement' }">工程管理</a>
 			</li>
 			<li v-if="checkPermission()">
+				<a v-link="{ path: '/index/POManagement' }">PO管理</a>
+			</li>
+			<li v-if="checkPermission()">
 				<a v-link="{ path: '/index/DataManagement' }">數據管理</a>
 			</li>
 			<li v-if="checkPermission()">
-				<a href="link">報表</a>
+				<a v-link="{ path: '/index' }">報表</a>
 			</li>
 			<li v-if="checkPermission()">
 				<a v-link="{ path: '/index/RBACManagement' }">權限管理</a>
 			</li>
 			<li v-if="checkPermission()">
-				<a href="link">設定</a>
+				<a v-link="{ path: '/index/Setting' }">設定</a>
 			</li>
 			<dropdown slot="right" v-if="state.userInfo.name" :text="state.userInfo.name">
 				<li><a @click="submitLogout">登出</a></li>

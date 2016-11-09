@@ -36,6 +36,19 @@ var exec = {
         } else {
             return Promise.reject("not found")
         }
+    },
+    submitConfirmInfo(req, res, next) {
+        var project_setting = require('../../db/models/project_setting')
+        return Promise.all([
+            project_setting.upsert({
+                code: "totalprofit",
+                value: req.body.totalprofit
+            }),
+            project_setting.upsert({
+                code: "profitability",
+                value: req.body.profitability
+            })
+        ])
     }
 }
 
