@@ -12,5 +12,14 @@ export default {
     },
     deletePODetail(params) {
         return request.post(path + 'deletePODetail', params)
+    },
+    uploadPODetailAttachment(params) {
+        return request.post(path + 'uploadPODetailAttachment', params)
+    },
+    deletePODetailAttachment(params) {
+        return request.post(path + 'deletePODetailAttachment', params)
+    },
+    finishPO(params) {
+        return request.post(path + 'finishPO', params)
     }
 }

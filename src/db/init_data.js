@@ -23,7 +23,7 @@ module.exports = function() {
         role.create({ code: "operator", name: "operator" }),
         permission.create({ code: "create_quotation", name: "創建報價單" }),
         permission.create({ code: "confirm_quotation", name: "確認報價單" }),
-        permission.create({ code: "confirm_quotation_boss", name: "BOSS確認報價單" }),
+        permission.create({ code: "boss", name: "BOSS權限" }),
         permission.create({ code: "approve_quotation", name: "核准報價單" }),
         permission.create({ code: "edit_quotation", name: "修改已確認報價單" }),
         permission.create({ code: "view_quotation", name: "查閱報價單" }),

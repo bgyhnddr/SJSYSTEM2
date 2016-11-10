@@ -16,7 +16,8 @@
     export default {
         props: {
             fileId: {
-                type: Number
+                type: Number,
+                default: 0
             },
             fileName: {
                 type: String,
@@ -70,8 +71,7 @@
                     that.clear()
                     if (result.body) {
                         that.fileId = result.body.id
-                        that.fileName = result.body.name
-                        that.$emit("uploaded")
+                        that.$emit("uploaded", result.body.id)
                     }
                 }).catch(function(error) {
                     that.clear()
@@ -89,6 +89,36 @@
                 this.percent = 0
                 this.uploadRequest = undefined
                 this.file = ""
+            },
+            getName(id) {
+                var that = this
+                Vue.http.get('/service/private/upload/getFileName', {
+                    params: {
+                        id: id
+                    }
+                }).then(function(result) {
+                    that.fileName = result.body
+                }).catch(function(error) {
+                    that.fileName = ""
+                    console.log(error)
+                })
+            }
+        },
+        watch: {
+            'fileId': function(val) {
+                console.log(val)
+                if (val) {
+                    this.getName(val)
+                } else {
+                    this.fileName = ""
+                }
+            }
+        },
+        ready() {
+            if (this.fileId) {
+                this.getName(this.fileId)
+            } else {
+                this.fileName = ""
             }
         }
     }

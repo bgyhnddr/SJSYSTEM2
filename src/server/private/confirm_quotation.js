@@ -91,7 +91,7 @@ var exec = {
                     quotation_no: result[1].quotation.no,
                     manager: result[1].quotation.manager
                 }
-                if (checkData.manager == req.session.userInfo.name || req.session.userInfo.permissions.some(o => o == "confirm_quotation_boss" || o == "admin")) {
+                if (checkData.manager == req.session.userInfo.name || req.session.userInfo.permissions.some(o => o == "boss" || o == "admin")) {
                     if ((checkData.belowprofitability || checkData.overtotalprofit)) {
                         if (result[1].project_state.boss_approve) {
                             return result[1]

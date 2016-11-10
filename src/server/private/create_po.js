@@ -50,7 +50,7 @@ var exec = {
             if (result != null) {
                 return result
             } else {
-                return "no quotation"
+                return Promise.reject("no quotation")
             }
         }).then((result) => {
             if (result.project != null &&
@@ -58,7 +58,7 @@ var exec = {
                 result.project.project_state.state != "quotation_save") {
                 return true
             } else {
-                return "not right quotation"
+                return Promise.reject("not right quotation")
             }
         }).then(() => {
             return po_quotation.findOne({
@@ -91,6 +91,55 @@ var exec = {
             }
         }).then(() => {
             return "success"
+        })
+    },
+    uploadPODetailAttachment(req, res, next) {
+        var po_quotation_detail_attachment = require("../../db/models/po_quotation_detail_attachment")
+        return po_quotation_detail_attachment.create({
+            po_quotation_detail_id: req.body.po_quotation_detail_id,
+            attachment_id: req.body.attachment_id
+        })
+    },
+    deletePODetailAttachment(req, res, next) {
+        var po_quotation_detail_attachment = require("../../db/models/po_quotation_detail_attachment")
+        return po_quotation_detail_attachment.destroy({
+            where: {
+                id: req.body.id
+            }
+        }).then(() => {
+            return "success"
+        })
+    },
+    finishPO(req, res, next) {
+        var po = require("../../db/models/po")
+        var po_quotation = require("../../db/models/po_quotation")
+        var po_quotation_approve = require("../../db/models/po_quotation_approve")
+        po.hasMany(po_quotation)
+
+        return po.findOne({
+            include: po_quotation,
+            where: {
+                id: req.body.id,
+                state: "draft"
+            }
+        }).then((result) => {
+            if (result != null) {
+                return result
+            } else {
+                return Promise.reject("not found")
+            }
+        }).then((result) => {
+            var updateList = result.po_quotations.map(o => {
+                return po_quotation_approve.upsert({
+                    po_quotation_id: o.id,
+                    manager_approve: false,
+                    boss_approve: false
+                })
+            })
+            result.state = "done"
+            updateList.push(result.save())
+
+            return Promise.all(updateList)
         })
     }
 }

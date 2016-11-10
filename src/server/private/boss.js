@@ -31,7 +31,7 @@ var exec = {
                     return Promise.reject("not found")
                 }
             }).then((no) => {
-                return common.log_project_record("confirm_quotation_boss/confirmQuotation", no, req.session.userInfo.name)
+                return common.log_project_record("boss/confirmQuotation", no, req.session.userInfo.name)
             })
         } else {
             return Promise.reject("not found")
@@ -49,6 +49,13 @@ var exec = {
                 value: req.body.profitability
             })
         ])
+    },
+    approvePODetail(req, res, next) {
+        var po_quotation_approve = require("../../db/models/po_quotation_approve")
+        return po_quotation_approve.upsert({
+            po_quotation_id: req.body.po_quotation_id,
+            boss_approve: true
+        })
     }
 }
 

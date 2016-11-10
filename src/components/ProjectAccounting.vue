@@ -48,7 +48,7 @@
         },
         computed: {
             isEdit() {
-                return this.checkPermission(['confirm_quotation_boss']) || (this.project && this.project.project_state.state == 'counting')
+                return this.checkPermission(['boss']) || (this.project && this.project.project_state.state == 'counting')
             },
             profit() {
                 return this.submitData.acost - this.submitData.income

@@ -237,7 +237,7 @@ var exec = {
                 } else {
                     return {
                         id: result.attachment_id,
-                        name: result.attachment.name
+                        name: result.attachment ? result.attachment.name : ""
                     }
                 }
             })
@@ -318,7 +318,7 @@ var exec = {
 
         project.hasOne(project_state)
         project.hasOne(project_accounting)
-        req.session.userInfo.permissions.some(o => o == "confirm_quotation_boss" || o == "admin")
+        req.session.userInfo.permissions.some(o => o == "boss" || o == "admin")
         return project.findOne({
             include: [project_accounting, project_state],
             where: {
@@ -332,7 +332,7 @@ var exec = {
             }
         }).then((result) => {
             if (result.project_state.state == "counting" ||
-                req.session.userInfo.permissions.some(o => o == "confirm_quotation_boss" || o == "admin")) {
+                req.session.userInfo.permissions.some(o => o == "boss" || o == "admin")) {
                 return result
             } else {
                 return Promise.reject("not allow")

@@ -12,7 +12,7 @@
 		</div>
 </template>
 <script>
-    import confirm_quotation_boss from '../api/confirm_quotation_boss'
+    import boss from '../api/boss'
     import view_quotation from '../api/view_quotation'
     import {
         spinner,
@@ -43,7 +43,7 @@
                 })
             },
             save() {
-                confirm_quotation_boss.submitConfirmInfo({
+                boss.submitConfirmInfo({
                     totalprofit: this.totalprofit,
                     profitability: this.profitability
                 }).then(() => {

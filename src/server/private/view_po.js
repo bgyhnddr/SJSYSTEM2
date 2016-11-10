@@ -49,8 +49,10 @@ var exec = {
         var project = require("../../db/models/project")
         var project_accounting = require("../../db/models/project_accounting")
         var attachment = require("../../db/models/attachment")
+        var po_quotation_approve = require("../../db/models/po_quotation_approve")
 
         po_quotation.belongsTo(po)
+        po_quotation.hasOne(po_quotation_approve)
         po_quotation.belongsTo(quotation)
         po_quotation.hasMany(po_quotation_detail)
         po_quotation_detail.hasMany(po_quotation_detail_attachment)
@@ -80,7 +82,7 @@ var exec = {
                     model: po_quotation_detail_attachment,
                     include: attachment
                 }]
-            }],
+            }, po_quotation_approve],
             where: {
                 po_id: req.query.po_id
             }
@@ -91,7 +93,7 @@ var exec = {
                 var ecost = poDetail.quotation.project.project_accounting.ecost
 
                 var used = poDetail.quotation.po_quotations.reduce((sum, poq) => {
-                    if (po.state != "draft" || po.id == req.query.po_id) {
+                    if (poq.po.state != "draft" || poq.po.id == req.query.po_id) {
                         return sum + poq.po_quotation_details.reduce((lsum, d) => {
                             return lsum + d.price * d.count
                         }, 0)

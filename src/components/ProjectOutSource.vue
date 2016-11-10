@@ -21,7 +21,7 @@
 
 					<div>
 						<label>附件</label>
-						<vue-strap-upload :file-id.sync="submitData.attachment_id" :file-name.sync="submitData.attachment"></vue-strap-upload>
+						<vue-strap-upload :file-id.sync="submitData.attachment_id"></vue-strap-upload>
 					</div>
 					<bs-input type="textarea" :value.sync="submitData.comments" label="外判資料備注"></bs-input>
 					<bs-input type="date" :value.sync="submitData.finish_date" label="開工日期"></bs-input>
@@ -82,7 +82,7 @@
 						<td>{{row.out_source}}</td>
 						<td>{{row.content}}</td>
 						<td>{{row.cost}}</td>
-						<td><a target="_blank" href="{{'/service/private/view_quotation/getAttachment?id='+row.attachment_id}}">{{row.attachment.name}}</a></td>
+						<td><a target="_blank" href="{{'/service/private/view_quotation/getAttachment?id='+row.attachment_id}}">{{row.attachment?row.attachment.name:""}}</a></td>
 						<td>{{row.comments}}</td>
 						<td>{{row.finish_date}}</td>
 						<td v-if="project.project_state.state=='working'">
@@ -221,7 +221,7 @@
                     comments: row.comments,
                     finish_date: row.finish_date,
                     project_id: row.project_id,
-                    attachment: row.attachment == null ? "" : row.attachment.name
+                    attachment: row.attachment ? row.attachment.name : ""
                 }
                 this.ShowOutSourceModel = true
             }

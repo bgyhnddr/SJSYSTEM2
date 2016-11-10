@@ -35,7 +35,7 @@
 					<td>{{row.no}}</td>
 					<td>{{row.create_date}}</td>
 					<td>{{row.invoice_money}}</td>
-					<td><a target="_blank" href="{{'/service/private/view_quotation/getAttachment?id='+row.attachment_id}}">{{row.attachment.name}}</a></td>
+					<td><a target="_blank" href="{{'/service/private/view_quotation/getAttachment?id='+row.attachment_id}}">{{row.attachment?row.attachment.name:""}}</a></td>
 					<td>{{row.check_money}}</td>
 					<td>{{row.check_no}}</td>
 					<td>{{row.check_date}}</td>
@@ -104,7 +104,7 @@
 				<bs-input type="number" :value.sync="submitData.check_money" label="支票金額"></bs-input>
 				<bs-input type="number" :value.sync="submitData.check_no" label="支票號碼"></bs-input>
 				<div>支票</div>
-				<vue-strap-upload :file-id.sync="submitData.attachment_id" :file-name.sync="submitData.attachment_name"></vue-strap-upload>
+				<vue-strap-upload :file-id.sync="submitData.attachment_id"></vue-strap-upload>
 			</div>
 			<div slot="modal-footer" class="modal-footer">
 				<button @click="showUploadCheck=false" class="btn btn-default">關閉</button>
@@ -216,7 +216,7 @@
                     check_no: row.check_no,
                     check_money: row.check_money,
                     attachment_id: row.attachment_id,
-                    attachment_name: row.attachment.name,
+                    attachment_name: row.attachment ? row.attachment.name : "",
                     project_id: this.project.id
                 }
                 this.showUploadCheck = true

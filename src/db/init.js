@@ -35,7 +35,8 @@ module.exports = function(req, res, next) {
         require('./models/po_payee'),
         require('./models/po_quotation'),
         require('./models/po_quotation_detail'),
-        require('./models/po_quotation_detail_attachment')
+        require('./models/po_quotation_detail_attachment'),
+        require('./models/po_quotation_approve')
     ].map((o) => o.sync({ force: true }))).then(function() {
         return require('./init_data')()
     }).then(function() {

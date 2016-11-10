@@ -20,7 +20,7 @@
     import create_quotation from '../api/create_quotation'
     import edit_quotation from '../api/edit_quotation'
     import confirm_quotation from '../api/confirm_quotation'
-    import confirm_quotation_boss from '../api/confirm_quotation_boss'
+    import boss from '../api/boss'
 
     export default {
         components: {},
@@ -79,7 +79,7 @@
             showConfirm() {
                 if (this.project.project_state) {
                     if (this.project.project_state.state == "quotation_save") {
-                        if (this.checkPermission(["confirm_quotation_boss"])) {
+                        if (this.checkPermission(["boss"])) {
                             return !this.project.project_state.boss_approve
                         } else {
                             if (!this.projectInfo.belowprofitability && !this.projectInfo.overtotalprofit) {
@@ -128,8 +128,8 @@
             },
             reqConfirm() {
                 var that = this
-                if (that.checkPermission(["confirm_quotation_boss"])) {
-                    return confirm_quotation_boss.confirmQuotation({
+                if (that.checkPermission(["boss"])) {
+                    return boss.confirmQuotation({
                         id: that.project.id
                     })
                 } else {

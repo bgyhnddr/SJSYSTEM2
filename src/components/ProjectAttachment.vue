@@ -6,7 +6,7 @@
 			<ul class="list-group">
 				<li class="list-group-item" v-for="att in attachments">
 					{{att.content}}
-					<vue-strap-upload v-on:uploaded="uploadAttachmentCallback(att)" :file-id.sync="att.attachment_id" :file-name.sync="att.attachment.name"
+					<vue-strap-upload v-on:uploaded="uploadAttachmentCallback(att)" :file-id.sync="att.attachment_id"
 						:readonly="project.project_state.state!='working'"></vue-strap-upload>
 					<button v-if="project.project_state.state=='working'" @click="deleteAttachment(att)" class="btn btn-default btn-xs">刪除資料</button>
 				</li>

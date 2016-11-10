@@ -50,6 +50,30 @@ var exec = {
         }).then(() => {
             return "success"
         })
+    },
+    savePODetailCheckNo(req, res, next) {
+        var po_quotation_detail = require("../../db/models/po_quotation_detail")
+        return po_quotation_detail.update({
+            check_no: req.body.check_no
+        }, {
+            where: {
+                id: req.body.id
+            }
+        }).then(() => {
+            return "success"
+        })
+    },
+    savePODetailCheck(req, res, next) {
+        var po_quotation_detail = require("../../db/models/po_quotation_detail")
+        return po_quotation_detail.update({
+            attachment_id: req.body.attachment_id
+        }, {
+            where: {
+                id: req.body.id
+            }
+        }).then(() => {
+            return "success"
+        })
     }
 }
 

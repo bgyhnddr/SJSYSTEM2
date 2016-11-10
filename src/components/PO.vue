@@ -2,7 +2,7 @@
 	<div class="container-fluid">
 		<div class="col-sm-12">
 			<button v-if="changed||!po.id" @click="submitPO" class="btn btn-primary">保存</button>
-			<button v-if="showFinish" class="btn btn-primary">完成</button>
+			<button v-if="showFinish" @click="finishPO" class="btn btn-primary">提交</button>
 		</div>
 		<div v-if="po.id" class="col-sm-12">
 			<h3>PO No: {{po.no}}</h3>
@@ -69,7 +69,9 @@
         },
         computed: {
             showFinish() {
-                return this.po.state == 'draft' && this.detail.length > 0
+                return this.po.state == 'draft' && this.detail.some((d) => {
+                    return d.po_quotation_details.length > 0
+                })
             }
         },
         methods: {
@@ -99,6 +101,16 @@
                 }).catch((err) => {
                     window.alert(err)
                 })
+            },
+            finishPO() {
+                var that = this
+                if (confirm("是否提交完成PO？")) {
+                    create_po.finishPO({
+                        id: that.po.id
+                    }).then(() => {
+                        that.getPO(that.po.id)
+                    })
+                }
             }
         },
         route: {

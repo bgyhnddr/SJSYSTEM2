@@ -81,6 +81,20 @@ var exec = {
                 reject("please post")
             }
         })
+    },
+    getFileName(req, res, next) {
+        var attachment = require('../../db/models/attachment')
+        return attachment.findOne({
+            where: {
+                id: req.query.id
+            }
+        }).then((result) => {
+            if (result != null) {
+                return result.name
+            } else {
+                return ""
+            }
+        })
     }
 }
 
