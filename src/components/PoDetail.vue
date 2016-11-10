@@ -14,6 +14,7 @@
 							<table class="table table-hover table-condensed">
 								<thead>
 									<tr>
+										<th>序號</th>
 										<th>收款人</th>
 										<th>内容</th>
 										<th>單價</th>
@@ -27,6 +28,7 @@
 								</thead>
 								<tbody>
 									<tr v-for="d in item.po_quotation_details">
+										<td>{{$index+1}}</td>
 										<td>{{d.po_payee_name}}</td>
 										<td>
 											<pre class="no-border">{{d.content}}</pre>
@@ -147,21 +149,25 @@
             checkPermission,
             poApprove(row) {
                 var approve = false
+                var approveObj = row.po_quotation_approve ? row.po_quotation_approve : {
+                    boss_approve: false,
+                    manager_approve: false
+                }
                 if (row.left < 0) {
-                    approve = row.po_quotation_approve.boss_approve
+                    approve = approveObj.boss_approve
                 } else {
-                    approve = row.po_quotation_approve.boss_approve || row.po_quotation_approve.manager_approve
+                    approve = approveObj.boss_approve || approveObj.manager_approve
                 }
                 return approve
             },
             showManagerConfirm(row) {
-                return !this.poApprove(row) && row.quotation.manager == this.state.userInfo.name
+                return !this.poApprove(row) && row.quotation.manager == this.state.userInfo.name && this.po.state == "done"
             },
             showBossConfirm(row) {
-                return !this.poApprove(row) && this.checkPermission(['boss'])
+                return !this.poApprove(row) && this.checkPermission(['boss']) && this.po.state == "done"
             },
             showCheck(row) {
-                return this.po.state != "draft" && this.poApprove(row) && this.checkPermission(['boss', 'check'])
+                return this.po.state == "done" && this.poApprove(row) && this.checkPermission(['boss', 'check'])
             },
             vaildDetail() {
                 return this.submitData.po_quotation_id &&

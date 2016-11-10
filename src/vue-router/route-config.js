@@ -74,6 +74,9 @@ export function configRouter(router) {
                         },
                         'PO/:id': {
                             component: require('../components/PO.vue')
+                        },
+                        'POList/:type': {
+                            component: require('../components/PoList.vue')
                         }
                     }
                 },
