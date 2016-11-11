@@ -198,9 +198,10 @@
             vaild() {
                 var check = true
                 for (var i in this.quotation) {
-                    console.log(i + this.quotation[i])
-                    if (this.quotation[i] == null || this.quotation[i] == undefined || this.quotation[i] == "") {
-                        check = false
+                    if (i != "comments") {
+                        if (this.quotation[i] == null || this.quotation[i] == undefined || this.quotation[i] == "") {
+                            check = false
+                        }
                     }
                 }
                 return check && this.retail
