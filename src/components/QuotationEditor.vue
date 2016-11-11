@@ -1,7 +1,6 @@
 <template>
 	<div>
 		<div v-if="checkPermission()">
-			<button @click="save" v-if="state.quotation_change" class="btn btn-primary fixed-save">保存報價</button>
 			<div class="form-group">
 				<label class="control-label">報價單編號</label>
 				<p>{{quotation.no}}</p>
@@ -60,6 +59,7 @@
 			</div>
 			<button v-if="vaild()" :disabled="finishing" @click="finish" class="btn btn-primary fixed-save">{{finishing?'loading':'完成報價'}}</button>
 			<label v-if="!vaild()">完成填寫報價信息后才能完成報價</label>
+            <button @click="save" v-if="state.quotation_change" class="btn btn-primary fixed-save">保存報價</button>
 		</div>
 	</div>
 </template>

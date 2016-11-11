@@ -17,12 +17,18 @@
 							<button type="button" class="btn btn-default" @click="showStaffModel=true">選擇</button>
 						</p>
 					</div>
-					<bs-input type="number" :value.sync="submitData.hour" label="開工時長"></bs-input>
+						<label>開工時長</label>
+					<v-select :value.sync="submitData.hour">
+						<v-option value="0.25">0.25</v-option>
+						<v-option value="0.5">0.5</v-option>
+						<v-option value="0.75">0.75</v-option>
+						<v-option value="1">1</v-option>
+					</v-select>
 					<bs-input type="textarea" :value.sync="submitData.comments" label="備注"></bs-input>
 				</div>
 				<div slot="modal-footer" class="modal-footer">
 					<button type="button" class="btn btn-default" @click="ShowHourModel=false">关闭</button>
-					<button :disabled="submittingHour" type="button" class="btn btn-success" @click="submitHour">確認</button>
+					<button v-if="vaild()" :disabled="submittingHour" type="button" class="btn btn-success" @click="submitHour">確認</button>
 				</div>
 			</modal>
 			<div :class="{'in':showStaffModel}" class="modal fade" :style="{zIndex:(showStaffModel?undefined:-1)}" style="display:block;overflow-y:auto;">
@@ -90,14 +96,18 @@
         spinner,
         modal,
         alert,
-        input as bsInput
+        input as bsInput,
+        select as vSelect,
+        option as vOption
     } from 'vue-strap'
 
     export default {
         components: {
             modal,
             bsInput,
-            StaffSetting
+            StaffSetting,
+            vSelect,
+            vOption
         },
         props: {
             project: {
@@ -188,7 +198,7 @@
                 this.submitData = {
                     id: row.id,
                     begin_date: row.begin_date,
-                    hour: row.hour,
+                    hour: row.hour.toString(),
                     staff: row.staff,
                     comments: row.comments,
                     project_id: row.project_id

@@ -61,6 +61,8 @@
                         return view_po.getApproved
                     case 'paid':
                         return view_po.getPOPaids
+                    case 'all':
+                        return view_po.getPOs
                 }
             },
             getData(page, count, filterKey, append) {

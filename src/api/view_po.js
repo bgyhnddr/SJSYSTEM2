@@ -5,7 +5,7 @@ export default {
         return request.get(path + 'getPayees', params)
     },
     getPOs(params) {
-        return request.get(path + 'getPos', params)
+        return request.get(path + 'getPOs', params)
     },
     getPO(params) {
         return request.get(path + 'getPO', params)

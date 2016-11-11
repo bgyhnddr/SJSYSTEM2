@@ -2,13 +2,12 @@
 	<div class="panel panel-default">
 		<div class="panel-heading">資料上傳</div>
 		<div class="panel-body">
-			<button v-if="project.project_state.state=='working'" @click="addAttachment" class="btn btn-default">新增資料</button>
+			<button @click="addAttachment" class="btn btn-default">新增資料</button>
 			<ul class="list-group">
 				<li class="list-group-item" v-for="att in attachments">
 					{{att.content}}
-					<vue-strap-upload v-on:uploaded="uploadAttachmentCallback(att)" :file-id.sync="att.attachment_id"
-						:readonly="project.project_state.state!='working'"></vue-strap-upload>
-					<button v-if="project.project_state.state=='working'" @click="deleteAttachment(att)" class="btn btn-default btn-xs">刪除資料</button>
+					<vue-strap-upload v-on:uploaded="uploadAttachmentCallback(att)" :file-id.sync="att.attachment_id"></vue-strap-upload>
+					<button @click="deleteAttachment(att)" class="btn btn-default btn-xs">刪除資料</button>
 				</li>
 			</ul>
 		</div>

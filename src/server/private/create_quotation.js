@@ -572,30 +572,23 @@ var exec = {
     addProjectAttachment(req, res, next) {
         var project_attachment = require('../../db/models/project_attachment')
 
-        return checkProjectWorking(req.body.project_id).then(() => {
-            return project_attachment.create(req.body)
-        })
+        return project_attachment.create(req.body)
     },
     deleteProjectAttachment(req, res, next) {
         var project_attachment = require('../../db/models/project_attachment')
 
-        return checkProjectWorking(req.body.project_id).then(() => {
-            return project_attachment.destroy({ where: { id: req.body.id } }).then((result) => {
-                return "success"
-            })
+        return project_attachment.destroy({ where: { id: req.body.id } }).then((result) => {
+            return "success"
         })
     },
     saveProjectAttachment(req, res, next) {
         var project_attachment = require('../../db/models/project_attachment')
-
-        return checkProjectWorking(req.body.project_id).then(() => {
-            return project_attachment.update({
-                attachment_id: req.body.attachment_id
-            }, {
-                where: {
-                    id: req.body.id
-                }
-            })
+        return project_attachment.update({
+            attachment_id: req.body.attachment_id
+        }, {
+            where: {
+                id: req.body.id
+            }
         })
     },
     submitProjectHour(req, res, next) {
@@ -697,6 +690,13 @@ var exec = {
             where: {
                 code: req.body.code
             }
+        })
+    },
+    saveQuotationComments(req) {
+        var quotation = require('../../db/models/quotation')
+        quotation.upsert({
+            no: req.body.no,
+            comments: req.body.comments
         })
     }
 }

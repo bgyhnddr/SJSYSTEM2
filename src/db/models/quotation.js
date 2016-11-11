@@ -13,7 +13,8 @@ var quotation = sequelize.define(
         building_id: { type: Sequelize.INTEGER },
         manager: { type: Sequelize.STRING },
         project_id: { type: Sequelize.INTEGER },
-        quotation_date: { type: Sequelize.STRING }
+        quotation_date: { type: Sequelize.STRING },
+        comments: { type: Sequelize.STRING }
 
     }, {
         underscored: true

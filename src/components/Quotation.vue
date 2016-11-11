@@ -19,6 +19,15 @@
 			<div class="col-sm-12">
 				<quotation-history :quotation.sync="quotation"></quotation-history>
 			</div>
+			<div class="col-sm-12">
+				<div class="panel panel-default">
+					<div class="panel-heading">補充信息</div>
+					<div class="panel-body">
+						<bs-input @input="commentsChanged=true" :value.sync="comments" type="textarea"></bs-input>
+						<button v-if="commentsChanged" @click="saveQuotationComments" class="btn btn-default">保存補充信息</button>
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 </template>
@@ -29,7 +38,9 @@
     import QuotationView from './QuotationView'
     import QuotationHistory from './QuotationHistory'
     import ViewQuotation from '../api/view_quotation'
+    import create_quotation from '../api/create_quotation'
     import {
+        input as bsInput,
         alert
     } from 'vue-strap'
 
@@ -44,7 +55,8 @@
             QuotationEditor,
             QuotationView,
             QuotationHistory,
-            alert
+            alert,
+            bsInput
         },
         data() {
             return {
@@ -53,7 +65,9 @@
                 profitSetting: {
                     totalprofit: "0",
                     profitability: "0"
-                }
+                },
+                commentsChanged: false,
+                comments: ""
             }
         },
         computed: {
@@ -66,12 +80,14 @@
         methods: {
             checkPermission,
             getQuotation(no) {
+                var that = this
                 return ViewQuotation.getQuotation({
                     no: no
                 }).then(function(result) {
                     if (!result.quotation_date) {
                         result.quotation_date = new Date().Format("yyyy-MM-dd")
                     }
+                    that.comments = result.comments
                     return result
                 })
             },
@@ -90,6 +106,17 @@
                 ViewQuotation.getProfitSetting().then((result) => {
                     that.profitSetting.totalprofit = result.totalprofit
                     that.profitSetting.profitability = result.profitability
+                }).catch((err) => {
+                    window.alert(err)
+                })
+            },
+            saveQuotationComments() {
+                var that = this
+                create_quotation.saveQuotationComments({
+                    no: that.quotation.no,
+                    comments: that.comments
+                }).then(() => {
+                    that.commentsChanged = false
                 }).catch((err) => {
                     window.alert(err)
                 })

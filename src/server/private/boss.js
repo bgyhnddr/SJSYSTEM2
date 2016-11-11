@@ -21,6 +21,7 @@ var exec = {
                     if (result.project_state.state != "quotation_save") {
                         return Promise.reject("not allow")
                     } else {
+                        result.project_state.manager_approve = true
                         result.project_state.boss_approve = true
                         return result.project_state.save().then(() => {
                             console.log(result.quotation.no)

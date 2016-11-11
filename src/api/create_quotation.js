@@ -60,5 +60,8 @@ export default {
     },
     deleteComments(params) {
         return request.post(path + 'deleteComments', params)
+    },
+    saveQuotationComments(params) {
+        return request.post(path + 'saveQuotationComments', params)
     }
 }

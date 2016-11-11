@@ -90,8 +90,8 @@
 				<div>總價：{{jobCount}}</div>
 			</div>
 			<div slot="modal-footer" class="modal-footer">
-                <button @click="showCreateInvoice=false" class="btn btn-default">關閉</button>
-				<button @click="createInvoice" class="btn btn-default">生成發票</button>
+				<button @click="showCreateInvoice=false" class="btn btn-default">關閉</button>
+				<button v-if="jobCount>0" @click="createInvoice" class="btn btn-default">生成發票</button>
 			</div>
 		</modal>
 		<modal :show.sync="showUploadCheck" effect="fade">

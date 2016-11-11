@@ -23,6 +23,7 @@
 				</div>
 				<div slot="modal-footer" class="modal-footer">
 					<button type="button" class="btn btn-default" @click="showQuotationJobModel=false">关闭</button>
+					<button :disabled="submitting" type="button" class="btn btn-success" @click="submitQuotationJobAndNext">確認並添加下一項</button>
 					<button :disabled="submitting" type="button" class="btn btn-success" @click="submitQuotationJob">確認</button>
 				</div>
 			</modal>
@@ -231,6 +232,27 @@
                         that.$broadcast("refreshData")
                         that.showQuotationJobModel = false
                         that.serverMsg = ""
+                    }).catch(function(err) {
+                        that.submitting = false
+                        that.serverMsg = err
+                    })
+                }
+            },
+            submitQuotationJobAndNext() {
+                if (this.valid()) {
+                    var that = this
+                    that.submitting = true
+                    create_quotation.submitQuotationJob({
+                        id: that.submitData.id,
+                        content: that.submitData.content,
+                        cost: that.submitData.cost,
+                        retail: that.submitData.retail,
+                        count: that.submitData.count,
+                        quotation_no: that.quotationNo
+                    }).then(function(result) {
+                        that.submitting = false
+                        that.$broadcast("refreshData")
+                        that.addQuotationJob()
                     }).catch(function(err) {
                         that.submitting = false
                         that.serverMsg = err

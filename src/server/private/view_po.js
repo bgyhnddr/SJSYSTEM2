@@ -217,6 +217,7 @@ var exec = {
                         }
                     }
                 },
+                distinct: 'no',
                 where: {
                     $and: {
                         state: "done",
@@ -469,6 +470,7 @@ var exec = {
                         }
                     }
                 },
+                distinct: 'no',
                 where: {
                     $and: {
                         state: "done",
@@ -485,6 +487,64 @@ var exec = {
                         }
                     }
 
+                }
+            })
+        ]).then(function(result) {
+            var list = result[0]
+            var rowCount = result[1]
+            return {
+                end: (list.length + page * count) >= rowCount,
+                list: list
+            }
+        })
+    },
+    getPOs(req, res, next) {
+        var po = require("../../db/models/po")
+        var po_quotation = require("../../db/models/po_quotation")
+        var po_quotation_detail = require("../../db/models/po_quotation_detail")
+        var filterKey = req.query.filterKey == undefined ? "" : req.query.filterKey
+        var count = req.query.count == undefined ? 5 : parseInt(req.query.count)
+        var page = req.query.page == undefined ? 0 : parseInt(req.query.page)
+        po.hasMany(po_quotation)
+        po_quotation.hasOne(po_quotation_detail)
+
+        return Promise.all([
+            po.findAll({
+                include: {
+                    model: po_quotation,
+                    include: {
+                        model: po_quotation_detail
+                    }
+                },
+                where: {
+                    $or: {
+                        no: {
+                            $like: "%" + filterKey + "%"
+                        },
+                        prepared_by: {
+                            $like: "%" + filterKey + "%"
+                        },
+                        comments: {
+                            $like: "%" + filterKey + "%"
+                        }
+                    }
+                },
+                offset: page * count,
+                limit: count
+            }),
+            po.count({
+                where: {
+                    $or: {
+                        no: {
+                            $like: "%" + filterKey + "%"
+                        },
+                        prepared_by: {
+                            $like: "%" + filterKey + "%"
+                        },
+                        comments: {
+                            $like: "%" + filterKey + "%"
+                        }
+                    }
                 }
             })
         ]).then(function(result) {

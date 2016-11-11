@@ -6,7 +6,7 @@ var project_hour = sequelize.define(
         id: { type: Sequelize.INTEGER, autoIncrement: true, primaryKey: true },
         name: { type: Sequelize.STRING },
         begin_date: { type: Sequelize.STRING },
-        hour: Sequelize.INTEGER,
+        hour: Sequelize.FLOAT,
         staff: Sequelize.STRING,
         comments: Sequelize.STRING,
         project_id: Sequelize.INTEGER
