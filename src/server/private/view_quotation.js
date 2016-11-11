@@ -68,12 +68,22 @@ var exec = {
             var project = require('../../db/models/project')
             var project_state = require('../../db/models/project_state')
             var quotation = require('../../db/models/quotation')
+            var quotation_job = require('../../db/models/quotation_job')
+            var building = require('../../db/models/building')
 
             project.hasOne(project_state)
             project.belongsTo(quotation)
+            quotation.belongsTo(building)
+            quotation.hasMany(quotation_job)
 
             return project.findOne({
-                include: [project_state, quotation],
+                include: [project_state, {
+                    model: quotation,
+                    include: [
+                        building,
+                        quotation_job
+                    ]
+                }],
                 where: { id: id }
             }).then(function(result) {
                 if (result == null) {
@@ -804,6 +814,20 @@ var exec = {
                 list: list
             }
         })
+    },
+    getPreparedBy(req) {
+        var project_record = require('../../db/models/project_record')
+
+        return project_record.findOne({
+            action: "create_quotation/createQuotation",
+            content: req.query.quotation_no
+        }).then((result) => {
+            return result.user_account
+        })
+    },
+    getComments(req) {
+        var comments_text = require('../../db/models/comments_text')
+        return comments_text.findAll()
     }
 }
 

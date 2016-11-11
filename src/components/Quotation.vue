@@ -8,7 +8,7 @@
 				<quotation-editor :quotation.sync="quotation"></quotation-editor>
 			</div>
 			<div v-if="!editable">
-				<button class="btn btn-default">下載報價單</button>
+				<a target="_blank" :href="'/quotation/'+quotation.project.id" class="btn btn-default">下載(預覽)報價單</a>
 				<quotation-view :quotation.sync="quotation"></quotation-view>
 			</div>
 			<div>

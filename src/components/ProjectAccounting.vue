@@ -6,13 +6,13 @@
 			<bs-input type="number" :value.sync="submitData.ecost" label="工程預計成本"></bs-input>
 			<bs-input type="number" :value.sync="submitData.acost" label="工程實際成本"></bs-input>
 			<bs-input type="number" :value.sync="submitData.income" label="工程實際收入"></bs-input>
-			工程實際綠潤：{{profit}}
+			工程實際利潤：：{{profit}}
 		</div>
 		<div v-else>
 			<p>工程預計成本：{{submitData.ecost}}</p>
 			<p>工程實際成本：{{submitData.acost}}</p>
 			<p>工程實際收入：{{submitData.income}}</p>
-			<p>工程實際綠潤：{{profit}}</p>
+			<p>工程實際利潤：{{profit}}</p>
 		</div>
 	</div>
 </template>
@@ -51,7 +51,7 @@
                 return this.checkPermission(['boss']) || (this.project && this.project.project_state.state == 'counting')
             },
             profit() {
-                return this.submitData.acost - this.submitData.income
+                return this.submitData.income - this.submitData.acost
             }
         },
         methods: {

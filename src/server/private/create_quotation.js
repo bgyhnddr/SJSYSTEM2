@@ -686,6 +686,18 @@ var exec = {
             common.log_project_record("create_quotation/endWork", result.id, req.session.userInfo.name)
             return "success"
         })
+    },
+    submitComments(req) {
+        var comments_text = require('../../db/models/comments_text')
+        comments_text.upsert(req.body)
+    },
+    deleteComments(req) {
+        var comments_text = require('../../db/models/comments_text')
+        comments_text.destroy({
+            where: {
+                code: req.body.code
+            }
+        })
     }
 }
 

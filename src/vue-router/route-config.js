@@ -84,6 +84,9 @@ export function configRouter(router) {
                     component: require('../components/Setting.vue')
                 }
             }
+        },
+        '/quotation/:id': {
+            component: require('../components/QuotationPrint.vue')
         }
     })
     router.redirect({

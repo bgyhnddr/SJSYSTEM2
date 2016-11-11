@@ -52,5 +52,11 @@ export default {
     },
     getProjects(params) {
         return request.get(path + 'getProjects', params)
+    },
+    getPreparedBy(params) {
+        return request.get(path + 'getPreparedBy', params)
+    },
+    getComments(params) {
+        return request.get(path + 'getComments', params)
     }
 }

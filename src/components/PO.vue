@@ -6,19 +6,17 @@
 		</div>
 		<div v-if="po.id" class="col-sm-12">
 			<h3>PO No: {{po.no}}</h3>
+			<h3>Prepared By: {{po.prepared_by}}</h3>
 		</div>
 		<div class="col-sm-2">
-			<bs-input :value.sync="po.prepared_by" label="Prepared By"></bs-input>
-		</div>
-		<div class="col-sm-2">
-			<bs-input :value.sync="po.date" label="日期" type="date"></bs-input>
+			<bs-input :readonly="po.state != 'draft'" :value.sync="po.date" label="日期" type="date"></bs-input>
 		</div>
 		<div class="col-sm-12">
 			<po-detail :po.sync="po" :detail.sync="detail" v-if="po.id"></po-detail>
 			<h4 v-else>*需要保存草稿后才能添加明細*</h4>
 		</div>
 		<div class="col-sm-12">
-			<bs-input :value.sync="po.comments" label="備注" type="textarea"></bs-input>
+			<bs-input :readonly="po.state != 'draft'" :value.sync="po.comments" label="備注" type="textarea"></bs-input>
 		</div>
 	</div>
 </template>

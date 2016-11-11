@@ -54,5 +54,11 @@ export default {
     },
     endWork(params) {
         return request.post(path + 'endWork', params)
+    },
+    submitComments(params) {
+        return request.post(path + 'submitComments', params)
+    },
+    deleteComments(params) {
+        return request.post(path + 'deleteComments', params)
     }
 }
