@@ -7,6 +7,9 @@ export default {
     getProject(params) {
         return request.get(path + 'getProject', params)
     },
+    getInvoice(params) {
+        return request.get(path + 'getInvoice', params)
+    },
     getQuotationJobs(params) {
         return request.get(path + 'getQuotationJobs', params)
     },

@@ -87,6 +87,9 @@ export function configRouter(router) {
         },
         '/quotation/:id': {
             component: require('../components/QuotationPrint.vue')
+        },
+        '/invoice/:id': {
+            component: require('../components/InvoicePrint.vue')
         }
     })
     router.redirect({

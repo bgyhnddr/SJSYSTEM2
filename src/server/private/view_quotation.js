@@ -96,6 +96,40 @@ var exec = {
             return Promise.reject("沒有找到工程")
         }
     },
+    getInvoice(req, res, next) {
+        var id = req.query.id
+        if (id) {
+            var project = require('../../db/models/project')
+            var project_state = require('../../db/models/project_state')
+            var quotation = require('../../db/models/quotation')
+            var quotation_job = require('../../db/models/quotation_job')
+            var building = require('../../db/models/building')
+
+            project.hasOne(project_state)
+            project.belongsTo(quotation)
+            quotation.belongsTo(building)
+            quotation.hasMany(quotation_job)
+
+            return project.findOne({
+                include: [project_state, {
+                    model: quotation,
+                    include: [
+                        building,
+                        quotation_job
+                    ]
+                }],
+                where: { id: id }
+            }).then(function(result) {
+                if (result == null) {
+                    return Promise.reject("沒有找到工程")
+                } else {
+                    return result
+                }
+            })
+        } else {
+            return Promise.reject("沒有找到工程")
+        }
+    },
     getQuotationJobs(req, res, next) {
         var quotation_job = require('../../db/models/quotation_job')
         var quotationNo = req.query.quotationNo
