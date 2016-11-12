@@ -61,5 +61,8 @@ export default {
     },
     getComments(params) {
         return request.get(path + 'getComments', params)
+    },
+    getInvoiceComments(params) {
+        return request.get(path + 'getInvoiceComments', params)
     }
 }

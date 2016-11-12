@@ -40,7 +40,7 @@
 					<td>{{row.check_no}}</td>
 					<td>{{row.check_date}}</td>
 					<td>
-						<button class="btn btn-default btn-xs">下載（預覽）發票</button>
+						<a target="_blank" :href="'/invoice/'+row.id" class="btn btn-default btn-xs">下載（預覽）發票</a>
 						<button @click="uploadCheck(row)" class="btn btn-default btn-xs">上傳支票</button>
 					</td>
 				</tr>

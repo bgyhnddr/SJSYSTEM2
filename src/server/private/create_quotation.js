@@ -698,6 +698,18 @@ var exec = {
             no: req.body.no,
             comments: req.body.comments
         })
+    },
+    submitInvoiceComments(req) {
+        var invoice_comments_text = require('../../db/models/invoice_comments_text')
+        invoice_comments_text.upsert(req.body)
+    },
+    deleteInvoiceComments(req) {
+        var invoice_comments_text = require('../../db/models/invoice_comments_text')
+        invoice_comments_text.destroy({
+            where: {
+                code: req.body.code
+            }
+        })
     }
 }
 

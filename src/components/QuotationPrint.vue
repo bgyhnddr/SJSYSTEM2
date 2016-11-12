@@ -180,7 +180,7 @@
 								<div>註:</div>
 							</td>
 							<td>
-								<div v-el:comments @input="commentsChange" contenteditable="true" id="modelContent"></div>
+								<div style='font-family: "Microsoft JhengHei UI";font-size: 10pt;' v-el:comments @input="commentsChange" contenteditable="true" id="modelContent"></div>
 							</td>
 						</tr>
 					</tbody>
@@ -192,8 +192,8 @@
 								<td style="width: 50%">Confirmed By :
 								</td>
 								<td style="width: 50%">
-									<div>順基工程有限公司</div>
-									<div>Smooth Prospect Engineering Limited</div>
+									<div class="bold">順基工程有限公司</div>
+									<div class="bold">Smooth Prospect Engineering Limited</div>
 								</td>
 							</tr>
 							<tr>
@@ -205,8 +205,8 @@
 								</td>
 							</tr>
 							<tr>
-								<td>Please sign with Co. chop & return copy
-								</td>
+								<td class="bold">Please sign with Co. chop & return copy
+								</td class="bold">
 								<td>Signature & Co. Chop
 								</td>
 							</tr>
@@ -363,37 +363,37 @@
         margin: auto;
         position: relative;
     }
-    
+
     .printContainer header {
         text-align: center;
     }
-    
+
     img.headlogo {
         width: 210mm;
     }
-    
+
     #modelContent {
         min-height: 100mm;
         border: 1px solid black;
     }
-    
+
     .QTitle {
         text-align: center;
         font-size: 28pt;
         text-decoration: underline;
         font-family: "Times New Roman", Georgia, Serif;
     }
-    
+
     .mainTable {
         font-size: 12pt;
         font-family: "Times New Roman", Georgia, Serif;
     }
-    
+
     .total {
         border-top: 1px solid black;
         border-bottom-style: double;
     }
-    
+
     #seal {
         position: absolute;
         bottom: 0;
@@ -402,12 +402,12 @@
         height: 50mm;
         text-align: center;
     }
-    
+
     #sealImg {
         width: 50mm;
         height: 50mm;
     }
-    
+
     #draft {
         color: red;
         font-size: 20mm;
@@ -415,88 +415,88 @@
         border: 2mm solid;
         border-radius: 3mm;
     }
-    
+
     .tableleft {
         text-align: left;
     }
-    
+
     .tableRight {
         text-align: right;
     }
-    
+
     .tableCenter {
         text-align: center;
     }
-    
+
     .bold {
         font-weight: bold
     }
-    
+
     .underline {
         text-decoration: underline
     }
-    
+
     #projectContent {
         margin-top: 25px;
     }
-    
+
     #projectContent>div>table {
         width: 100%;
         text-align: left;
         table-layout: fixed;
     }
-    
+
     #projectContent>div>table td {
         word-wrap: break-word;
     }
-    
+
     #projectContent>div>table th:nth-child(1) {
         width: 10%;
     }
-    
+
     #projectContent>div>table th:nth-child(2) {
         width: 50%;
     }
-    
+
     #projectContent>div>table th:nth-child(3) {
         width: 13%;
     }
-    
+
     #projectContent>div>table th:nth-child(4) {
         width: 12%;
     }
-    
+
     #projectContent>div>table th:nth-child(5) {
         width: 15%;
     }
-    
+
     #signTable {
         text-align: center;
         width: 100%;
     }
-    
+
     #signTable td {
         vertical-align: top;
     }
-    
+
     .footer {
         margin-top: 10mm;
     }
-    
+
     #projectName {
         text-decoration: underline;
         font-size: 6mm;
     }
-    
+
     #total {
         margin-top: 20px;
         text-align: right;
     }
-    
+
     .hide {
         display: none;
     }
-    
+
     @media print {
         .printHide {
             display: none;

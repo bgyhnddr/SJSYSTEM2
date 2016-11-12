@@ -37,7 +37,8 @@ module.exports = function(req, res, next) {
         require('./models/po_quotation_detail'),
         require('./models/po_quotation_detail_attachment'),
         require('./models/po_quotation_approve'),
-        require('./models/comments_text')
+        require('./models/comments_text'),
+        require('./models/invoice_comments_text')
     ].map((o) => o.sync({ force: true }))).then(function() {
         return require('./init_data')()
     }).then(function() {

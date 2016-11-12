@@ -63,5 +63,11 @@ export default {
     },
     saveQuotationComments(params) {
         return request.post(path + 'saveQuotationComments', params)
+    },
+    submitInvoiceComments(params) {
+        return request.post(path + 'submitInvoiceComments', params)
+    },
+    deleteInvoiceComments(params) {
+        return request.post(path + 'deleteInvoiceComments', params)
     }
 }
