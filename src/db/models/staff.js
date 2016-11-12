@@ -3,8 +3,8 @@ var sequelize = require('../sequelize')
 
 var staff = sequelize.define(
     'staff', {
-        id: { type: Sequelize.INTEGER, autoIncrement: true, primaryKey: true },
-        name: { type: Sequelize.STRING, unique: true }
+        id: { type: Sequelize.INTEGER, autoIncrement: true, unique: true },
+        name: { type: Sequelize.STRING, primaryKey: true }
     }, {
         underscored: true
     })

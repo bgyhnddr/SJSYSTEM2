@@ -19,6 +19,17 @@ var getState = (state) => {
   }
 }
 
+var getLastDay = (year, month) => {
+  var new_year = year; //取当前的年份
+  var new_month = month++; //取下一个月的第一天，方便计算（最后一天不固定）
+  if (month > 12) {
+    new_month -= 12; //月份减
+    new_year++; //年份增
+  }
+  var new_date = new Date(new_year, new_month, 1); //取当年当月中的第一天
+  return (new Date(new_date.getTime() - 1000 * 60 * 60 * 24)).getDate(); //获取当月最后一天日期
+}
+
 var getProjectSetting = () => {
   var project_setting = require('../../db/models/project_setting')
   return project_setting.findAll().then((result) => {
@@ -994,6 +1005,104 @@ var exec = {
     var invoice_comments_text = require('../../db/models/invoice_comments_text')
     invoice_comments_text.sync()
     return invoice_comments_text.findAll()
+  },
+  getHourReport(req) {
+    var staff = require('../../db/models/staff')
+    var project = require('../../db/models/project')
+    var quotation = require('../../db/models/quotation')
+    var project_hour = require('../../db/models/project_hour')
+    var building = require('../../db/models/building')
+    Date.prototype.Format = function(fmt) { //author: meizz
+      var o = {
+        "M+": this.getMonth() + 1, //月份
+        "d+": this.getDate(), //日
+        "h+": this.getHours(), //小时
+        "m+": this.getMinutes(), //分
+        "s+": this.getSeconds(), //秒
+        "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+        "S": this.getMilliseconds() //毫秒
+      };
+      if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+      for (var k in o)
+        if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+      return fmt;
+    }
+
+    staff.hasMany(project_hour, {
+      foreignKey: "staff"
+    })
+    project_hour.belongsTo(project)
+    project.belongsTo(quotation)
+    quotation.belongsTo(building)
+
+    var begin_date, end_date
+    if (req.query.front) {
+      begin_date = new Date(req.query.year + "-" + req.query.month + "-01")
+      end_date = new Date(req.query.year + "-" + req.query.month + "-15")
+    } else {
+      begin_date = new Date(req.query.year + "-" + req.query.month + "-16")
+      end_date = new Date(req.query.year + "-" +
+        req.query.month + "-" +
+        getLastDay(parseInt(req.query.year), parseInt(req.query.month)))
+    }
+    var sequelize = require('sequelize')
+    return staff.findAll({
+      include: {
+        model: project_hour,
+        include: {
+          model: project,
+          include: {
+            model: quotation,
+            include: building,
+            where: {
+              manager: req.query.manager
+            }
+          }
+        },
+        where: sequelize.literal("project_hours.begin_date>='" +
+          begin_date.Format('yyyy-MM-dd') + "' AND project_hours.begin_date<='" +
+          end_date.Format('yyyy-MM-dd') + "'"
+        )
+      }
+    }).then((result) => {
+      return result.map((obj) => {
+        var o = obj.toJSON()
+        var qtions = {}
+        o.project_hours.forEach((ph) => {
+          if (qtions[ph.project.quotation_no] == undefined) {
+            qtions[ph.project.quotation_no] = {}
+            qtions[ph.project.quotation_no].qobj = ph.project.quotation
+            qtions[ph.project.quotation_no].qobj.lsum = 0
+            qtions[ph.project.quotation_no].phObjs = {}
+          }
+          qtions[ph.project.quotation_no].qobj.lsum += ph.hour
+          if (qtions[ph.project.quotation_no].phObjs[ph.begin_date] == undefined) {
+            var quotation_no = ph.project.quotation_no
+            delete ph.project
+            qtions[quotation_no].phObjs[ph.begin_date] = ph
+          } else {
+            qtions[ph.project.quotation_no].phObjs[ph.begin_date].hour += ph.hour
+          }
+
+        })
+        var newQuotationList = []
+        for (var qt in qtions) {
+          var qobj = qtions[qt].qobj
+          qobj.project_hours = []
+          for (var ph in qtions[qt].phObjs) {
+            qobj.project_hours.push(qtions[qt].phObjs[ph])
+          }
+          newQuotationList.push(qobj)
+        }
+        o.quotations = newQuotationList
+        delete o.project_hours
+        o.sum = o.quotations.reduce((sum, q) => {
+          return sum = q.lsum
+        }, 0)
+
+        return o
+      })
+    })
   }
 }
 

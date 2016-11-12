@@ -64,5 +64,8 @@ export default {
     },
     getInvoiceComments(params) {
         return request.get(path + 'getInvoiceComments', params)
+    },
+    getHourReport(params) {
+        return request.get(path + 'getHourReport', params)
     }
 }

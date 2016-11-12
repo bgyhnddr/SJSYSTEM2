@@ -17,7 +17,7 @@
 				<a v-link="{ path: '/index/DataManagement' }">數據管理</a>
 			</li>
 			<li v-if="checkPermission()">
-				<a v-link="{ path: '/index' }">報表</a>
+				<a v-link="{ path: '/index/ReportManager' }">報表</a>
 			</li>
 			<li v-if="checkPermission()">
 				<a v-link="{ path: '/index/RBACManagement' }">權限管理</a>

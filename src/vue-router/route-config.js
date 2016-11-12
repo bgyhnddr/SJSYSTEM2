@@ -80,6 +80,14 @@ export function configRouter(router) {
                         }
                     }
                 },
+                'ReportManager':{
+                    component: require('../components/ReportManager.vue'),
+                    subRoutes: {
+                        'Hour': {
+                            component: require('../components/HourQuery.vue')
+                        }
+                    }
+                },
                 'Setting': {
                     component: require('../components/Setting.vue')
                 }
@@ -90,6 +98,9 @@ export function configRouter(router) {
         },
         '/invoice/:id': {
             component: require('../components/InvoicePrint.vue')
+        },
+        '/report/hours':{
+            component: require('../components/HoursReport.vue')
         }
     })
     router.redirect({
