@@ -103,42 +103,53 @@ var exec = {
   getInvoice(req, res, next) {
     var id = req.query.id
     if (id) {
-      var project = require('../../db/models/project')
-      var project_state = require('../../db/models/project_state')
-      var project_invoice = require('../../db/models/project_invoice')
-      var project_invoice_detail = require('../../db/models/project_invoice_detail')
-      var quotation = require('../../db/models/quotation')
-      var quotation_job = require('../../db/models/quotation_job')
-      var building = require('../../db/models/building')
-
-      project.hasOne(project_state)
-      project.belongsTo(quotation)
-      quotation.belongsTo(building)
-      quotation.hasMany(quotation_job)
-
-      project.hasOne(project_invoice)
-      project_invoice.hasMany(project_invoice_detail)
-      project_invoice_detail.belongsTo(quotation_job)
-
-      return project.findOne({
-        include: [project_state, {
-          model: quotation,
-          include: building
-        }, {
-          model: project_invoice,
-          include: {
-            model: project_invoice_detail,
-            include: quotation_job
-          },
-          where: {
-            id: id
-          }
-        }]
-      }).then(function(result) {
-        if (result == null) {
-          return Promise.reject("无发票")
+      var invoice_snapshot = require('../../db/models/invoice_snapshot')
+      return invoice_snapshot.findOne({
+        where: {
+          project_invoice_id: id
+        }
+      }).then((result) => {
+        if (result != null) {
+          return JSON.parse(result.content)
         } else {
-          return result
+          var project = require('../../db/models/project')
+          var project_state = require('../../db/models/project_state')
+          var project_invoice = require('../../db/models/project_invoice')
+          var project_invoice_detail = require('../../db/models/project_invoice_detail')
+          var quotation = require('../../db/models/quotation')
+          var quotation_job = require('../../db/models/quotation_job')
+          var building = require('../../db/models/building')
+
+          project.hasOne(project_state)
+          project.belongsTo(quotation)
+          quotation.belongsTo(building)
+          quotation.hasMany(quotation_job)
+
+          project.hasOne(project_invoice)
+          project_invoice.hasMany(project_invoice_detail)
+          project_invoice_detail.belongsTo(quotation_job)
+
+          return project.findOne({
+            include: [project_state, {
+              model: quotation,
+              include: building
+            }, {
+              model: project_invoice,
+              include: {
+                model: project_invoice_detail,
+                include: quotation_job
+              },
+              where: {
+                id: id
+              }
+            }]
+          }).then(function(result) {
+            if (result == null) {
+              return Promise.reject("无发票")
+            } else {
+              return result
+            }
+          })
         }
       })
     } else {
@@ -647,7 +658,7 @@ var exec = {
                 })
               }
 
-              return [list, list.length]
+              return [list.slice(page * count, count), list.length]
             })
           })
         case 'wait_contract':
@@ -808,7 +819,7 @@ var exec = {
                   pj.quotation.project_type.indexOf(filterKey) >= 0
               })
             }
-            return [list, list.length]
+            return [list.slice(page * count, count), list.length]
           })
         case "wait_pay":
           return project.findAll({
@@ -856,7 +867,7 @@ var exec = {
                   pj.quotation.project_type.indexOf(filterKey) >= 0
               })
             }
-            return [list, list.length]
+            return [list.slice(page * count, count), list.length]
           })
         case "paid":
           return project.findAll({
@@ -895,7 +906,7 @@ var exec = {
                   pj.quotation.project_type.indexOf(filterKey) >= 0
               })
             }
-            return [list, list.length]
+            return [list.slice(page * count, count), list.length]
           })
         default:
           return Promise.all([project.findAll({

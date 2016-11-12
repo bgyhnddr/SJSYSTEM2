@@ -69,5 +69,8 @@ export default {
     },
     deleteInvoiceComments(params) {
         return request.post(path + 'deleteInvoiceComments', params)
+    },
+    saveInvoiceSnapshot(params) {
+        return request.post(path + 'saveInvoiceSnapshot', params)
     }
 }

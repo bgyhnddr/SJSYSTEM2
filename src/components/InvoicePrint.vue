@@ -2,6 +2,7 @@
 <div class="printContainer">
   <div class="printHide">
     <input type="button" onclick="window.print()" value="打印" />
+    <input type="button" @click="saveSnap" value="保存" />
     <select v-model="lang">
       <option value="zh">中文</option>
       <option value="en">English</option>
@@ -354,6 +355,12 @@ export default {
           window.alert(err)
         })
       }
+    },
+    saveSnap() {
+      create_quotation.saveInvoiceSnapshot({
+        id: this.project.project_invoice.id,
+        content: JSON.stringify(this.project)
+      })
     }
   },
   watch: {
