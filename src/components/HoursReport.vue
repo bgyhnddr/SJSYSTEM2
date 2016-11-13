@@ -1,46 +1,60 @@
 <template>
 <div id="hourReport">
-  <table>
-    <thead>
-      <tr>
-        <th rowspan="2"></th>
-        <th rowspan="2">報價號</th>
-        <th rowspan="2">盤名</th>
-        <th rowspan="2">工程項目</th>
-        <th class="workdate" v-for="i in getLastDay()">
-          {{i+getFirstDay()}}
-        </th>
-        <th rowspan="2">小計</th>
-        <th rowspan="2">合計</th>
-      </tr>
-      <tr>
-        <th class="workdate" v-for="i in getLastDay()">
-          {{getDayOfWeek(i+getFirstDay())}}
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      <template v-for="staff in list">
-        <tr v-for="quotation in staff.quotations">
-          <td v-if="$index==0" :rowspan="staff.quotations.length+1">
-            {{staff.name}}
-          </td>
-          <td>{{quotation.no}}</td>
-          <td>{{quotation.building.name}}</td>
-          <td>{{quotation.project_type}}</td>
-          <td v-for="i in getLastDay()">
-            {{getHourOfDay(quotation,i+getFirstDay())}}
-          </td>
-          <td>{{quotation.lsum}}</td>
-          <td></td>
+  <div class="printContainer">
+    <div id="title">工程工數記錄表</div>
+    <div>
+      <span>主管姓名:
+        <label>{{$route.query.manager}}</label>
+      </span>
+      <span id="splitMonth">月份:
+        <label>{{getTimeChinese()}}</label>
+      </span>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th rowspan="2"></th>
+          <th rowspan="2">報價號</th>
+          <th rowspan="2">盤名</th>
+          <th rowspan="2">工程項目</th>
+          <th class="workdate" v-for="i in getLastDay()">
+            {{i+getFirstDay()}}
+          </th>
+          <th rowspan="2">小計</th>
+          <th rowspan="2">合計</th>
         </tr>
         <tr>
-          <td :colspan="getLastDay()+4"></td>
-          <td>{{staff.sum}}</td>
+          <th class="workdate" v-for="i in getLastDay()">
+            {{getDayOfWeek(i+getFirstDay())}}
+          </th>
         </tr>
+      </thead>
+      <tbody>
+        <template v-for="staff in list">
+          <tr v-for="quotation in staff.quotations">
+            <td v-if="$index==0" :rowspan="staff.quotations.length+1">
+              {{staff.name}}
+            </td>
+            <td>{{quotation.no}}</td>
+            <td>{{quotation.building.name}}</td>
+            <td>{{quotation.project_type}}</td>
+            <td v-for="i in getLastDay()">
+              {{getHourOfDay(quotation,i+getFirstDay())}}
+            </td>
+            <td>{{quotation.lsum}}</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td :colspan="getLastDay()+4"></td>
+            <td>{{staff.sum}}</td>
+          </tr>
 </template>
-  </tbody>
-</table>
+      </tbody>
+    </table>
+    <div class="printHide">
+      <input type="button" onclick="window.print()" value="打印" />
+    </div>
+  </div>
 </div>
 </template>
 <script>
@@ -52,6 +66,38 @@ export default {
     }
   },
   methods: {
+    n2c(num) {
+      switch (num) {
+        case 1:
+          return "一";
+        case 2:
+          return "二";
+        case 3:
+          return "三";
+        case 4:
+          return "四";
+        case 5:
+          return "五";
+        case 6:
+          return "六";
+        case 7:
+          return "七";
+        case 8:
+          return "八";
+        case 9:
+          return "九";
+        case 10:
+          return "十";
+        case 11:
+          return "十一";
+        case 12:
+          return "十二";
+      }
+    },
+    getTimeChinese() {
+      return this.n2c(parseInt(this.$route.query.month)) + "月" +
+      (this.$route.query.front?"上旬":"下旬")
+    },
     getHourReport() {
       var that = this
       var query = {

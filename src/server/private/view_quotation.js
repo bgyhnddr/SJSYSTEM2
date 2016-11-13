@@ -1063,7 +1063,8 @@ var exec = {
           begin_date.Format('yyyy-MM-dd') + "' AND project_hours.begin_date<='" +
           end_date.Format('yyyy-MM-dd') + "'"
         )
-      }
+      },
+      order:"project_hours.begin_date"
     }).then((result) => {
       return result.map((obj) => {
         var o = obj.toJSON()
@@ -1097,7 +1098,7 @@ var exec = {
         o.quotations = newQuotationList
         delete o.project_hours
         o.sum = o.quotations.reduce((sum, q) => {
-          return sum = q.lsum
+          return sum + q.lsum
         }, 0)
 
         return o
