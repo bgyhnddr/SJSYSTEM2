@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<div v-if="checkPermission()">
+		<div v-if="checkPermission(checkPermission(['datasource']))">
 			<ol class="breadcrumb">
 				<li><a v-link="{ path: '/index/DataManagement/ProjectType' }">工程類別</a></li>
 				<li><a v-link="{ path: '/index/DataManagement/ProjectType/'+$route.params.type }">{{$route.params.type}}</a></li>

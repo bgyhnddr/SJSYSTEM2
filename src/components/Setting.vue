@@ -1,6 +1,6 @@
 <template>
 	<div class="container-fluid">
-		<div v-if="checkPermission()">
+		<div v-if="checkPermission(['boss'])">
 			<div class="panel panel-default">
 				<div class="panel-heading">報價單BOSS審批條件</div>
 				<div class="panel-body">

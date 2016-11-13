@@ -1,9 +1,8 @@
 <template>
 	<div>
-		<div v-if="checkPermission()">
+		<div v-if="checkPermission(['datasource'])">
 			<button @click="addBuilding" class="btn btn-default">添加盤</button>
 			<div style="position:relative">
-				<spinner size="md" text="loading..."></spinner>
 				<vue-strap-table :err-msg.sync="errMsg" :data.sync="data" :get-data-event="getData" :columns.sync="columns"></vue-strap-table>
 			</div>
 			<modal :show.sync="showBuildingModel" effect="fade" :large="true">
@@ -38,7 +37,6 @@
 <script>
     import VueStrapTable from './extend/vue-strap-table'
     import {
-        spinner,
         modal,
         alert,
         input as bsInput
@@ -58,7 +56,6 @@
         },
         components: {
             VueStrapTable,
-            spinner,
             modal,
             alert,
             bsInput
@@ -217,9 +214,7 @@
             },
             "getData": function(pageNum, countPerPage, filterKey, append) {
                 let that = this
-                that.$broadcast('show::spinner')
                 datasource.getBuildings(pageNum, countPerPage, filterKey).then(function(result) {
-                    that.$broadcast('hide::spinner')
                     if (append) {
                         that.data.end = result.end
                         that.data.list = that.data.list.concat(result.list)
@@ -228,7 +223,6 @@
                     }
                 }).catch(function(err) {
                     that.errMsg = err
-                    that.$broadcast('hide::spinner')
                 })
             }
         },

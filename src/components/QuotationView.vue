@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<div v-if="checkPermission()">
+		<div>
 			<p>報價單編號：{{quotation.no}}</p>
 			<p>物業公司：{{quotation.property_management_co_name}}</p>
 			<p>工程名稱：{{quotation.project_name}}</p>

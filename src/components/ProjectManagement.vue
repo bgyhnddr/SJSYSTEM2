@@ -1,42 +1,42 @@
 <template>
 	<div>
-		<div v-if="checkPermission()">
+		<div v-if="checkPermission(['view_quotation'])">
 			<navbar type="default">
 				<a slot="brand" class="navbar-brand">工程管理</a>
-				<li v-if="checkPermission()">
+				<li v-if="checkPermission(['create_quotation'])">
 					<a v-link="{ path: '/index/ProjectManagement/Project' }">新建報價單</a>
 				</li>
-				<li v-if="checkPermission()">
+				<li>
 					<a v-link="{ path: '/index/ProjectManagement/ProjectList/draft' }">報價單草稿</a>
 				</li>
-				<li v-if="checkPermission()">
+				<li>
 					<a v-link="{ path: '/index/ProjectManagement/ProjectList/wait_approve' }">待核准工程</a>
 				</li>
-				<li v-if="checkPermission()">
+				<li>
 					<a v-link="{ path: '/index/ProjectManagement/ProjectList/wait_approve_boss' }">待boss核准工程</a>
 				</li>
-				<li v-if="checkPermission()">
+				<li>
 					<a v-link="{ path: '/index/ProjectManagement/ProjectList/wait_contract' }">等待合同工程</a>
 				</li>
-				<li v-if="checkPermission()">
+				<li>
 					<a v-link="{ path: '/index/ProjectManagement/ProjectList/quotation_contract' }">已報價工程</a>
 				</li>
-				<li v-if="checkPermission()">
+				<li>
 					<a v-link="{ path: '/index/ProjectManagement/ProjectList/working' }">施工中工程</a>
 				</li>
-				<li v-if="checkPermission()">
+				<li>
 					<a v-link="{ path: '/index/ProjectManagement/ProjectList/counting' }">已完成工程</a>
 				</li>
-				<li v-if="checkPermission()">
+				<li>
 					<a v-link="{ path: '/index/ProjectManagement/ProjectList/wait_invoice' }">待開發票工程</a>
 				</li>
-				<li v-if="checkPermission()">
+				<li>
 					<a v-link="{ path: '/index/ProjectManagement/ProjectList/wait_pay' }">待付款工程</a>
 				</li>
-				<li v-if="checkPermission()">
+				<li>
 					<a v-link="{ path: '/index/ProjectManagement/ProjectList/paid' }">已付款工程</a>
 				</li>
-				<li v-if="checkPermission()">
+				<li>
 					<a v-link="{ path: '/index/ProjectManagement/ProjectList/all' }">全部工程</a>
 				</li>
 			</navbar>

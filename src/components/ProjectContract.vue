@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<div v-if="checkPermission()">
+		<div>
 			<div class="panel panel-default">
 				<div class="panel-heading">合同</div>
 				<div class="panel-body">

@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<div v-if="checkPermission()">
+		<div v-if="checkPermission(['datasource'])">
 			<ol v-if="breadcrumb" class="breadcrumb">
 				<li><a v-link="{ path: '/index/DataManagement/ProjectType' }">工程類別</a></li>
 				<li class="active">{{type}}</li>
@@ -8,7 +8,6 @@
 			<div>
 				<button @click="addProjectItem" class="btn btn-default">添加工程項目</button>
 				<div style="position:relative">
-					<spinner size="md" text="loading..."></spinner>
 					<vue-strap-table :err-msg.sync="errMsg" :data.sync="data" :get-data-event="getData" :columns="columns"></vue-strap-table>
 				</div>
 				<modal :show.sync="showProjectItemModel" effect="fade" width="400">
@@ -36,7 +35,6 @@
 <script>
     import VueStrapTable from './extend/vue-strap-table'
     import {
-        spinner,
         modal,
         alert,
         input as bsInput
@@ -66,7 +64,6 @@
         },
         components: {
             VueStrapTable,
-            spinner,
             modal,
             alert,
             bsInput
@@ -202,9 +199,7 @@
             },
             "getData": function(pageNum, countPerPage, filterKey, append) {
                 let that = this
-                that.$broadcast('show::spinner')
                 datasource.getProjectItems(that.type, pageNum, countPerPage, filterKey).then(function(result) {
-                    that.$broadcast('hide::spinner')
                     if (append) {
                         that.data.end = result.end
                         that.data.list = that.data.list.concat(result.list)
@@ -213,7 +208,6 @@
                     }
                 }).catch(function(err) {
                     that.errMsg = err
-                    that.$broadcast('hide::spinner')
                 })
             },
             "editUploadDetail": function(row) {

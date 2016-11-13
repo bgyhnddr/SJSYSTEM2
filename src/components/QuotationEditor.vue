@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<div v-if="checkPermission()">
+		<div>
 			<div class="form-group">
 				<label class="control-label">報價單編號</label>
 				<p>{{quotation.no}}</p>

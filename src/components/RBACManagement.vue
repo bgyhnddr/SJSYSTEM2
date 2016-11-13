@@ -1,9 +1,9 @@
 <template>
 	<div>
-		<div v-if="checkPermission()">
+		<div v-if="checkPermission(['boss'])">
 			<navbar type="default">
 				<a slot="brand" class="navbar-brand">權限管理</a>
-				<li v-if="checkPermission()">
+				<li v-if="checkPermission(['boss'])">
 					<a v-link="{ path: '/index/RBACManagement/User' }">用戶</a>
 				</li>
 				<li v-if="checkPermission()">

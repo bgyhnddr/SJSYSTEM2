@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<div v-if="checkPermission()">
+		<div v-if="checkPermission(['datasource'])">
 			<button @click="addPropertyManagementCo" class="btn btn-default">添加物業公司</button>
 			<div style="position:relative">
 				<spinner size="md" text="loading..."></spinner>

@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<div v-if="checkPermission()">
+		<div v-if="checkPermission(['boss'])">
 			<button @click="addUserRole" class="btn btn-default">添加用戶角色</button>
 			<div style="position:relative">
 				<spinner size="md" text="loading..."></spinner>

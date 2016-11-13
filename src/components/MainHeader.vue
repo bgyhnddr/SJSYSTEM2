@@ -7,22 +7,22 @@
 				<img style="width: 200px;" src='../assets/img/logo.png'>
 			</a>
 			<!-- For right positioning use slot -->
-			<li v-if="checkPermission()">
+			<li v-if="checkPermission(['view_quotation'])">
 				<a v-link="{ path: '/index/ProjectManagement' }">工程管理</a>
 			</li>
-			<li v-if="checkPermission()">
+			<li v-if="checkPermission(['view_po'])">
 				<a v-link="{ path: '/index/POManagement' }">PO管理</a>
 			</li>
-			<li v-if="checkPermission()">
+			<li v-if="checkPermission(['datasource'])">
 				<a v-link="{ path: '/index/DataManagement' }">數據管理</a>
 			</li>
-			<li v-if="checkPermission()">
+			<li v-if="checkPermission(['view_quotation'])">
 				<a v-link="{ path: '/index/ReportManager' }">報表</a>
 			</li>
-			<li v-if="checkPermission()">
+			<li v-if="checkPermission(['boss'])">
 				<a v-link="{ path: '/index/RBACManagement' }">權限管理</a>
 			</li>
-			<li v-if="checkPermission()">
+			<li v-if="checkPermission(['boss'])">
 				<a v-link="{ path: '/index/Setting' }">設定</a>
 			</li>
 			<dropdown slot="right" v-if="state.userInfo.name" :text="state.userInfo.name">

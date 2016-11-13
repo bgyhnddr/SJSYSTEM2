@@ -1,6 +1,5 @@
 <template>
 	<div @keyup.enter="submitLogin">
-		<spinner class="login_loading_zindex" size="md" text="loading..."></spinner>
 		<modal class="login_zindex" backdrop="false" :show.sync="state.showLoginModal" effect="fade" width="400">
 			<div slot="modal-header" class="modal-header">
 				<h4 class="modal-title">
@@ -28,7 +27,6 @@
     import {
         modal,
         alert,
-        spinner,
         input as bsInput
     } from 'vue-strap'
     import authAPI from '../api/auth'
@@ -47,8 +45,7 @@
         components: {
             modal,
             bsInput,
-            alert,
-            spinner
+            alert
         },
         computed: {
             alertType() {
@@ -76,15 +73,12 @@
             submitLogin() {
                 var that = this
                 if (that.valid()) {
-                    that.$broadcast('show::spinner')
                     authAPI.login(that.loginInfo).then(function(result) {
                         that.state.userInfo = result
                         that.state.showLoginModal = false
-                        that.$broadcast('hide::spinner')
                     }).catch(function(err) {
                         console.log(err)
                         that.serverMsg = err
-                        that.$broadcast('hide::spinner')
                     })
                 }
             }
@@ -103,7 +97,7 @@
     .login_zindex {
         z-index: 10000000 !important;
     }
-    
+
     .login_loading_zindex {
         z-index: 10000001 !important;
     }

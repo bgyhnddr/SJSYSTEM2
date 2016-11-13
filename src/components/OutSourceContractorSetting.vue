@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<div v-if="checkPermission()">
+		<div v-if="checkPermission(['workhour_and_outsource'])">
 			<button @click="addOutSourceContractor" class="btn btn-default">添加外判資料</button>
 			<div style="position:relative">
 				<vue-strap-table :err-msg.sync="errMsg" :data.sync="data" :get-data-event="getData" :columns.sync="columns"></vue-strap-table>
@@ -38,7 +38,6 @@
 <script>
     import VueStrapTable from './extend/vue-strap-table'
     import {
-        spinner,
         modal,
         alert,
         input as bsInput
@@ -58,7 +57,6 @@
         },
         components: {
             VueStrapTable,
-            spinner,
             modal,
             alert,
             bsInput

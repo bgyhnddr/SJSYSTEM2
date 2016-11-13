@@ -93,7 +93,6 @@
     import VueStrapUpload from './extend/vue-strap-upload'
     import StaffSetting from './StaffSetting'
     import {
-        spinner,
         modal,
         alert,
         input as bsInput,

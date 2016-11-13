@@ -1,27 +1,27 @@
 <template>
 	<div>
-		<div v-if="checkPermission()">
+		<div v-if="checkPermission(['view_po'])">
 			<navbar type="default">
 				<a slot="brand" class="navbar-brand">PO管理</a>
-				<li v-if="checkPermission()">
+				<li>
 					<a href="#" @click.prevent="$router.go('/index/POManagement/PO')">新建PO</a>
 				</li>
-				<li v-if="checkPermission()">
+				<li>
 					<a href="#" @click.prevent="$router.go('/index/POManagement/POList/draft')">草稿PO</a>
 				</li>
-				<li v-if="checkPermission()">
+				<li>
 					<a href="#" @click.prevent="$router.go('/index/POManagement/POList/wait')">待確認PO</a>
 				</li>
-				<li v-if="checkPermission()">
+				<li>
 					<a href="#" @click.prevent="$router.go('/index/POManagement/POList/waitboss')">待審核超預算PO</a>
 				</li>
-				<li v-if="checkPermission()">
+				<li>
 					<a href="#" @click.prevent="$router.go('/index/POManagement/POList/approved')">已確認/核准PO</a>
 				</li>
-				<li v-if="checkPermission()">
+				<li>
 					<a href="#" @click.prevent="$router.go('/index/POManagement/POList/paid')">已付款PO</a>
 				</li>
-				<li v-if="checkPermission()">
+				<li>
 					<a href="#" @click.prevent="$router.go('/index/POManagement/POList/all')">全部PO</a>
 				</li>
 			</navbar>

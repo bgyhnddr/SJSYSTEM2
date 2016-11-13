@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<div v-if="checkPermission()">
+		<div>
 			<alert v-if="alertText" type="success">
 				{{alertText}}
 			</alert>

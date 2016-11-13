@@ -1,9 +1,8 @@
 <template>
 	<div>
-		<div v-if="checkPermission()">
+		<div v-if="checkPermission(['datasource'])">
 			<button @click="addProjectManager" class="btn btn-default">添加工程負責人</button>
 			<div style="position:relative">
-				<spinner size="md" text="loading..."></spinner>
 				<vue-strap-table :err-msg.sync="errMsg" :data.sync="data" :get-data-event="getData" :columns.sync="columns"></vue-strap-table>
 			</div>
 			<div :class="{'in':showProjectManagerModel}" class="modal fade" :style="{zIndex:(showProjectManagerModel?undefined:-1)}"
@@ -38,7 +37,7 @@
                         </h4>
                     </div>
                     <div class="modal-body" style="min-height:300px;">
-                        <user-setting :selectable="userSelect"></user-setting>
+                        <app-user-setting :selectable="userSelect"></app-user-setting>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" @click="showUserModel=false">关闭</button>
@@ -53,13 +52,12 @@
 <script>
     import VueStrapTable from './extend/vue-strap-table'
     import {
-        spinner,
         modal,
         alert,
         input as bsInput
     } from 'vue-strap'
     import datasource from '../api/datasource'
-    import UserSetting from './UserSetting'
+    import AppUserSetting from './AppUserSetting'
     import checkPermission from '../extend/check-permission'
 
     export default {
@@ -84,11 +82,10 @@
         },
         components: {
             VueStrapTable,
-            spinner,
             modal,
             alert,
             bsInput,
-            UserSetting
+            AppUserSetting
         },
         data() {
             var columns = [{
@@ -168,7 +165,7 @@
             deleteProjectManager(row) {
                 if (window.confirm("是否確認刪除：" + row.user_account + "?")) {
                     var that = this
-                    datasource.deleteUserRole({
+                    datasource.deleteProjectManager({
                         id: row.id
                     }).then(function(result) {
                         that.$broadcast("refreshData")
@@ -187,9 +184,7 @@
             },
             "getData": function(pageNum, countPerPage, filterKey, append) {
                 let that = this
-                that.$broadcast('show::spinner')
                 datasource.getProjectManagers(pageNum, countPerPage, filterKey).then(function(result) {
-                    that.$broadcast('hide::spinner')
                     if (append) {
                         that.data.end = result.end
                         that.data.list = that.data.list.concat(result.list)
@@ -198,7 +193,6 @@
                     }
                 }).catch(function(err) {
                     that.errMsg = err
-                    that.$broadcast('hide::spinner')
                 })
             },
             "select": function(row) {

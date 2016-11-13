@@ -1103,6 +1103,45 @@ var exec = {
         return o
       })
     })
+  },
+  getUsers(req, res, next) {
+    var user = require('../../db/models/user')
+
+    var filterKey = req.query.filterKey == undefined ? "" : req.query.filterKey
+    var count = req.query.count == undefined ? 5 : parseInt(req.query.count)
+    var page = req.query.page == undefined ? 0 : parseInt(req.query.page)
+
+    return Promise.all([
+      user.findAll({
+        where: {
+          account: {
+            $and: {
+              $not: "admin",
+              $like: "%" + filterKey + "%"
+            }
+          }
+        },
+        offset: page * count,
+        limit: count
+      }),
+      user.count({
+        where: {
+          account: {
+            $and: {
+              $not: "admin",
+              $like: "%" + filterKey + "%"
+            }
+          }
+        }
+      })
+    ]).then(function(result) {
+      var list = result[0]
+      var rowCount = result[1]
+      return {
+        end: (list.length + page * count) >= rowCount,
+        list: list
+      }
+    })
   }
 }
 

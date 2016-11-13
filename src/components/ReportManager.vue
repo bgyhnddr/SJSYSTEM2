@@ -1,9 +1,9 @@
 <template>
 	<div>
-		<div v-if="checkPermission()">
+		<div>
 			<navbar type="default">
 				<a slot="brand" class="navbar-brand">報表</a>
-				<li v-if="checkPermission()">
+				<li v-if="checkPermission(['view_quotation'])">
 					<a href="#" @click.prevent="$router.go('/index/ReportManager/Hour')">工時報表</a>
 				</li>
 			</navbar>

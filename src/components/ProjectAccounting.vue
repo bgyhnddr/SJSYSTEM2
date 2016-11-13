@@ -22,7 +22,6 @@
     import {
         modal,
         alert,
-        spinner,
         input as bsInput
     } from 'vue-strap'
 

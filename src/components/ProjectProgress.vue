@@ -1,14 +1,14 @@
 <template>
 	<div>
-		<div v-if="checkPermission()">
-			<button v-if="project.project_state.state=='quotation_contract'" @click="beginWork" class="btn btn-default">開工</button>
+		<div>
+			<button v-if="project.project_state.state=='quotation_contract'&&checkPermission('create_quotation')" @click="beginWork" class="btn btn-default">開工</button>
 			<div v-else>
 				<label>工程負責人:{{project.quotation.manager}}</label>
 				<project-attachment :project="project"></project-attachment>
 				<project-hour :count.sync="outSourceCount" :project="project"></project-hour>
 				<project-out-source :count.sync="hourCount" :project="project"></project-out-source>
 				<div v-if="project.project_state.state=='working'">
-					<button v-if="hourCount||outSourceCount" @click="endWork" class="btn btn-default">完工</button>
+					<button v-if="(hourCount||outSourceCount)&&checkPermission('create_quotation')" @click="endWork" class="btn btn-default">完工</button>
 				</div>
 			</div>
 		</div>
