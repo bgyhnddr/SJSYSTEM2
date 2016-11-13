@@ -14,6 +14,8 @@ var building = sequelize.define(
         attn_en: { type: Sequelize.STRING },
         tel: { type: Sequelize.STRING },
         fax: { type: Sequelize.STRING },
+        mgt_tel: { type: Sequelize.STRING },
+        mgt_fax: { type: Sequelize.STRING },
         email: { type: Sequelize.STRING }
     }, {
         underscored: true

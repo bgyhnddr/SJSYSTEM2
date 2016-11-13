@@ -103,6 +103,18 @@
 					</td>
 				</tr>
 				<tr>
+					<td class="bold">Mgt:
+					</td>
+					<td class="tableleft">
+						{{project.quotation.building.mgt_tel}}
+					</td>
+					<td class="bold">
+					</td>
+					<td class="tableleft">
+						{{project.quotation.building.mgt_fax}}
+					</td>
+				</tr>
+				<tr>
 					<td class="bold">Email:
 					</td>
 					<td colspan="3" class="tableleft">

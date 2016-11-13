@@ -19,12 +19,12 @@
 					<bs-input :value.sync="submitData.name_en" label="名稱(英文)"></bs-input>
 					<bs-input :value.sync="submitData.address" label="地址" pattern=""></bs-input>
 					<bs-input :value.sync="submitData.address_en" label="地址（英文）" pattern=""></bs-input>
-					<bs-input :value.sync="submitData.bill_address" label="賬單地址" pattern=""></bs-input>
-					<bs-input :value.sync="submitData.bill_address_en" label="賬單地址（英文）" pattern=""></bs-input>
 					<bs-input :value.sync="submitData.attn" label="聯繫人" pattern=""></bs-input>
 					<bs-input :value.sync="submitData.attn_en" label="聯繫人（英文）" pattern=""></bs-input>
 					<bs-input :value.sync="submitData.tel" label="電話" pattern=""></bs-input>
 					<bs-input :value.sync="submitData.fax" label="傳真" pattern=""></bs-input>
+					<bs-input :value.sync="submitData.mgt_tel" label="管理處電話" pattern=""></bs-input>
+					<bs-input :value.sync="submitData.mgt_fax" label="管理處傳真" pattern=""></bs-input>
 					<bs-input :value.sync="submitData.email" label="電郵" pattern=""></bs-input>
 				</div>
 				<div slot="modal-footer" class="modal-footer">
@@ -77,12 +77,6 @@
                 "header": "地址（英文）",
                 "bind": "address_en"
             }, {
-                "header": "賬單地址",
-                "bind": "bill_address"
-            }, {
-                "header": "賬單地址（英文）",
-                "bind": "bill_address_en"
-            }, {
                 "header": "聯繫人",
                 "bind": "attn"
             }, {
@@ -94,6 +88,12 @@
             }, {
                 "header": "傳真",
                 "bind": "fax"
+            }, {
+                "header": "管理處電話",
+                "bind": "mgt_tel"
+            }, {
+                "header": "管理處傳真",
+                "bind": "mgt_fax"
             }, {
                 "header": "電郵",
                 "bind": "email"
@@ -133,12 +133,12 @@
                     name_en: "",
                     address: "",
                     address_en: "",
-                    bill_address: "",
-                    bill_address_en: "",
                     attn: "",
                     attn_en: "",
                     tel: "",
                     fax: "",
+                    mgt_tel: "",
+                    mgt_fax: "",
                     email: ""
                 },
                 showBuildingModel: false,

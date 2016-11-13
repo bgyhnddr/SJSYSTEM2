@@ -127,12 +127,12 @@
         <td class="bold">Mgt:
         </td>
         <td class="tableleft">
-          {{project.quotation.building.mgtTel}}
+          {{project.quotation.building.mgt_tel}}
         </td>
         <td class="bold">
         </td>
         <td class="tableleft">
-          {{project.quotation.building.mgtFax}}
+          {{project.quotation.building.mgt_fax}}
         </td>
         <td class="tableRight bold">In Charge:
         </td>

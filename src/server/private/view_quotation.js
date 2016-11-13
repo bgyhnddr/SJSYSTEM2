@@ -83,7 +83,6 @@ var exec = {
       var quotation = require('../../db/models/quotation')
       var quotation_job = require('../../db/models/quotation_job')
       var building = require('../../db/models/building')
-
       project.hasOne(project_state)
       project.belongsTo(quotation)
       quotation.belongsTo(building)
@@ -1064,7 +1063,7 @@ var exec = {
           end_date.Format('yyyy-MM-dd') + "'"
         )
       },
-      order:"project_hours.begin_date"
+      order: "project_hours.begin_date"
     }).then((result) => {
       return result.map((obj) => {
         var o = obj.toJSON()
