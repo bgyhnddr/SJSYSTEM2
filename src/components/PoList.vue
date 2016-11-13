@@ -1,7 +1,7 @@
 <template>
 	<div>
-		<div v-if="checkPermission()">
-            <vue-strap-table v-ref:table :data.sync="data" @rowaction="rowaction" @getdata="getData" :columns.sync="columns"></vue-strap-table>
+		<div v-if="checkPermission(['view_po'])">
+			<vue-strap-table v-ref:table :data.sync="data" @rowaction="rowaction" @getdata="getData" :columns.sync="columns"></vue-strap-table>
 		</div>
 	</div>
 </template>
