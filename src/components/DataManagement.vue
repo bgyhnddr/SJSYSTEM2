@@ -6,7 +6,7 @@
 				<li>
 					<a v-link="{ path: '/index/DataManagement/ProjectType' }">工程類型管理</a>
 				</li>
-				<li>
+				<li v-if="checkPermission(['boss'])">
 					<a v-link="{ path: '/index/DataManagement/ProjectManager' }">工程負責人</a>
 				</li>
 				<li>
