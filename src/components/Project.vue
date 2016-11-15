@@ -97,7 +97,7 @@ export default {
 			var state = this.project.project_state ? this.project.project_state.state : ""
 			return !['quotation_save', 'draft', 'quotation_contract', 'working'].some(o => o == state) ||
 				(!['quotation_save', 'draft'].some(o => o == state) &&
-					checkPermission(["boss"]))
+					checkPermission(["boss", "approve_quotation", "check"]))
 		},
 		showprojectInvoice() {
 			var state = this.project.project_state ? this.project.project_state.state : ""
