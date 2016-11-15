@@ -8,8 +8,8 @@
             </select>
 		</div>
 		<div id="seal">
-			<img src="../assets/img/Chop.png" id="sealImg">
-			<div id="draft">DRAFT</div>
+			<img v-if="project.project_state.manager_approve" src="../assets/img/Chop.png" id="sealImg">
+			<div v-else id="draft">DRAFT</div>
 		</div>
 		<div class="header">
 			<img class="headlogo" src="../assets/img/logo.png" />
