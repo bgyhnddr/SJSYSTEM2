@@ -398,7 +398,6 @@ var exec = {
 
     project.hasOne(project_state)
     project.hasOne(project_accounting)
-    req.session.userInfo.permissions.some(o => o == "boss" || o == "admin")
     return project.findOne({
       include: [project_accounting, project_state],
       where: {
@@ -409,13 +408,6 @@ var exec = {
         return result
       } else {
         return Promise.reject("not found")
-      }
-    }).then((result) => {
-      if (result.project_state.state == "counting" ||
-        req.session.userInfo.permissions.some(o => o == "boss" || o == "admin")) {
-        return result
-      } else {
-        return Promise.reject("not allow")
       }
     }).then((result) => {
       return project_accounting.upsert(req.body)
