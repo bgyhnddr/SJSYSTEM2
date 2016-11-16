@@ -298,8 +298,9 @@ export default {
 		},
 		formatDate(stringDate) {
 			var date = new Date(stringDate)
+			console.log(date)
 			var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-			var day = date.getDay().toString()
+			var day = date.getDate().toString()
 			if (day.length == 1) {
 				day = "0" + day
 			}

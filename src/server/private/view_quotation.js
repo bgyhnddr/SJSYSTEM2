@@ -135,7 +135,7 @@ var exec = {
           quotation.belongsTo(building)
           quotation.hasMany(quotation_job)
 
-          project.hasOne(project_invoice)
+          project.hasMany(project_invoice)
           project_invoice.hasMany(project_invoice_detail)
           project_invoice_detail.belongsTo(quotation_job)
 
@@ -157,7 +157,9 @@ var exec = {
             if (result == null) {
               return Promise.reject("无发票")
             } else {
-              return result
+              var obj = result.toJSON()
+              obj.project_invoice = obj.project_invoices.length > 0 ? obj.project_invoices[0] : null
+              return obj
             }
           })
         }
@@ -513,8 +515,8 @@ var exec = {
 
     project.hasOne(project_state)
     project.belongsTo(quotation)
-    project.hasMany(project_invoice)
     quotation.belongsTo(building)
+    project.hasMany(project_invoice)
     quotation.hasMany(quotation_job)
 
     quotation_job.hasMany(project_invoice_detail)

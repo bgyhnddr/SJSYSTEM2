@@ -112,7 +112,7 @@
 		</div>
 		<div slot="modal-footer" class="modal-footer">
 			<button @click="showUploadCheck=false" class="btn btn-default">關閉</button>
-			<button @click="submitCheck" class="btn btn-default">確認</button>
+			<button v-if="allowConfirmCheck" @click="submitCheck" class="btn btn-default">確認</button>
 		</div>
 	</modal>
 </div>

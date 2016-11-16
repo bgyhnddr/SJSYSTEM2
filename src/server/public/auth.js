@@ -38,12 +38,10 @@ var exec = {
         }
       }
     }).then(function(result) {
-      console.log(result)
       var userInfo = {}
       userInfo.name = result[1]
       userInfo.permissions = result[0].map(o => o.permission_code)
       req.session.userInfo = userInfo
-      console.log(userInfo)
       return req.session.userInfo
     })
   },

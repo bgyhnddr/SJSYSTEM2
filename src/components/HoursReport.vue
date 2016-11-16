@@ -177,6 +177,7 @@ export default {
 }
 
 #hourReport table {
+  font-size: 12px;
   width: 297mm;
   border: 1px solid black;
   border-collapse: collapse;

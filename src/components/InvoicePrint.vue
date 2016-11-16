@@ -175,7 +175,7 @@
               <td colspan="4" class="bold underline">{{project.quotation.project_name}}</td>
             </tr>
             <tr v-for="item in project.project_invoice.project_invoice_details">
-              <td class="tableCenter">{{item.quotation_job.index}}</td>
+              <td class="tableCenter">{{$index+1}}</td>
               <td>
                 <span class="printShow hide">{{item.quotation_job.content}}</span>
                 <input style="width:50px" class="printHide" v-model="item.quotation_job.content" />
@@ -278,6 +278,7 @@ export default {
       return view_quotation.getInvoice({
         id: id
       }).then((result) => {
+        console.log(result)
         that.project = result
         that.alertText = ""
         that.getPreparedBy(that.project.quotation_no)
@@ -303,7 +304,7 @@ export default {
     formatDate(stringDate) {
       var date = new Date(stringDate)
       var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-      var day = date.getDay().toString()
+      var day = date.getDate().toString()
       if (day.length == 1) {
         day = "0" + day
       }
