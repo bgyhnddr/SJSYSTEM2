@@ -673,7 +673,7 @@ var exec = {
                 })
               }
 
-              return [list.slice(page * count, count), list.length]
+              return [list.slice(page * count, page * count + count), list.length]
             })
           })
         case 'wait_contract':
@@ -843,7 +843,7 @@ var exec = {
                   pj.quotation.project_type.indexOf(filterKey) >= 0
               })
             }
-            return [list.slice(page * count, count), list.length]
+            return [list.slice(page * count, page * count + count), list.length]
           })
         case "wait_pay":
           return project.findAll({
@@ -888,7 +888,7 @@ var exec = {
                   pj.quotation.project_type.indexOf(filterKey) >= 0
               })
             }
-            return [list.slice(page * count, count), list.length]
+            return [list.slice(page * count, page * count + count), list.length]
           })
         case "paid":
           return project.findAll({
@@ -924,7 +924,7 @@ var exec = {
                   pj.quotation.project_type.indexOf(filterKey) >= 0
               })
             }
-            return [list.slice(page * count, count), list.length]
+            return [list.slice(page * count, page * count + count), list.length]
           })
         default:
           var quotationWhere = undefined,
@@ -999,7 +999,7 @@ var exec = {
                     (pj.quotation.project_type ? (pj.quotation.project_type.indexOf(filterKey) >= 0) : false)
                 })
               }
-              return [list.slice(page * count, count), list.length]
+              return [list.slice(page * count, page * count + count), list.length]
             })
           })
       }

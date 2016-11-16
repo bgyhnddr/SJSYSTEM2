@@ -17,9 +17,6 @@
         data() {
             return {
                 columns: [{
-                    "header": "序號",
-                    "type": "index"
-                }, {
                     "header": "PO No.",
                     "bind": "no"
                 }, {
@@ -29,8 +26,8 @@
                     "header": "日期",
                     "bind": "date"
                 }, {
-                    "header": "備注",
-                    "bind": "comments"
+                    "header": "報價單",
+                    "bind": "quotation_nos"
                 }, {
                     "header": "操作",
                     "type": "action",
