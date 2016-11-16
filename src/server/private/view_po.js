@@ -399,7 +399,7 @@ var exec = {
     var page = req.query.page == undefined ? 0 : parseInt(req.query.page)
 
     po.hasMany(po_quotation)
-    po_quotation.hasOne(po_quotation_detail)
+    po_quotation.hasMany(po_quotation_detail)
 
     return po.findAll({
       include: {
@@ -454,14 +454,10 @@ var exec = {
     var count = req.query.count == undefined ? 5 : parseInt(req.query.count)
     var page = req.query.page == undefined ? 0 : parseInt(req.query.page)
     po.hasMany(po_quotation)
-    po_quotation.hasOne(po_quotation_detail)
 
     return po.findAll({
       include: {
-        model: po_quotation,
-        include: {
-          model: po_quotation_detail
-        }
+        model: po_quotation
       },
       where: {
         $or: {

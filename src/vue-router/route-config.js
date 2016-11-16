@@ -106,4 +106,12 @@ export function configRouter(router) {
     router.redirect({
         '/': '/index'
     })
+
+    router.redirect({
+        '/index/ProjectManagement': '/index/ProjectManagement/ProjectList/all'
+    })
+
+    router.redirect({
+        '/index/POManagement': '/index/POManagement/POList/all'
+    })
 }
