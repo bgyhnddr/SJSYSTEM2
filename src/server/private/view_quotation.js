@@ -496,7 +496,7 @@ var exec = {
     })
   },
   getProjects(req, res, next) {
-    console.log(type)
+    var sequelize = require('sequelize')
     var filterKey = req.query.filterKey == undefined ? "" : req.query.filterKey
     var count = req.query.count == undefined ? 5 : parseInt(req.query.count)
     var page = req.query.page == undefined ? 0 : parseInt(req.query.page)
@@ -522,6 +522,14 @@ var exec = {
 
     var where = undefined
     if (filterKey) {
+      // wheretext = "`quotation_no` like '%" + filterKey + "%'"
+      // wheretext += " OR `quotation_no` like '%" + filterKey + "%'"
+      // wheretext += " OR quotation.project_name like '%" + filterKey + "%'"
+      // wheretext += " OR `quotation.building`.`name` like '%" + filterKey + "%'"
+      // wheretext += " OR `quotation.property_management_co_name` like '%" + filterKey + "%'"
+      // wheretext += " OR `quotation.manager` like '%" + filterKey + "%'"
+      // wheretext += " OR `quotation.project_type` like '%" + filterKey + "%'"
+      // where = sequelize.literal(wheretext)
       where = {
         $or: [{
           quotation_no: {
@@ -532,7 +540,7 @@ var exec = {
             $like: "%" + filterKey + "%"
           }
         }, {
-          '$quotation.building.name$': {
+          '$`quotation.building`.`name`$': {
             $like: "%" + filterKey + "%"
           }
         }, {
@@ -554,34 +562,35 @@ var exec = {
     return Promise.resolve().then(() => {
       switch (type) {
         case "draft":
-          return Promise.all([project.findAll({
-            include: [{
-              model: project_state,
-              where: {
-                state: "draft"
-              }
-            }, {
-              model: quotation,
-              include: building
-            }],
-            where: where,
-            offset: page * count,
-            limit: count,
-            order: 'project.id DESC'
-          }), project.count({
-            include: [{
-              model: project_state,
-              where: {
-                state: "draft"
-              }
-            }, {
-              model: quotation,
-              include: building
-            }],
-            where: where,
-            offset: page * count,
-            limit: count
-          })])
+          return Promise.all([
+            project.findAll({
+              include: [{
+                model: project_state,
+                where: {
+                  state: "draft"
+                }
+              }, {
+                model: quotation,
+                include: building
+              }],
+              where: where,
+              offset: page * count,
+              limit: count,
+              order: 'project.id DESC'
+            }),
+            project.count({
+              include: [{
+                model: project_state,
+                where: {
+                  state: "draft"
+                }
+              }, {
+                model: quotation,
+                include: building
+              }],
+              where: where
+            })
+          ])
         case 'wait_approve':
           return Promise.all([
             project.findAll({
@@ -597,13 +606,14 @@ var exec = {
                 }
               }, {
                 model: quotation,
-                include: [building, quotation_job]
+                include: building
               }],
               where: where,
               offset: page * count,
               limit: count,
               order: 'project.id DESC'
-            }), project.count({
+            }),
+            project.count({
               include: [{
                 model: project_state,
                 where: {
@@ -614,11 +624,11 @@ var exec = {
                     }, false]
                   }
                 }
+              }, {
+                model: quotation,
+                include: building
               }],
-              where: where,
-              offset: page * count,
-              limit: count,
-              order: 'project.id DESC'
+              where: where
             })
           ])
         case 'wait_approve_boss':
@@ -677,7 +687,7 @@ var exec = {
                 }
               }, {
                 model: quotation,
-                include: [building, quotation_job]
+                include: building
               }],
               where: where,
               offset: page * count,
@@ -690,13 +700,19 @@ var exec = {
                   state: "quotation_save",
                   manager_approve: true
                 }
+              }, {
+                model: quotation,
+                include: building
               }],
               where: where,
               offset: page * count,
               limit: count,
               order: 'project.id DESC'
             })
-          ])
+          ]).then((result) => {
+            result[0].forEach(o => o.project_state.state = "wait_contract")
+            return result
+          })
         case "quotation_contract":
           return Promise.all([project.findAll({
             include: [{
@@ -747,6 +763,9 @@ var exec = {
               where: {
                 state: "working"
               }
+            }, {
+              model: quotation,
+              include: building
             }],
             where: where,
             offset: page * count,
@@ -773,6 +792,9 @@ var exec = {
               where: {
                 state: "counting"
               }
+            }, {
+              model: quotation,
+              include: building
             }],
             where: where,
             offset: page * count,
@@ -795,9 +817,6 @@ var exec = {
                 }
               }, building]
             }],
-            where: where,
-            offset: page * count,
-            limit: count,
             order: 'project.id DESC'
           }).then((result) => {
             var list = result.filter((p) => {
@@ -843,9 +862,6 @@ var exec = {
                 }
               }, building]
             }],
-            where: where,
-            offset: page * count,
-            limit: count,
             order: 'project.id DESC'
           }).then((result) => {
             var list = result.filter((p) => {
@@ -885,9 +901,6 @@ var exec = {
               model: quotation,
               include: [quotation_job, building]
             }, project_invoice],
-            where: where,
-            offset: page * count,
-            limit: count,
             order: 'project.id DESC'
           }).then((result) => {
             var list = result.filter((p) => {
@@ -914,24 +927,44 @@ var exec = {
             return [list.slice(page * count, count), list.length]
           })
         default:
-          return Promise.all([project.findAll({
+          var quotationWhere = undefined,
+            buildingWhere = undefined
+          if (filterKey) {
+            quotationWhere = {
+              $or: [{
+                no: {
+                  $like: "%" + filterKey + "%"
+                }
+              }, {
+                project_name: {
+                  $like: "%" + filterKey + "%"
+                }
+              }, {
+                property_management_co_name: {
+                  $like: "%" + filterKey + "%"
+                }
+              }, {
+                manager: {
+                  $like: "%" + filterKey + "%"
+                }
+              }, {
+                project_type: {
+                  $like: "%" + filterKey + "%"
+                }
+              }]
+            }
+          }
+          return project.findAll({
             include: [{
               model: project_state
             }, {
               model: quotation,
               include: [building, quotation_job]
             }],
-            where: where,
-            offset: page * count,
-            limit: count,
             order: 'project.id DESC'
-          }), project.count({
-            where: where,
-            offset: page * count,
-            limit: count
-          })]).then((result) => {
+          }).then((result) => {
             return getProjectSetting().then((settingObj) => {
-              var list = result[0].map((o) => {
+              var list = result.map((o) => {
                 var pj = o.toJSON()
                 if (pj.project_state.state == "quotation_save") {
                   var totalRetail = pj.quotation.quotation_jobs.reduce((sum, o) => {
@@ -943,7 +976,6 @@ var exec = {
                   var belowprofitability = settingObj.profitability > ((totalRetail - totalCost) / totalCost) * 100
                   var overtotalprofit = settingObj.totalprofit < totalCost
                   var needboss = belowprofitability || overtotalprofit
-
                   if (pj.project_state.boss_approve) {
                     pj.project_state.state = "wait_contract"
                   } else {
@@ -957,7 +989,17 @@ var exec = {
                 }
                 return pj
               })
-              return [list, result[1]]
+              if (filterKey) {
+                list = list.filter((pj) => {
+                  return pj.quotation_no.indexOf(filterKey) >= 0 ||
+                    (pj.quotation.project_name ? (pj.quotation.project_name.indexOf(filterKey) >= 0) : false) ||
+                    (pj.quotation.building ? (pj.quotation.building.name.indexOf(filterKey) >= 0) : false) ||
+                    (pj.quotation.property_management_co_name ? (pj.quotation.property_management_co_name.indexOf(filterKey) >= 0) : false) ||
+                    (pj.quotation.manager ? (pj.quotation.manager.indexOf(filterKey) >= 0) : false) ||
+                    (pj.quotation.project_type ? (pj.quotation.project_type.indexOf(filterKey) >= 0) : false)
+                })
+              }
+              return [list.slice(page * count, count), list.length]
             })
           })
       }
@@ -971,7 +1013,7 @@ var exec = {
           project_name: o.quotation.project_name,
           project_type: o.quotation.project_type,
           state: getState(o.project_state.state),
-          manager: o.manager
+          manager: o.quotation.manager
         }
       })
       var rowCount = result[1]

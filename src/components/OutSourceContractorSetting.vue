@@ -14,8 +14,8 @@
 				<div slot="modal-body" class="modal-body">
 					<alert :type="alertType">{{alertText}}</alert>
 					<bs-input v-show="false" :value.sync="submitData.id"></bs-input>
-					<bs-input :value.sync="submitData.code" label="盤頭編號"></bs-input>
-					<bs-input :value.sync="submitData.company" label="盤頭公司名"></bs-input>
+					<bs-input :value.sync="submitData.code" label="判頭編號"></bs-input>
+					<bs-input :value.sync="submitData.company" label="判頭公司名"></bs-input>
 					<bs-input :value.sync="submitData.address" label="地址"></bs-input>
 					<bs-input :value.sync="submitData.address_en" label="地址（英文）"></bs-input>
 					<bs-input :value.sync="submitData.bill_address" label="賬單地址"></bs-input>
@@ -63,10 +63,10 @@
         },
         data() {
             let columns = [{
-                "header": "盤頭編號",
+                "header": "判頭編號",
                 "bind": "code"
             }, {
-                "header": "盤頭公司名",
+                "header": "判頭公司名",
                 "bind": "company"
             }, {
                 "header": "地址",
