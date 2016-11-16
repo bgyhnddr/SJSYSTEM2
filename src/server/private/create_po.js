@@ -58,7 +58,7 @@ var exec = {
                 result.project.project_state.state != "quotation_save") {
                 return true
             } else {
-                return Promise.reject("not right quotation")
+                return Promise.reject("Unavailable Quotation  Not Approved By Client")
             }
         }).then(() => {
             return po_quotation.findOne({

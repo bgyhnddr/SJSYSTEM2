@@ -9,7 +9,7 @@ var getState = (state) => {
     case "wait_contract":
       return "等待合同"
     case "quotation_contract":
-      return "已報價工程"
+      return "已確認工程"
     case "working":
       return "施工中"
     case "counting":

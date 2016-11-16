@@ -27,15 +27,19 @@ var exec = {
       include: {
         model: project_state,
         where: {
-          state: {
-            $and: {
-              $ne: "draft",
+          $and: [{
+            state: {
+              $ne: "draft"
+            }
+          }, {
+            state: {
               $ne: "quotation_save"
             }
-          }
+          }]
         }
       }
     }).then((result) => {
+      result.forEach(o => console.log(o.project_state.state))
       return result.map(o => o.quotation_no)
     })
   },

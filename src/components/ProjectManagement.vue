@@ -19,7 +19,7 @@
 					<a v-link="{ path: '/index/ProjectManagement/ProjectList/wait_contract' }">等待合同工程</a>
 				</li>
 				<li>
-					<a v-link="{ path: '/index/ProjectManagement/ProjectList/quotation_contract' }">已報價工程</a>
+					<a v-link="{ path: '/index/ProjectManagement/ProjectList/quotation_contract' }">已確認工程</a>
 				</li>
 				<li>
 					<a v-link="{ path: '/index/ProjectManagement/ProjectList/working' }">施工中工程</a>
@@ -31,10 +31,10 @@
 					<a v-link="{ path: '/index/ProjectManagement/ProjectList/wait_invoice' }">待開發票工程</a>
 				</li>
 				<li>
-					<a v-link="{ path: '/index/ProjectManagement/ProjectList/wait_pay' }">待付款工程</a>
+					<a v-link="{ path: '/index/ProjectManagement/ProjectList/wait_pay' }">待收款工程</a>
 				</li>
 				<li>
-					<a v-link="{ path: '/index/ProjectManagement/ProjectList/paid' }">已付款工程</a>
+					<a v-link="{ path: '/index/ProjectManagement/ProjectList/paid' }">已收款工程</a>
 				</li>
 				<li>
 					<a v-link="{ path: '/index/ProjectManagement/ProjectList/all' }">全部工程</a>
