@@ -49,7 +49,11 @@ export default {
 	computed: {
 		isEdit() {
 			var state = this.project.project_state ? this.project.project_state.state : ""
-			return !['quotation_save', 'draft'].some(o => o == state) && (this.project.project_state.state == "paying" && this.checkPermission(['boss', 'check']))
+			if (state == "paying" && !this.checkPermission(['boss', 'check'])) {
+				return false
+			} else {
+				return !['quotation_save', 'draft'].some(o => o == state)
+			}
 		},
 		allowConfirm() {
 			return (this.checkPermission(['boss']) || state.userInfo.name == this.project.quotation.manager) && this.project.project_state.state == 'counting'
