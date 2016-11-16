@@ -405,6 +405,9 @@ var exec = {
       }
     }).then((result) => {
       if (result != null) {
+        if (result.project_state.state == "paying" && !req.session.userInfo.permissions.some(o => o == "boss" || o == "check")) {
+          return Promise.reject("not allow")
+        }
         return result
       } else {
         return Promise.reject("not found")
