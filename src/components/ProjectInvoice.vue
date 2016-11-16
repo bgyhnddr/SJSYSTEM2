@@ -112,7 +112,7 @@
 		</div>
 		<div slot="modal-footer" class="modal-footer">
 			<button @click="showUploadCheck=false" class="btn btn-default">關閉</button>
-			<button v-if="allowConfirmCheck" @click="submitCheck" class="btn btn-default">確認</button>
+			<button @click="submitCheck" class="btn btn-default">確認</button>
 		</div>
 	</modal>
 </div>
@@ -228,12 +228,17 @@ export default {
 		},
 		submitCheck() {
 			var that = this
-			check.submitCheck(that.submitData).then(() => {
-				that.getProjectInvoices(that.project.id)
-				that.showUploadCheck = false
-			}).catch((err) => {
-				window.alert(err)
-			})
+			if (that.submitData.check_no && that.submitData.attachment_id && that.submitData.check_money) {
+				check.submitCheck(that.submitData).then(() => {
+					that.getProjectInvoices(that.project.id)
+					that.showUploadCheck = false
+				}).catch((err) => {
+					window.alert(err)
+				})
+			}
+			else {
+				window.alert('信息不全')
+			}
 		}
 	},
 	computed: {
