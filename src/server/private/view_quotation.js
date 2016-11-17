@@ -14,8 +14,14 @@ var getState = (state) => {
       return "施工中"
     case "counting":
       return "已完成工程"
+    case "wait_invoice":
+      return "待開發票工程"
+    case "wait_pay":
+      return "待收款工程"
+    case "paid":
+      return "已收款工程"
     default:
-      return "已完成工程"
+      return ""
   }
 }
 
@@ -632,7 +638,10 @@ var exec = {
               }],
               where: where
             })
-          ])
+          ]).then((result) => {
+            result[0].map(o => o.project_state.state = "wait_approve")
+            return result
+          })
         case 'wait_approve_boss':
           return getProjectSetting().then((settingObj) => {
             return project.findAll({
@@ -674,8 +683,10 @@ var exec = {
                     pj.quotation.project_type.indexOf(filterKey) >= 0
                 })
               }
-
               return [list.slice(page * count, page * count + count), list.length]
+            }).then((result) => {
+              result[0].map(o => o.project_state.state = "wait_approve_boss")
+              return result
             })
           })
         case 'wait_contract':
@@ -801,7 +812,10 @@ var exec = {
             where: where,
             offset: page * count,
             limit: count
-          })])
+          })]).then((result) => {
+            result[0].map(o => o.project_state.state = "counting")
+            return result
+          })
         case "wait_invoice":
           return project.findAll({
             include: [{
@@ -846,6 +860,9 @@ var exec = {
               })
             }
             return [list.slice(page * count, page * count + count), list.length]
+          }).then((result) => {
+            result[0].map(o => o.project_state.state = "wait_invoice")
+            return result
           })
         case "wait_pay":
           return project.findAll({
@@ -891,6 +908,9 @@ var exec = {
               })
             }
             return [list.slice(page * count, page * count + count), list.length]
+          }).then((result) => {
+            result[0].map(o => o.project_state.state = "wait_pay")
+            return result
           })
         case "paid":
           return project.findAll({
@@ -927,42 +947,26 @@ var exec = {
               })
             }
             return [list.slice(page * count, page * count + count), list.length]
+          }).then((result) => {
+            result[0].map(o => o.project_state.state = "paid")
+            return result
           })
         default:
           var quotationWhere = undefined,
             buildingWhere = undefined
-          if (filterKey) {
-            quotationWhere = {
-              $or: [{
-                no: {
-                  $like: "%" + filterKey + "%"
-                }
-              }, {
-                project_name: {
-                  $like: "%" + filterKey + "%"
-                }
-              }, {
-                property_management_co_name: {
-                  $like: "%" + filterKey + "%"
-                }
-              }, {
-                manager: {
-                  $like: "%" + filterKey + "%"
-                }
-              }, {
-                project_type: {
-                  $like: "%" + filterKey + "%"
-                }
-              }]
-            }
-          }
           return project.findAll({
             include: [{
               model: project_state
             }, {
               model: quotation,
-              include: [building, quotation_job]
-            }],
+              include: [{
+                model: quotation_job,
+                include: {
+                  model: project_invoice_detail,
+                  include: quotation_job
+                }
+              }, building]
+            }, project_invoice],
             order: 'project.id DESC'
           }).then((result) => {
             return getProjectSetting().then((settingObj) => {
@@ -987,7 +991,31 @@ var exec = {
                       pj.project_state.state = pj.project_state.manager_approve ? "wait_contract" : "wait_approve"
                     }
                   }
+                } else if (pj.project_state.state == "paying") {
+                  var total = pj.quotation.quotation_jobs.reduce((sum, j) => {
+                    return sum + j.retail * j.count
+                  }, 0)
 
+                  var invoice_total = pj.quotation.quotation_jobs.reduce((sum, j) => {
+                    var sumInvoicePer = j.project_invoice_details.reduce((sumi, vo) => {
+                      return sumi + vo.quotation_job.retail * vo.quotation_job.count
+                    }, 0)
+                    return sum + sumInvoicePer
+                  }, 0)
+
+                  var check_total = pj.project_invoices.reduce((sum, inv) => {
+                    return sum + (inv.check_money ? inv.check_money : 0)
+                  }, 0)
+
+                  if (invoice_total < total) {
+                    pj.project_state.state = "wait_invoice"
+                  } else {
+                    if (check_total < total) {
+                      pj.project_state.state = "wait_pay"
+                    } else {
+                      pj.project_state.state = "paid"
+                    }
+                  }
                 }
                 return pj
               })
