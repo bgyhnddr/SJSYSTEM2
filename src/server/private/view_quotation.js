@@ -508,6 +508,7 @@ var exec = {
     var filterKey = req.query.filterKey == undefined ? "" : req.query.filterKey
     var count = req.query.count == undefined ? 5 : parseInt(req.query.count)
     var page = req.query.page == undefined ? 0 : parseInt(req.query.page)
+    var sort = req.query.sort == undefined ? {} : req.query.sort
     var type = req.query.type
 
     var project = require('../../db/models/project')
@@ -567,6 +568,29 @@ var exec = {
       }
     }
 
+    var order = 'project.id DESC'
+
+    if (sort.sortCol) {
+      switch (sort.sortCol) {
+        case "quotation_no":
+        case "property_management_co_name":
+        case "manager":
+        case "project_type":
+        case "project_name":
+          order = sort.sortCol
+          if (sort.asc != 'true') {
+            order += " DESC"
+          }
+          break
+        case "building_name":
+          order = "`quotation.building`.`name`"
+          if (sort.asc != 'true') {
+            order += " DESC"
+          }
+          break
+      }
+    }
+
     return Promise.resolve().then(() => {
       switch (type) {
         case "draft":
@@ -584,7 +608,7 @@ var exec = {
               where: where,
               offset: page * count,
               limit: count,
-              order: 'project.id DESC'
+              order: order
             }),
             project.count({
               include: [{
@@ -619,7 +643,7 @@ var exec = {
               where: where,
               offset: page * count,
               limit: count,
-              order: 'project.id DESC'
+              order: order
             }),
             project.count({
               include: [{
@@ -654,7 +678,7 @@ var exec = {
                 model: quotation,
                 include: [building, quotation_job]
               }],
-              order: 'project.id DESC'
+              order: order
             }).then((result) => {
               var list = result.map((o) => {
                 var obj = o.toJSON()
@@ -720,7 +744,7 @@ var exec = {
               where: where,
               offset: page * count,
               limit: count,
-              order: 'project.id DESC'
+              order: order
             })
           ]).then((result) => {
             result[0].forEach(o => o.project_state.state = "wait_contract")
@@ -740,7 +764,7 @@ var exec = {
             where: where,
             offset: page * count,
             limit: count,
-            order: 'project.id DESC'
+            order: order
           }), project.count({
             include: [{
               model: project_state,
@@ -769,7 +793,7 @@ var exec = {
             where: where,
             offset: page * count,
             limit: count,
-            order: 'project.id DESC'
+            order: order
           }), project.count({
             include: [{
               model: project_state,
@@ -798,7 +822,7 @@ var exec = {
             where: where,
             offset: page * count,
             limit: count,
-            order: 'project.id DESC'
+            order: order
           }), project.count({
             include: [{
               model: project_state,
@@ -833,7 +857,7 @@ var exec = {
                 }
               }, building]
             }],
-            order: 'project.id DESC'
+            order: order
           }).then((result) => {
             var list = result.filter((p) => {
               var total = p.quotation.quotation_jobs.reduce((sum, j) => {
@@ -881,7 +905,7 @@ var exec = {
                 }
               }, building]
             }],
-            order: 'project.id DESC'
+            order: order
           }).then((result) => {
             var list = result.filter((p) => {
               var total = p.quotation.quotation_jobs.reduce((sum, j) => {
@@ -923,7 +947,7 @@ var exec = {
               model: quotation,
               include: [quotation_job, building]
             }, project_invoice],
-            order: 'project.id DESC'
+            order: order
           }).then((result) => {
             var list = result.filter((p) => {
               var total = p.quotation.quotation_jobs.reduce((sum, j) => {
@@ -967,7 +991,7 @@ var exec = {
                 }
               }, building]
             }, project_invoice],
-            order: 'project.id DESC'
+            order: order
           }).then((result) => {
             return getProjectSetting().then((settingObj) => {
               var list = result.map((o) => {
@@ -1029,6 +1053,46 @@ var exec = {
                     (pj.quotation.project_type ? (pj.quotation.project_type.indexOf(filterKey) >= 0) : false)
                 })
               }
+
+
+              if (sort.sortCol == "state") {
+                var countSort = (s) => {
+                  switch (s) {
+                    case 'draft':
+                      return 1
+                    case "wait_approve":
+                      return 2
+                    case "wait_approve_boss":
+                      return 3
+                    case "wait_contract":
+                      return 4
+                    case "quotation_contract":
+                      return 5
+                    case "working":
+                      return 6
+                    case "counting":
+                      return 7
+                    case "wait_invoice":
+                      return 8
+                    case "wait_pay":
+                      return 9
+                    case "paid":
+                      return 10
+                    default:
+                      return 11
+                  }
+                }
+                if (sort.asc == "true") {
+                  list = list.sort((a, b) => {
+                    return countSort(a.project_state.state) - countSort(b.project_state.state)
+                  })
+                } else {
+                  list = list.sort((a, b) => {
+                    return countSort(a.project_state.state) - countSort(b.project_state.state)
+                  }).reverse()
+                }
+              }
+
               return [list.slice(page * count, page * count + count), list.length]
             })
           })

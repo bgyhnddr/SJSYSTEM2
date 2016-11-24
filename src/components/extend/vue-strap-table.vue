@@ -14,8 +14,9 @@
 		<table class="table table-hover table-condensed">
 			<thead>
 				<tr>
-					<th v-for="column of columns | filterBy undefiend in 'hide'">
+					<th :class="{'hover':hasSort&&column.sortable}" @click="sorting(column)" v-for="column of columns | filterBy undefiend in 'hide'">
 						{{ column.header }}
+						<span class="glyphicon" :class="{'glyphicon-arrow-up':asc,'glyphicon-arrow-down':!asc}" v-if="hasSort&&sortCol==column.bind"></span>
 					</th>
 				</tr>
 			</thead>
@@ -25,29 +26,29 @@
 						<template v-if="column.type == undefined || column.type == 'string'">
 							<template v-if="column.format">{{ column.format(row[column.bind],row) }}
 </template>
-<template v-else>
+							<template v-else>
  {{ row[column.bind] }}
 </template>
-</template>
-<template v-if="column.type == 'action'">
+						</template>
+						<template v-if="column.type == 'action'">
 <template v-for="item in column.items">
 	<template v-if="item.tag=='button'">
 		<button v-if="item.filter?item.filter(row):true" @click="action(item.eventName,row)" class="{{item.class}} btn btn-default">{{item.text}}</button>
 </template>
-</template>
-</template>
-<template v-if="column.type == 'index'">
+							</template>
+						</template>
+						<template v-if="column.type == 'index'">
  {{$parent.$index+1}}
 </template>
-</td>
-</tr>
-</tbody>
-</table>
-<button type="button" v-if="data.end===false" class="btn btn-default" @click="addData">更多...</button>
-<div v-if="errMsg">
-    {{errMsg}}
-</div>
-</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<button type="button" v-if="data.end===false" class="btn btn-default" @click="addData">更多...</button>
+		<div v-if="errMsg">
+			{{errMsg}}
+		</div>
+	</div>
 </div>
 </template>
 <script>
@@ -56,6 +57,12 @@ import {
 } from 'vue-strap'
 
 export default {
+	data() {
+		return {
+			sortCol: "",
+			asc: false
+		}
+	},
 	components: {
 		bsInput
 	},
@@ -69,6 +76,10 @@ export default {
 			default: 5
 		},
 		hasFilter: {
+			type: Boolean,
+			default: true
+		},
+		hasSort: {
 			type: Boolean,
 			default: true
 		},
@@ -104,15 +115,27 @@ export default {
 		getData() {
 			this.pageNum = 0
 			this.errMsg = ""
-			this.$dispatch(this.getDataEvent, this.pageNum, this.countPerPage, this.filterKey)
-			this.$emit("getdata", this.pageNum, this.countPerPage, this.filterKey)
+			this.$dispatch(this.getDataEvent, this.pageNum, this.countPerPage, this.filterKey, false, {
+				sortCol: this.sortCol,
+				asc: this.asc
+			})
+			this.$emit("getdata", this.pageNum, this.countPerPage, this.filterKey, false, {
+				sortCol: this.sortCol,
+				asc: this.asc
+			})
 		},
 		addData() {
 			let that = this
 			this.errMsg = ""
 			this.pageNum += 1
-			this.$dispatch(this.getDataEvent, this.pageNum, this.countPerPage, this.filterKey, true)
-			this.$emit("getdata", this.pageNum, this.countPerPage, this.filterKey, true)
+			this.$dispatch(this.getDataEvent, this.pageNum, this.countPerPage, this.filterKey, true, {
+				sortCol: this.sortCol,
+				asc: this.asc
+			})
+			this.$emit("getdata", this.pageNum, this.countPerPage, this.filterKey, true, {
+				sortCol: this.sortCol,
+				asc: this.asc
+			})
 		},
 		action(event, row) {
 			this.$dispatch(event, row)
@@ -121,6 +144,17 @@ export default {
 		clearFilter() {
 			this.filterKey = ""
 			this.getData()
+		},
+		sorting(column) {
+			if (this.hasSort && column.sortable) {
+				if (this.sortCol == column.bind) {
+					this.asc = !this.asc
+				} else {
+					this.sortCol = column.bind
+					this.asc = true
+				}
+				this.getData()
+			}
 		}
 	},
 	events: {
@@ -133,5 +167,10 @@ export default {
 <style>
 .vue-strap-table {
 	position: relative;
+}
+
+.hover:hover {
+	background-color: #f5f5f5;
+	cursor: pointer;
 }
 </style>
