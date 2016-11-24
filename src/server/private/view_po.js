@@ -119,6 +119,28 @@ var exec = {
     var count = req.query.count == undefined ? 5 : parseInt(req.query.count)
     var page = req.query.page == undefined ? 0 : parseInt(req.query.page)
 
+    var sort = req.query.sort == undefined ? {} : req.query.sort
+    var order = undefined
+
+    if (sort.sortCol) {
+      switch (sort.sortCol) {
+        case "no":
+        case "prepared_by":
+        case "date":
+          order = sort.sortCol
+          if (sort.asc != 'true') {
+            order += " DESC"
+          }
+          break
+        case "quotation_nos":
+          order = "po_quotations.quotation_no"
+          if (sort.asc != 'true') {
+            order += " DESC"
+          }
+          break
+      }
+    }
+
     return po.findAll({
       include: po_quotation,
       where: {
@@ -139,7 +161,8 @@ var exec = {
             }
           }
         }
-      }
+      },
+      order: order
     }).then(function(result) {
       var list = result.map((o) => {
         var obj = o.toJSON()
@@ -158,6 +181,26 @@ var exec = {
     var filterKey = req.query.filterKey == undefined ? "" : req.query.filterKey
     var count = req.query.count == undefined ? 5 : parseInt(req.query.count)
     var page = req.query.page == undefined ? 0 : parseInt(req.query.page)
+    var sort = req.query.sort == undefined ? {} : req.query.sort
+    var order = undefined
+    if (sort.sortCol) {
+      switch (sort.sortCol) {
+        case "no":
+        case "prepared_by":
+        case "date":
+          order = sort.sortCol
+          if (sort.asc != 'true') {
+            order += " DESC"
+          }
+          break
+        case "quotation_nos":
+          order = "po_quotations.quotation_no"
+          if (sort.asc != 'true') {
+            order += " DESC"
+          }
+          break
+      }
+    }
 
     var po = require("../../db/models/po")
     var po_quotation = require("../../db/models/po_quotation")
@@ -196,7 +239,8 @@ var exec = {
             }
           }
         }
-      }
+      },
+      order: order
     }).then(function(result) {
       var list = result.map((o) => {
         var obj = o.toJSON()
@@ -215,6 +259,26 @@ var exec = {
     var filterKey = req.query.filterKey == undefined ? "" : req.query.filterKey
     var count = req.query.count == undefined ? 5 : parseInt(req.query.count)
     var page = req.query.page == undefined ? 0 : parseInt(req.query.page)
+    var sort = req.query.sort == undefined ? {} : req.query.sort
+    var order = undefined
+    if (sort.sortCol) {
+      switch (sort.sortCol) {
+        case "no":
+        case "prepared_by":
+        case "date":
+          order = sort.sortCol
+          if (sort.asc != 'true') {
+            order += " DESC"
+          }
+          break
+        case "quotation_nos":
+          order = "po_quotations.quotation_no"
+          if (sort.asc != 'true') {
+            order += " DESC"
+          }
+          break
+      }
+    }
 
     var po = require("../../db/models/po")
     var po_quotation = require("../../db/models/po_quotation")
@@ -258,7 +322,8 @@ var exec = {
       },
       where: {
         state: "done"
-      }
+      },
+      order: order
     }).then(function(result) {
       var list = result.map((o) => {
         var obj = o.toJSON()
@@ -298,6 +363,26 @@ var exec = {
     var filterKey = req.query.filterKey == undefined ? "" : req.query.filterKey
     var count = req.query.count == undefined ? 5 : parseInt(req.query.count)
     var page = req.query.page == undefined ? 0 : parseInt(req.query.page)
+    var sort = req.query.sort == undefined ? {} : req.query.sort
+    var order = undefined
+    if (sort.sortCol) {
+      switch (sort.sortCol) {
+        case "no":
+        case "prepared_by":
+        case "date":
+          order = sort.sortCol
+          if (sort.asc != 'true') {
+            order += " DESC"
+          }
+          break
+        case "quotation_nos":
+          order = "po_quotations.quotation_no"
+          if (sort.asc != 'true') {
+            order += " DESC"
+          }
+          break
+      }
+    }
 
     var po = require("../../db/models/po")
     var po_quotation = require("../../db/models/po_quotation")
@@ -347,7 +432,8 @@ var exec = {
       },
       where: {
         state: "done"
-      }
+      },
+      order: order
     }).then(function(result) {
       var list = result.map((o) => {
         var obj = o.toJSON()
@@ -397,6 +483,26 @@ var exec = {
     var filterKey = req.query.filterKey == undefined ? "" : req.query.filterKey
     var count = req.query.count == undefined ? 5 : parseInt(req.query.count)
     var page = req.query.page == undefined ? 0 : parseInt(req.query.page)
+    var sort = req.query.sort == undefined ? {} : req.query.sort
+    var order = undefined
+    if (sort.sortCol) {
+      switch (sort.sortCol) {
+        case "no":
+        case "prepared_by":
+        case "date":
+          order = sort.sortCol
+          if (sort.asc != 'true') {
+            order += " DESC"
+          }
+          break
+        case "quotation_nos":
+          order = "po_quotations.quotation_no"
+          if (sort.asc != 'true') {
+            order += " DESC"
+          }
+          break
+      }
+    }
 
     po.hasMany(po_quotation)
     po_quotation.hasMany(po_quotation_detail)
@@ -431,7 +537,8 @@ var exec = {
             }
           }
         }
-      }
+      },
+      order: order
     }).then(function(result) {
       var list = result.map((o) => {
         var obj = o.toJSON()
@@ -453,6 +560,26 @@ var exec = {
     var filterKey = req.query.filterKey == undefined ? "" : req.query.filterKey
     var count = req.query.count == undefined ? 5 : parseInt(req.query.count)
     var page = req.query.page == undefined ? 0 : parseInt(req.query.page)
+    var sort = req.query.sort == undefined ? {} : req.query.sort
+    var order = undefined
+    if (sort.sortCol) {
+      switch (sort.sortCol) {
+        case "no":
+        case "prepared_by":
+        case "date":
+          order = sort.sortCol
+          if (sort.asc != 'true') {
+            order += " DESC"
+          }
+          break
+        case "quotation_nos":
+          order = "po_quotations.quotation_no"
+          if (sort.asc != 'true') {
+            order += " DESC"
+          }
+          break
+      }
+    }
     po.hasMany(po_quotation)
 
     return po.findAll({
@@ -474,7 +601,8 @@ var exec = {
             $like: "%" + filterKey + "%"
           }
         }
-      }
+      },
+      order: sort
     }).then(function(result) {
       var list = result.map((o) => {
         var obj = o.toJSON()
