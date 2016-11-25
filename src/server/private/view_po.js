@@ -602,7 +602,7 @@ var exec = {
           }
         }
       },
-      order: sort
+      order: order
     }).then(function(result) {
       var list = result.map((o) => {
         var obj = o.toJSON()
