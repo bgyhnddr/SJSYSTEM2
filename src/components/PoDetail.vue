@@ -159,7 +159,7 @@ export default {
 			return approveObj.manager_approve
 		},
 		showManagerConfirm(row) {
-			return !this.poApprove(row) && row.quotation.manager == this.state.userInfo.name && this.po.state == "done"
+			return !this.poApprove(row) && row.left >= 0 && row.quotation.manager == this.state.userInfo.name && this.po.state == "done"
 		},
 		showBossConfirm(row) {
 			return !this.poApprove(row) && this.checkPermission(['boss']) && this.po.state == "done"
