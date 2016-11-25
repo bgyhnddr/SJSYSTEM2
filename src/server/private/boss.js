@@ -55,7 +55,7 @@ var exec = {
         var po_quotation_approve = require("../../db/models/po_quotation_approve")
         return po_quotation_approve.upsert({
             po_quotation_id: req.body.po_quotation_id,
-            boss_approve: true
+            manager_approve: true
         })
     }
 }

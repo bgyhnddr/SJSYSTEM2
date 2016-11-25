@@ -67,7 +67,7 @@
         },
         computed: {
             showFinish() {
-                return this.po.state == 'draft' && this.detail.some((d) => {
+                return this.po.state == 'draft' && this.detail.every((d) => {
                     return d.po_quotation_details.length > 0
                 })
             }

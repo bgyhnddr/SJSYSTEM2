@@ -73,7 +73,7 @@ export default {
 		},
 		countPerPage: {
 			type: Number,
-			default: 5
+			default: 10
 		},
 		hasFilter: {
 			type: Boolean,

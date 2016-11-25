@@ -132,8 +132,7 @@ var exec = {
             var updateList = result.po_quotations.map(o => {
                 return po_quotation_approve.upsert({
                     po_quotation_id: o.id,
-                    manager_approve: false,
-                    boss_approve: false
+                    manager_approve: false
                 })
             })
             result.state = "done"

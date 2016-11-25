@@ -73,7 +73,7 @@ var exec = {
         model: quotation,
         include: [{
           model: po_quotation,
-          include: [po_quotation_detail, po]
+          include: [po_quotation_detail, po, po_quotation_approve]
         }, {
           model: project,
           include: project_accounting
@@ -95,7 +95,8 @@ var exec = {
         var ecost = poDetail.quotation.project.project_accounting.ecost
 
         var used = poDetail.quotation.po_quotations.reduce((sum, poq) => {
-          if (poq.po.state == "done" || poq.po.id == req.query.po_id) {
+          var approve = poq.po_quotation_approve ? poq.po_quotation_approve.manager_approve : false
+          if ((poq.po.state == "done" && approve) || poq.po.id == req.query.po_id) {
             return sum + poq.po_quotation_details.reduce((lsum, d) => {
               return lsum + d.price * d.count
             }, 0)
@@ -214,10 +215,7 @@ var exec = {
         include: {
           model: po_quotation_approve,
           where: {
-            $and: {
-              boss_approve: false,
-              manager_approve: false
-            }
+            manager_approve: false
           }
         }
       },
@@ -306,7 +304,7 @@ var exec = {
           model: po_quotation_approve,
           where: {
             $and: {
-              boss_approve: false
+              manager_approve: false
             }
           }
         }, {
@@ -316,7 +314,7 @@ var exec = {
             include: project_accounting
           }, {
             model: po_quotation,
-            include: [po_quotation_detail, po]
+            include: [po_quotation_detail, po, po_quotation_approve]
           }]
         }, po_quotation_detail]
       },
@@ -334,7 +332,8 @@ var exec = {
           var ecost = poquotation.quotation.project.project_accounting.ecost
 
           var used = poquotation.quotation.po_quotations.reduce((sum, poq) => {
-            if (poq.po.state == "done" || poq.po.id == req.query.po_id) {
+            var approve = poq.po_quotation_approve ? poq.po_quotation_approve.manager_approve : false
+            if ((poq.po.state == "done" && approve) || poq.po.id == req.query.po_id) {
               return sum + poq.po_quotation_details.reduce((lsum, d) => {
                 return lsum + d.price * d.count
               }, 0)
@@ -407,7 +406,12 @@ var exec = {
       include: {
         model: po_quotation,
         include: [{
-          model: po_quotation_approve
+          model: po_quotation_approve,
+          where: {
+            $and: {
+              manager_approve: true
+            }
+          }
         }, {
           model: quotation,
           include: [{
@@ -415,7 +419,7 @@ var exec = {
             include: project_accounting
           }, {
             model: po_quotation,
-            include: [po_quotation_detail, po]
+            include: [po_quotation_detail, po, po_quotation_approve]
           }]
         }, {
           model: po_quotation_detail,
@@ -439,28 +443,6 @@ var exec = {
         var obj = o.toJSON()
         obj.quotation_nos = o.po_quotations.map(o => o.quotation_no).join(",")
         return obj
-      }).filter((po) => {
-        return po.po_quotations.every((poquotation) => {
-          if (poquotation.po_quotation_approve.boss_approve) {
-            return true
-          } else {
-            var ecost = poquotation.quotation.project.project_accounting.ecost
-
-            var used = poquotation.quotation.po_quotations.reduce((sum, poq) => {
-              if (poq.po.state == "done" || poq.po.id == req.query.po_id) {
-                return sum + poq.po_quotation_details.reduce((lsum, d) => {
-                  return lsum + d.price * d.count
-                }, 0)
-              } else {
-                return sum
-              }
-            }, 0)
-
-            var needboss = ecost < used
-
-            return !needboss && poquotation.po_quotation_approve.manager_approve
-          }
-        })
       })
 
       if (filterKey) {
