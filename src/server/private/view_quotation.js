@@ -588,6 +588,12 @@ var exec = {
             order += " DESC"
           }
           break
+        case "invoices":
+          order = "project_invoices.no"
+          if (sort.asc != 'true') {
+            order += " DESC"
+          }
+          break
       }
     }
 
@@ -604,7 +610,7 @@ var exec = {
               }, {
                 model: quotation,
                 include: building
-              }],
+              }, project_invoice],
               where: where,
               offset: page * count,
               limit: count,
@@ -639,7 +645,7 @@ var exec = {
               }, {
                 model: quotation,
                 include: building
-              }],
+              }, project_invoice],
               where: where,
               offset: page * count,
               limit: count,
@@ -677,7 +683,7 @@ var exec = {
               }, {
                 model: quotation,
                 include: [building, quotation_job]
-              }],
+              }, project_invoice],
               order: order
             }).then((result) => {
               var list = result.map((o) => {
@@ -725,7 +731,7 @@ var exec = {
               }, {
                 model: quotation,
                 include: building
-              }],
+              }, project_invoice],
               where: where,
               offset: page * count,
               limit: count,
@@ -760,7 +766,7 @@ var exec = {
             }, {
               model: quotation,
               include: building
-            }],
+            }, project_invoice],
             where: where,
             offset: page * count,
             limit: count,
@@ -789,7 +795,7 @@ var exec = {
             }, {
               model: quotation,
               include: building
-            }],
+            }, project_invoice],
             where: where,
             offset: page * count,
             limit: count,
@@ -818,7 +824,7 @@ var exec = {
             }, {
               model: quotation,
               include: building
-            }],
+            }, project_invoice],
             where: where,
             offset: page * count,
             limit: count,
@@ -856,7 +862,7 @@ var exec = {
                   include: quotation_job
                 }
               }, building]
-            }],
+            }, project_invoice],
             order: order
           }).then((result) => {
             var list = result.filter((p) => {
@@ -873,6 +879,8 @@ var exec = {
 
               return invoice_total < total
             })
+
+
             if (filterKey) {
               list = list.filter((pj) => {
                 return pj.quotation_no.indexOf(filterKey) >= 0 ||
@@ -885,7 +893,11 @@ var exec = {
             }
             return [list.slice(page * count, page * count + count), list.length]
           }).then((result) => {
-            result[0].map(o => o.project_state.state = "wait_invoice")
+            result[0].map((o) => {
+              var obj = o.toJSON()
+              obj.invoices = o.project_invoices.map(o => o.no).join(',')
+              obj.project_state.state = "wait_invoice"
+            })
             return result
           })
         case "wait_pay":
@@ -904,7 +916,7 @@ var exec = {
                   include: quotation_job
                 }
               }, building]
-            }],
+            }, project_invoice],
             order: order
           }).then((result) => {
             var list = result.filter((p) => {
@@ -933,7 +945,11 @@ var exec = {
             }
             return [list.slice(page * count, page * count + count), list.length]
           }).then((result) => {
-            result[0].map(o => o.project_state.state = "wait_pay")
+            result[0].map((o) => {
+              var obj = o.toJSON()
+              obj.invoices = o.project_invoices.map(o => o.no).join(',')
+              obj.project_state.state = "wait_pay"
+            })
             return result
           })
         case "paid":
@@ -972,7 +988,11 @@ var exec = {
             }
             return [list.slice(page * count, page * count + count), list.length]
           }).then((result) => {
-            result[0].map(o => o.project_state.state = "paid")
+            result[0].map((o) => {
+              var obj = o.toJSON()
+              obj.invoices = o.project_invoices.map(o => o.no).join(',')
+              obj.project_state.state = "paid"
+            })
             return result
           })
         default:
@@ -1107,7 +1127,8 @@ var exec = {
           project_name: o.quotation.project_name,
           project_type: o.quotation.project_type,
           state: getState(o.project_state.state),
-          manager: o.quotation.manager
+          manager: o.quotation.manager,
+          invoices: o.project_invoices.map(o => o.no).join(',')
         }
       })
       var rowCount = result[1]

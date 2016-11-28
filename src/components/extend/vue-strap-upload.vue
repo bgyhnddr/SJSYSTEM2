@@ -106,7 +106,6 @@
         },
         watch: {
             'fileId': function(val) {
-                console.log(val)
                 if (val) {
                     this.getName(val)
                 } else {

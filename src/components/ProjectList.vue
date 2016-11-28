@@ -13,45 +13,51 @@ export default {
 		VueStrapTable
 	},
 	data() {
+		var columns = [{
+			"header": "報價單編號",
+			"bind": "quotation_no",
+			"sortable": true
+		}, {
+			"header": "物業管理公司",
+			"bind": "property_management_co_name",
+			"sortable": true
+		}, {
+			"header": "負責人",
+			"bind": "manager",
+			"sortable": true
+		}, {
+			"header": "盤名",
+			"bind": "building_name",
+			"sortable": true
+		}, {
+			"header": "工程名稱",
+			"bind": "project_name",
+			"sortable": true
+		}, {
+			"header": "工程類型",
+			"bind": "project_type",
+			"sortable": true
+		}, {
+			"header": "發票單號",
+			"bind": "invoices",
+			"sortable": true
+		}, {
+			"header": "工程狀態",
+			"bind": "state",
+			"sortable": true
+		}, {
+			"header": "操作",
+			"type": "action",
+			"items": [{
+				eventName: "goto",
+				tag: "button",
+				class: "btn-xs",
+				text: "進入"
+			}]
+		}]
+
 		return {
-			columns: [{
-				"header": "報價單編號",
-				"bind": "quotation_no",
-				"sortable": true
-			}, {
-				"header": "物業管理公司",
-				"bind": "property_management_co_name",
-				"sortable": true
-			}, {
-				"header": "負責人",
-				"bind": "manager",
-				"sortable": true
-			}, {
-				"header": "盤名",
-				"bind": "building_name",
-				"sortable": true
-			}, {
-				"header": "工程名稱",
-				"bind": "project_name",
-				"sortable": true
-			}, {
-				"header": "工程類型",
-				"bind": "project_type",
-				"sortable": true
-			}, {
-				"header": "工程狀態",
-				"bind": "state",
-				"sortable": true
-			}, {
-				"header": "操作",
-				"type": "action",
-				"items": [{
-					eventName: "goto",
-					tag: "button",
-					class: "btn-xs",
-					text: "進入"
-				}]
-			}],
+			columns: columns,
 			data: {
 				list: [],
 				end: true

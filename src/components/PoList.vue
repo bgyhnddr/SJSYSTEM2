@@ -33,6 +33,10 @@ export default {
 				"bind": "quotation_nos",
 				"sortable": true
 			}, {
+				"header": "總價",
+				"bind": "sum",
+				"sortable": true
+			}, {
 				"header": "操作",
 				"type": "action",
 				"items": [{

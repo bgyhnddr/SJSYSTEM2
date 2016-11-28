@@ -3,7 +3,7 @@
 	<div v-if="isEdit">
 		<button @click="saveChange" v-if="changed" class="btn btn-default">保存修改</button>
 		<button @click="confirmInfo" v-if="allowConfirm" class="btn btn-default">確認信息</button>
-		<bs-input type="number" :value.sync="submitData.ecost" label="工程預計成本"></bs-input>
+		<p>工程預計成本：{{submitData.ecost}}</p>
 		<bs-input type="number" :value.sync="submitData.acost" label="工程實際成本"></bs-input>
 		<bs-input type="number" :value.sync="submitData.income" label="工程實際收入"></bs-input>
 		工程實際利潤：：{{profit}}
@@ -49,14 +49,10 @@ export default {
 	computed: {
 		isEdit() {
 			var state = this.project.project_state ? this.project.project_state.state : ""
-			if (state == "paying" && !this.checkPermission(['boss', 'check'])) {
-				return false
-			} else {
-				return !['quotation_save', 'draft'].some(o => o == state)
-			}
+			return !['quotation_save', 'draft'].some(o => o == state) && this.checkPermission(['boss', 'check'])
 		},
 		allowConfirm() {
-			return (this.checkPermission(['boss']) || state.userInfo.name == this.project.quotation.manager) && this.project.project_state.state == 'counting'
+			return this.checkPermission(['boss', 'check']) && this.project.project_state.state == 'counting'
 		},
 		profit() {
 			return this.submitData.income - this.submitData.acost
@@ -69,13 +65,14 @@ export default {
 			view_quotation.getProjectAccounting({
 				project_id: project_id
 			}).then((result) => {
-				that.submitData = result
+				that.submitData.id = result.id
+				that.submitData.acost = result.acost
+				that.submitData.income = result.income
 			})
 		},
 		saveChange() {
 			var that = this
 			view_quotation.saveProjectAcounting({
-				ecost: that.submitData.ecost,
 				acost: that.submitData.acost,
 				income: that.submitData.income,
 				project_id: that.project.id
@@ -102,11 +99,6 @@ export default {
 		'project': function() {
 			this.getProjectAccounting(this.project.id)
 		},
-		'submitData.ecost': function(val, val2) {
-			if (val2 != undefined) {
-				this.changed = true
-			}
-		},
 		'submitData.acost': function(val, val2) {
 			if (val2 != undefined) {
 				this.changed = true
@@ -122,6 +114,9 @@ export default {
 		if (this.project) {
 			this.getProjectAccounting(this.project.id)
 		}
+		this.submitData.ecost = this.project.quotation.quotation_jobs.reduce((sum, j) => {
+			return sum + j.cost * j.count
+		}, 0)
 	}
 }
 </script>

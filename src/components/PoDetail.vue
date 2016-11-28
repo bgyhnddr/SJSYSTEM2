@@ -63,6 +63,7 @@
 					</div>
 					<div class="panel-footer">
 						<span>剩餘預算：{{item.left}}</span>
+						<span>核准后剩餘預算：{{item.left_all}}</span>
 						<span>工程負責人：{{item.quotation.manager}}</span>
 						<button v-if="showManagerConfirm(item)" @click="managerConfirm(item)" class="btn btn-default">確認</button>
 						<button v-if="showBossConfirm(item)" @click="bossConfirm(item)" class="btn btn-default">BOSS確認</button>

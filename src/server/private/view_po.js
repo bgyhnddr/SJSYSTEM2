@@ -47,6 +47,7 @@ var exec = {
     var po = require("../../db/models/po")
     var po_quotation = require("../../db/models/po_quotation")
     var quotation = require("../../db/models/quotation")
+    var quotation_job = require("../../db/models/quotation_job")
     var po_quotation_detail = require("../../db/models/po_quotation_detail")
     var po_quotation_detail_attachment = require("../../db/models/po_quotation_detail_attachment")
     var project = require("../../db/models/project")
@@ -67,6 +68,7 @@ var exec = {
     project.hasOne(project_accounting)
 
     quotation.hasMany(po_quotation)
+    quotation.hasMany(quotation_job)
 
     return po_quotation.findAll({
       include: [{
@@ -77,7 +79,7 @@ var exec = {
         }, {
           model: project,
           include: project_accounting
-        }]
+        }, quotation_job]
       }, {
         model: po_quotation_detail,
         include: [attachment, {
@@ -92,7 +94,9 @@ var exec = {
       return result.map(o => o.toJSON())
     }).then((result) => {
       return result.map((poDetail) => {
-        var ecost = poDetail.quotation.project.project_accounting.ecost
+        var ecost = poDetail.quotation.quotation_jobs.reduce((sum, job) => {
+          return sum + job.cost * job.count
+        }, 0)
 
         var used = poDetail.quotation.po_quotations.reduce((sum, poq) => {
           var approve = poq.po_quotation_approve ? poq.po_quotation_approve.manager_approve : false
@@ -105,7 +109,18 @@ var exec = {
           }
         }, 0)
 
+        var used_all = poDetail.quotation.po_quotations.reduce((sum, poq) => {
+          if (poq.po.state == "done" || poq.po.id == req.query.po_id) {
+            return sum + poq.po_quotation_details.reduce((lsum, d) => {
+              return lsum + d.price * d.count
+            }, 0)
+          } else {
+            return sum
+          }
+        }, 0)
+
         poDetail.left = ecost - used
+        poDetail.left_all = ecost - used_all
         return poDetail
       })
     })
@@ -114,6 +129,7 @@ var exec = {
     var sequelize = require('sequelize')
     var po = require("../../db/models/po")
     var po_quotation = require("../../db/models/po_quotation")
+    var po_quotation_detail = require("../../db/models/po_quotation_detail")
     var quotation = require("../../db/models/quotation")
     po.hasMany(po_quotation)
     var filterKey = req.query.filterKey == undefined ? "" : req.query.filterKey
@@ -143,7 +159,10 @@ var exec = {
     }
 
     return po.findAll({
-      include: po_quotation,
+      include: {
+        model: po_quotation,
+        include: po_quotation_detail
+      },
       where: {
         $and: {
           state: "draft",
@@ -168,8 +187,26 @@ var exec = {
       var list = result.map((o) => {
         var obj = o.toJSON()
         obj.quotation_nos = o.po_quotations.map(o => o.quotation_no).join(",")
+        obj.sum = obj.po_quotations.reduce((sum, poq) => {
+          return sum + poq.po_quotation_details.reduce((dsum, d) => {
+            return dsum + d.price * d.count
+          }, 0)
+        }, 0)
         return obj
       })
+
+      if (sort.sortCol == "sum") {
+        if (sort.asc == "true") {
+          list = list.sort((a, b) => {
+            return a.sum - b.sum
+          })
+        } else {
+          list = list.sort((a, b) => {
+            return a.sum - b.sum
+          }).reverse()
+        }
+      }
+
       var rowCount = list.length
       list = list.slice(page * count, page * count + count)
       return {
@@ -205,19 +242,20 @@ var exec = {
 
     var po = require("../../db/models/po")
     var po_quotation = require("../../db/models/po_quotation")
+    var po_quotation_detail = require("../../db/models/po_quotation_detail")
     var po_quotation_approve = require("../../db/models/po_quotation_approve")
     po.hasMany(po_quotation)
     po_quotation.hasOne(po_quotation_approve)
-
+    po_quotation.hasMany(po_quotation_detail)
     return po.findAll({
       include: {
         model: po_quotation,
-        include: {
+        include: [{
           model: po_quotation_approve,
           where: {
             manager_approve: false
           }
-        }
+        }, po_quotation_detail]
       },
       where: {
         $and: {
@@ -243,8 +281,26 @@ var exec = {
       var list = result.map((o) => {
         var obj = o.toJSON()
         obj.quotation_nos = o.po_quotations.map(o => o.quotation_no).join(",")
+        obj.sum = obj.po_quotations.reduce((sum, poq) => {
+          return sum + poq.po_quotation_details.reduce((dsum, d) => {
+            return dsum + d.price * d.count
+          }, 0)
+        }, 0)
         return obj
       })
+
+      if (sort.sortCol == "sum") {
+        if (sort.asc == "true") {
+          list = list.sort((a, b) => {
+            return a.sum - b.sum
+          })
+        } else {
+          list = list.sort((a, b) => {
+            return a.sum - b.sum
+          }).reverse()
+        }
+      }
+
       var rowCount = list.length
       list = list.slice(page * count, page * count + count)
       return {
@@ -282,6 +338,7 @@ var exec = {
     var po_quotation = require("../../db/models/po_quotation")
     var po_quotation_approve = require("../../db/models/po_quotation_approve")
     var quotation = require("../../db/models/quotation")
+    var quotation_job = require("../../db/models/quotation_job")
     var project = require('../../db/models/project')
     var project_accounting = require('../../db/models/project_accounting')
     var po_quotation_detail = require('../../db/models/po_quotation_detail')
@@ -295,6 +352,7 @@ var exec = {
     quotation.hasOne(project)
 
     quotation.hasMany(po_quotation)
+    quotation.hasMany(quotation_job)
     project.hasOne(project_accounting)
 
     return po.findAll({
@@ -315,7 +373,7 @@ var exec = {
           }, {
             model: po_quotation,
             include: [po_quotation_detail, po, po_quotation_approve]
-          }]
+          }, quotation_job]
         }, po_quotation_detail]
       },
       where: {
@@ -326,10 +384,18 @@ var exec = {
       var list = result.map((o) => {
         var obj = o.toJSON()
         obj.quotation_nos = o.po_quotations.map(o => o.quotation_no).join(",")
+        obj.sum = obj.po_quotations.reduce((sum, poq) => {
+          return sum + poq.po_quotation_details.reduce((dsum, d) => {
+            return dsum + d.price * d.count
+          }, 0)
+        }, 0)
         return obj
       }).filter((po) => {
         return po.po_quotations.some((poquotation) => {
           var ecost = poquotation.quotation.project.project_accounting.ecost
+          var ecost = poquotation.quotation.quotation_jobs.reduce((sum, job) => {
+            return sum + job.cost * job.count
+          }, 0)
 
           var used = poquotation.quotation.po_quotations.reduce((sum, poq) => {
             var approve = poq.po_quotation_approve ? poq.po_quotation_approve.manager_approve : false
@@ -344,6 +410,19 @@ var exec = {
           return ecost < used
         })
       })
+
+
+      if (sort.sortCol == "sum") {
+        if (sort.asc == "true") {
+          list = list.sort((a, b) => {
+            return a.sum - b.sum
+          })
+        } else {
+          list = list.sort((a, b) => {
+            return a.sum - b.sum
+          }).reverse()
+        }
+      }
 
       if (filterKey) {
         list = list.filter((o) => {
@@ -442,8 +521,26 @@ var exec = {
       var list = result.map((o) => {
         var obj = o.toJSON()
         obj.quotation_nos = o.po_quotations.map(o => o.quotation_no).join(",")
+        obj.sum = obj.po_quotations.reduce((sum, poq) => {
+          return sum + poq.po_quotation_details.reduce((dsum, d) => {
+            return dsum + d.price * d.count
+          }, 0)
+        }, 0)
         return obj
       })
+
+
+      if (sort.sortCol == "sum") {
+        if (sort.asc == "true") {
+          list = list.sort((a, b) => {
+            return a.sum - b.sum
+          })
+        } else {
+          list = list.sort((a, b) => {
+            return a.sum - b.sum
+          }).reverse()
+        }
+      }
 
       if (filterKey) {
         list = list.filter((o) => {
@@ -525,8 +622,27 @@ var exec = {
       var list = result.map((o) => {
         var obj = o.toJSON()
         obj.quotation_nos = o.po_quotations.map(o => o.quotation_no).join(",")
+
+        obj.sum = obj.po_quotations.reduce((sum, poq) => {
+          return sum + poq.po_quotation_details.reduce((dsum, d) => {
+            return dsum + d.price * d.count
+          }, 0)
+        }, 0)
         return obj
       })
+
+      if (sort.sortCol == "sum") {
+        if (sort.asc == "true") {
+          list = list.sort((a, b) => {
+            return a.sum - b.sum
+          })
+        } else {
+          list = list.sort((a, b) => {
+            return a.sum - b.sum
+          }).reverse()
+        }
+      }
+
       var rowCount = list.length
       list = list.slice(page * count, page * count + count)
       return {
@@ -563,10 +679,12 @@ var exec = {
       }
     }
     po.hasMany(po_quotation)
+    po_quotation.hasMany(po_quotation_detail)
 
     return po.findAll({
       include: {
-        model: po_quotation
+        model: po_quotation,
+        include: po_quotation_detail
       },
       where: {
         $or: {
@@ -589,8 +707,27 @@ var exec = {
       var list = result.map((o) => {
         var obj = o.toJSON()
         obj.quotation_nos = o.po_quotations.map(o => o.quotation_no).join(",")
+
+        obj.sum = obj.po_quotations.reduce((sum, poq) => {
+          return sum + poq.po_quotation_details.reduce((dsum, d) => {
+            return dsum + d.price * d.count
+          }, 0)
+        }, 0)
         return obj
       })
+
+      if (sort.sortCol == "sum") {
+        if (sort.asc == "true") {
+          list = list.sort((a, b) => {
+            return a.sum - b.sum
+          })
+        } else {
+          list = list.sort((a, b) => {
+            return a.sum - b.sum
+          }).reverse()
+        }
+      }
+
       var rowCount = list.length
       list = list.slice(page * count, page * count + count)
       return {
