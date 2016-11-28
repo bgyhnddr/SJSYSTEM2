@@ -531,14 +531,6 @@ var exec = {
 
     var where = undefined
     if (filterKey) {
-      // wheretext = "`quotation_no` like '%" + filterKey + "%'"
-      // wheretext += " OR `quotation_no` like '%" + filterKey + "%'"
-      // wheretext += " OR quotation.project_name like '%" + filterKey + "%'"
-      // wheretext += " OR `quotation.building`.`name` like '%" + filterKey + "%'"
-      // wheretext += " OR `quotation.property_management_co_name` like '%" + filterKey + "%'"
-      // wheretext += " OR `quotation.manager` like '%" + filterKey + "%'"
-      // wheretext += " OR `quotation.project_type` like '%" + filterKey + "%'"
-      // where = sequelize.literal(wheretext)
       where = {
         $or: [{
           quotation_no: {
@@ -609,7 +601,7 @@ var exec = {
                 }
               }, {
                 model: quotation,
-                include: building
+                include: [building, quotation_job]
               }, project_invoice],
               where: where,
               offset: page * count,
@@ -644,7 +636,7 @@ var exec = {
                 }
               }, {
                 model: quotation,
-                include: building
+                include: [building, quotation_job]
               }, project_invoice],
               where: where,
               offset: page * count,
@@ -745,7 +737,7 @@ var exec = {
                 }
               }, {
                 model: quotation,
-                include: building
+                include: [building, quotation_job]
               }],
               where: where,
               offset: page * count,
@@ -765,7 +757,7 @@ var exec = {
               }
             }, {
               model: quotation,
-              include: building
+              include: [building, quotation_job]
             }, project_invoice],
             where: where,
             offset: page * count,
@@ -794,7 +786,7 @@ var exec = {
               }
             }, {
               model: quotation,
-              include: building
+              include: [building, quotation_job]
             }, project_invoice],
             where: where,
             offset: page * count,
@@ -823,7 +815,7 @@ var exec = {
               }
             }, {
               model: quotation,
-              include: building
+              include: [building, quotation_job]
             }, project_invoice],
             where: where,
             offset: page * count,
@@ -837,7 +829,7 @@ var exec = {
               }
             }, {
               model: quotation,
-              include: building
+              include: [building, quotation_job]
             }],
             where: where,
             offset: page * count,
@@ -1128,7 +1120,10 @@ var exec = {
           project_type: o.quotation.project_type,
           state: getState(o.project_state.state),
           manager: o.quotation.manager,
-          invoices: o.project_invoices.map(o => o.no).join(',')
+          invoices: o.project_invoices.map(o => o.no).join(','),
+          sum: o.quotation.quotation_jobs.reduce((sum, q) => {
+            return sum + q.count * q.retail
+          }, 0)
         }
       })
       var rowCount = result[1]

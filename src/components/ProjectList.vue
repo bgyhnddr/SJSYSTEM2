@@ -38,6 +38,10 @@ export default {
 			"bind": "project_type",
 			"sortable": true
 		}, {
+			"header": "工程總價",
+			"bind": "sum",
+			"sortable": false
+		}, {
 			"header": "發票單號",
 			"bind": "invoices",
 			"sortable": true

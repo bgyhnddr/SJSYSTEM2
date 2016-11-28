@@ -100,7 +100,7 @@ var exec = {
 
         var used = poDetail.quotation.po_quotations.reduce((sum, poq) => {
           var approve = poq.po_quotation_approve ? poq.po_quotation_approve.manager_approve : false
-          if ((poq.po.state == "done" && approve) || poq.po.id == req.query.po_id) {
+          if ((poq.po.state == "done" && approve) && poq.po.id != req.query.po_id) {
             return sum + poq.po_quotation_details.reduce((lsum, d) => {
               return lsum + d.price * d.count
             }, 0)
@@ -109,18 +109,14 @@ var exec = {
           }
         }, 0)
 
-        var used_all = poDetail.quotation.po_quotations.reduce((sum, poq) => {
-          if (poq.po.state == "done" || poq.po.id == req.query.po_id) {
-            return sum + poq.po_quotation_details.reduce((lsum, d) => {
-              return lsum + d.price * d.count
-            }, 0)
-          } else {
-            return sum
-          }
+
+        poDetail.sum = poDetail.po_quotation_details.reduce((sum, o) => {
+          return sum + o.count * o.price
         }, 0)
 
-        poDetail.left = ecost - used
-        poDetail.left_all = ecost - used_all
+        var approve = poDetail.po_quotation_approve ? poDetail.po_quotation_approve.manager_approve : false
+        poDetail.left = ecost - used - (approve ? poDetail.sum : 0)
+        poDetail.left_all = ecost - used - poDetail.sum
         return poDetail
       })
     })

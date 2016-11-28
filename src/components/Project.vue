@@ -145,6 +145,7 @@ export default {
 		var that = this
 		that.getProject(that.$route.params.id)
 		that.getProjectConfirmInfo(that.$route.params.id)
+		window.document.getElementsByClassName("v-link-active")[1].className = ""
 	},
 	events: {
 		'refreshProject': function() {

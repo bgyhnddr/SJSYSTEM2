@@ -166,7 +166,10 @@ var exec = {
             })
           ]).then(function() {
             return project_item.findOne({
-              include: [job_content_template, upload_content_template]
+              include: [job_content_template, upload_content_template],
+              where: {
+                name: req.body.project_item
+              }
             })
           }).then(function(pi) {
             if (pi) {
