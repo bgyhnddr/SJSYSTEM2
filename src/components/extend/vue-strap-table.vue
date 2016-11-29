@@ -44,7 +44,11 @@
 				</tr>
 			</tbody>
 		</table>
-		<button type="button" v-if="data.end===false" class="btn btn-default" @click="addData">更多...</button>
+		<!-- <button type="button" v-if="data.end===false" class="btn btn-default" @click="addData">更多...</button> -->
+		<button type="button" v-if="pageNum!==0" class="btn btn-default" @click="prev">上一页</button>
+		<span>第{{pageNum+1}}页</span>
+		<span>{{pageNum*countPerPage+1}}~{{pageNum*countPerPage+data.list.length}}</span>
+		<button type="button" v-if="data.end===false" class="btn btn-default" @click="next">下一页</button>
 		<div v-if="errMsg">
 			{{errMsg}}
 		</div>
@@ -111,6 +115,36 @@ export default {
 	methods: {
 		hideHeader(obj) {
 			return !obj.hide
+		},
+		prev() {
+			if (this.pageNum > 0) {
+				this.pageNum -= 1
+			} else {
+				this.pageNum = 0
+			}
+
+			this.$dispatch(this.getDataEvent, this.pageNum, this.countPerPage, this.filterKey, false, {
+				sortCol: this.sortCol,
+				asc: this.asc
+			})
+			this.$emit("getdata", this.pageNum, this.countPerPage, this.filterKey, false, {
+				sortCol: this.sortCol,
+				asc: this.asc
+			})
+		},
+		next() {
+			if (!this.data.end) {
+				this.pageNum += 1
+			}
+
+			this.$dispatch(this.getDataEvent, this.pageNum, this.countPerPage, this.filterKey, false, {
+				sortCol: this.sortCol,
+				asc: this.asc
+			})
+			this.$emit("getdata", this.pageNum, this.countPerPage, this.filterKey, false, {
+				sortCol: this.sortCol,
+				asc: this.asc
+			})
 		},
 		getData() {
 			this.pageNum = 0
