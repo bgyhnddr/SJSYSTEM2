@@ -556,6 +556,10 @@ var exec = {
           '$quotation.project_type$': {
             $like: "%" + filterKey + "%"
           }
+        }, {
+          '$quotation.quotation_date$': {
+            $like: "%" + filterKey + "%"
+          }
         }]
       }
     }
@@ -569,6 +573,7 @@ var exec = {
         case "manager":
         case "project_type":
         case "project_name":
+        case "quotation_date":
           order = sort.sortCol
           if (sort.asc != 'true') {
             order += " DESC"
@@ -702,7 +707,8 @@ var exec = {
                     pj.quotation.building.name.indexOf(filterKey) >= 0 ||
                     pj.quotation.property_management_co_name.indexOf(filterKey) >= 0 ||
                     pj.quotation.manager.indexOf(filterKey) >= 0 ||
-                    pj.quotation.project_type.indexOf(filterKey) >= 0
+                    pj.quotation.project_type.indexOf(filterKey) >= 0 ||
+                    pj.quotation.quotation_date.indexOf(filterKey) >= 0
                 })
               }
               return [list.slice(page * count, page * count + count), list.length]
@@ -722,7 +728,7 @@ var exec = {
                 }
               }, {
                 model: quotation,
-                include: building
+                include: [building, quotation_job]
               }, project_invoice],
               where: where,
               offset: page * count,
@@ -880,7 +886,8 @@ var exec = {
                   pj.quotation.building.name.indexOf(filterKey) >= 0 ||
                   pj.quotation.property_management_co_name.indexOf(filterKey) >= 0 ||
                   pj.quotation.manager.indexOf(filterKey) >= 0 ||
-                  pj.quotation.project_type.indexOf(filterKey) >= 0
+                  pj.quotation.project_type.indexOf(filterKey) >= 0 ||
+                  pj.quotation.quotation_date.indexOf(filterKey) >= 0
               })
             }
             return [list.slice(page * count, page * count + count), list.length]
@@ -932,7 +939,8 @@ var exec = {
                   pj.quotation.building.name.indexOf(filterKey) >= 0 ||
                   pj.quotation.property_management_co_name.indexOf(filterKey) >= 0 ||
                   pj.quotation.manager.indexOf(filterKey) >= 0 ||
-                  pj.quotation.project_type.indexOf(filterKey) >= 0
+                  pj.quotation.project_type.indexOf(filterKey) >= 0 ||
+                  pj.quotation.quotation_date.indexOf(filterKey) >= 0
               })
             }
             return [list.slice(page * count, page * count + count), list.length]
@@ -975,7 +983,8 @@ var exec = {
                   pj.quotation.building.name.indexOf(filterKey) >= 0 ||
                   pj.quotation.property_management_co_name.indexOf(filterKey) >= 0 ||
                   pj.quotation.manager.indexOf(filterKey) >= 0 ||
-                  pj.quotation.project_type.indexOf(filterKey) >= 0
+                  pj.quotation.project_type.indexOf(filterKey) >= 0 ||
+                  pj.quotation.quotation_date.indexOf(filterKey) >= 0
               })
             }
             return [list.slice(page * count, page * count + count), list.length]
@@ -1062,7 +1071,8 @@ var exec = {
                     (pj.quotation.building ? (pj.quotation.building.name.indexOf(filterKey) >= 0) : false) ||
                     (pj.quotation.property_management_co_name ? (pj.quotation.property_management_co_name.indexOf(filterKey) >= 0) : false) ||
                     (pj.quotation.manager ? (pj.quotation.manager.indexOf(filterKey) >= 0) : false) ||
-                    (pj.quotation.project_type ? (pj.quotation.project_type.indexOf(filterKey) >= 0) : false)
+                    (pj.quotation.project_type ? (pj.quotation.project_type.indexOf(filterKey) >= 0) : false) ||
+                    (pj.quotation.quotation_date ? (pj.quotation.quotation_date.indexOf(filterKey) >= 0) : false)
                 })
               }
 
@@ -1114,6 +1124,7 @@ var exec = {
         return {
           id: o.id,
           quotation_no: o.quotation_no,
+          quotation_date: o.quotation.quotation_date,
           property_management_co_name: o.quotation.property_management_co_name,
           building_name: o.quotation.building == null ? "" : o.quotation.building.name,
           project_name: o.quotation.project_name,

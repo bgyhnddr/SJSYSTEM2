@@ -26,6 +26,10 @@ export default {
 			"bind": "manager",
 			"sortable": true
 		}, {
+			"header": "報價日期",
+			"bind": "quotation_date",
+			"sortable": true
+		}, {
 			"header": "盤名",
 			"bind": "building_name",
 			"sortable": true

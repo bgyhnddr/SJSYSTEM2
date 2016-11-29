@@ -128,12 +128,13 @@ var exec = {
     var po_quotation_detail = require("../../db/models/po_quotation_detail")
     var quotation = require("../../db/models/quotation")
     po.hasMany(po_quotation)
+    po_quotation.hasMany(po_quotation_detail)
     var filterKey = req.query.filterKey == undefined ? "" : req.query.filterKey
     var count = req.query.count == undefined ? 5 : parseInt(req.query.count)
     var page = req.query.page == undefined ? 0 : parseInt(req.query.page)
 
     var sort = req.query.sort == undefined ? {} : req.query.sort
-    var order = undefined
+    var order = "po.id DESC"
 
     if (sort.sortCol) {
       switch (sort.sortCol) {
@@ -216,7 +217,7 @@ var exec = {
     var count = req.query.count == undefined ? 5 : parseInt(req.query.count)
     var page = req.query.page == undefined ? 0 : parseInt(req.query.page)
     var sort = req.query.sort == undefined ? {} : req.query.sort
-    var order = undefined
+    var order = "po.id DESC"
     if (sort.sortCol) {
       switch (sort.sortCol) {
         case "no":
@@ -236,21 +237,42 @@ var exec = {
       }
     }
 
+
     var po = require("../../db/models/po")
     var po_quotation = require("../../db/models/po_quotation")
-    var po_quotation_detail = require("../../db/models/po_quotation_detail")
     var po_quotation_approve = require("../../db/models/po_quotation_approve")
+    var quotation = require("../../db/models/quotation")
+    var quotation_job = require("../../db/models/quotation_job")
+    var project = require('../../db/models/project')
+    var project_accounting = require('../../db/models/project_accounting')
+    var po_quotation_detail = require('../../db/models/po_quotation_detail')
+
+
     po.hasMany(po_quotation)
+    po_quotation.belongsTo(po)
     po_quotation.hasOne(po_quotation_approve)
+    po_quotation.belongsTo(quotation)
     po_quotation.hasMany(po_quotation_detail)
+    quotation.hasOne(project)
+
+    quotation.hasMany(po_quotation)
+    quotation.hasMany(quotation_job)
+    project.hasOne(project_accounting)
+
     return po.findAll({
       include: {
         model: po_quotation,
         include: [{
-          model: po_quotation_approve,
-          where: {
-            manager_approve: false
-          }
+          model: po_quotation_approve
+        }, {
+          model: quotation,
+          include: [{
+            model: project,
+            include: project_accounting
+          }, {
+            model: po_quotation,
+            include: [po_quotation_detail, po, po_quotation_approve]
+          }, quotation_job]
         }, po_quotation_detail]
       },
       where: {
@@ -274,7 +296,11 @@ var exec = {
       },
       order: order
     }).then(function(result) {
-      var list = result.map((o) => {
+      var list = result.filter((o) => {
+        return o.po_quotations.some((poq) => {
+          return poq.po_quotation_approve ? (!poq.po_quotation_approve.manager_approve) : true
+        })
+      }).map((o) => {
         var obj = o.toJSON()
         obj.quotation_nos = o.po_quotations.map(o => o.quotation_no).join(",")
         obj.sum = obj.po_quotations.reduce((sum, poq) => {
@@ -283,6 +309,24 @@ var exec = {
           }, 0)
         }, 0)
         return obj
+      }).filter((po) => {
+        return po.po_quotations.every((poquotation) => {
+          var ecost = poquotation.quotation.quotation_jobs.reduce((sum, job) => {
+            return sum + job.cost * job.count
+          }, 0)
+
+          var used = poquotation.quotation.po_quotations.reduce((sum, poq) => {
+            var approve = poq.po_quotation_approve ? poq.po_quotation_approve.manager_approve : false
+            if ((poq.po.state == "done" && approve) || poq.po.id == po.id) {
+              return sum + poq.po_quotation_details.reduce((lsum, d) => {
+                return lsum + d.price * d.count
+              }, 0)
+            } else {
+              return sum
+            }
+          }, 0)
+          return ecost >= used
+        })
       })
 
       if (sort.sortCol == "sum") {
@@ -310,7 +354,7 @@ var exec = {
     var count = req.query.count == undefined ? 5 : parseInt(req.query.count)
     var page = req.query.page == undefined ? 0 : parseInt(req.query.page)
     var sort = req.query.sort == undefined ? {} : req.query.sort
-    var order = undefined
+    var order = "po.id DESC"
     if (sort.sortCol) {
       switch (sort.sortCol) {
         case "no":
@@ -355,12 +399,7 @@ var exec = {
       include: {
         model: po_quotation,
         include: [{
-          model: po_quotation_approve,
-          where: {
-            $and: {
-              manager_approve: false
-            }
-          }
+          model: po_quotation_approve
         }, {
           model: quotation,
           include: [{
@@ -377,7 +416,11 @@ var exec = {
       },
       order: order
     }).then(function(result) {
-      var list = result.map((o) => {
+      var list = result.filter((o) => {
+        return o.po_quotations.some((poq) => {
+          return poq.po_quotation_approve ? (!poq.po_quotation_approve.manager_approve) : true
+        })
+      }).map((o) => {
         var obj = o.toJSON()
         obj.quotation_nos = o.po_quotations.map(o => o.quotation_no).join(",")
         obj.sum = obj.po_quotations.reduce((sum, poq) => {
@@ -388,14 +431,13 @@ var exec = {
         return obj
       }).filter((po) => {
         return po.po_quotations.some((poquotation) => {
-          var ecost = poquotation.quotation.project.project_accounting.ecost
           var ecost = poquotation.quotation.quotation_jobs.reduce((sum, job) => {
             return sum + job.cost * job.count
           }, 0)
 
           var used = poquotation.quotation.po_quotations.reduce((sum, poq) => {
             var approve = poq.po_quotation_approve ? poq.po_quotation_approve.manager_approve : false
-            if ((poq.po.state == "done" && approve) || poq.po.id == req.query.po_id) {
+            if ((poq.po.state == "done" && approve) || poq.po.id == po.id) {
               return sum + poq.po_quotation_details.reduce((lsum, d) => {
                 return lsum + d.price * d.count
               }, 0)
@@ -424,7 +466,8 @@ var exec = {
         list = list.filter((o) => {
           return o.no.indexOf(filterKey) >= 0 ||
             o.prepared_by.indexOf(filterKey) >= 0 ||
-            o.comments.indexOf(filterKey) >= 0
+            o.comments.indexOf(filterKey) >= 0 ||
+            o.quotation_nos.indexOf(filterKey) >= 0
         })
       }
       return {
@@ -438,7 +481,7 @@ var exec = {
     var count = req.query.count == undefined ? 5 : parseInt(req.query.count)
     var page = req.query.page == undefined ? 0 : parseInt(req.query.page)
     var sort = req.query.sort == undefined ? {} : req.query.sort
-    var order = undefined
+    var order = "po.id DESC"
     if (sort.sortCol) {
       switch (sort.sortCol) {
         case "no":
@@ -542,7 +585,8 @@ var exec = {
         list = list.filter((o) => {
           return o.no.indexOf(filterKey) >= 0 ||
             o.prepared_by.indexOf(filterKey) >= 0 ||
-            o.comments.indexOf(filterKey) >= 0
+            o.comments.indexOf(filterKey) >= 0 ||
+            o.quotation_nos.indexOf(filterKey) >= 0
         })
       }
       return {
@@ -559,7 +603,7 @@ var exec = {
     var count = req.query.count == undefined ? 5 : parseInt(req.query.count)
     var page = req.query.page == undefined ? 0 : parseInt(req.query.page)
     var sort = req.query.sort == undefined ? {} : req.query.sort
-    var order = undefined
+    var order = "po.id DESC"
     if (sort.sortCol) {
       switch (sort.sortCol) {
         case "no":
@@ -655,7 +699,7 @@ var exec = {
     var count = req.query.count == undefined ? 5 : parseInt(req.query.count)
     var page = req.query.page == undefined ? 0 : parseInt(req.query.page)
     var sort = req.query.sort == undefined ? {} : req.query.sort
-    var order = undefined
+    var order = "po.id DESC"
     if (sort.sortCol) {
       switch (sort.sortCol) {
         case "no":
