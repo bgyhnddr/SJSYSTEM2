@@ -1299,7 +1299,6 @@ var exec = {
     po_quotation.belongsTo(po)
     po_quotation.hasOne(po_quotation_approve)
     po_quotation.hasMany(po_quotation_detail)
-    console.log(req.query.quotation_no)
     return po_quotation.findAll({
       include: [{
         model: po,

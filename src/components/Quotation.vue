@@ -160,9 +160,6 @@ export default {
 			}).catch((err) => {
 				window.alert(err)
 			})
-
-
-
 			this.getPODetail(that.quotation_no)
 		},
 		saveQuotationComments() {
