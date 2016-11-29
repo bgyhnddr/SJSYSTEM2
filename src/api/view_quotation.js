@@ -74,5 +74,8 @@ export default {
       count,
       filterKey
     })
+  },
+  getPODetail(params) {
+    return request.get(path + 'getPODetail', params)
   }
 }

@@ -1289,6 +1289,41 @@ var exec = {
         list: list
       }
     })
+  },
+  getPODetail(req, res, next) {
+    var po = require("../../db/models/po")
+    var po_quotation = require("../../db/models/po_quotation")
+    var po_quotation_detail = require("../../db/models/po_quotation_detail")
+    var po_quotation_approve = require("../../db/models/po_quotation_approve")
+
+    po_quotation.belongsTo(po)
+    po_quotation.hasOne(po_quotation_approve)
+    po_quotation.hasMany(po_quotation_detail)
+    console.log(req.query.quotation_no)
+    return po_quotation.findAll({
+      include: [{
+        model: po,
+        where: {
+          state: "done"
+        }
+      }, po_quotation_detail, po_quotation_approve],
+      where: {
+        quotation_no: req.query.quotation_no
+      }
+    }).then((result) => {
+      return result.map((o) => {
+        var obj = o.toJSON()
+        if (obj.po_quotation_approve ? obj.po_quotation_approve.manager_approve : false) {
+          obj.state = "核准"
+        } else {
+          obj.state = "待核准"
+        }
+        obj.sum = obj.po_quotation_details.reduce((sum, o) => {
+          return sum + o.price * o.count
+        }, 0)
+        return obj
+      })
+    })
   }
 }
 
