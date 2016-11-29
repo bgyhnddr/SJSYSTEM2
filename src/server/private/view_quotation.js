@@ -735,6 +735,7 @@ var exec = {
               limit: count,
               order: 'project.id DESC'
             }), project.count({
+              distinct: 'id',
               include: [{
                 model: project_state,
                 where: {
@@ -745,10 +746,7 @@ var exec = {
                 model: quotation,
                 include: [building, quotation_job]
               }],
-              where: where,
-              offset: page * count,
-              limit: count,
-              order: order
+              where: where
             })
           ]).then((result) => {
             result[0].forEach(o => o.project_state.state = "wait_contract")
