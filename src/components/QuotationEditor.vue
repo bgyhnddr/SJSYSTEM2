@@ -7,7 +7,13 @@
 		</div>
 		<div class="form-group">
 			<label class="control-label">物業公司</label>
-			<p>{{quotation.property_management_co_name}}</p>
+			<p>{{quotation.property_management_co_name}}
+				<button @click="property_management_co_setting.show = true" class="btn btn-default btn-xs">選擇</button>
+				<button @click="property_management_co_setting.show = false" v-if="property_management_co_setting.show" class="btn btn-default btn-xs">關閉</button>
+			</p>
+			<p v-if="property_management_co_setting.show">
+				<property-management-co-setting :selectable="property_management_co_setting.selectable" :select-event="property_management_co_setting.selectEvent"></property-management-co-setting>
+			</p>
 		</div>
 		<div class="form-group">
 			<bs-input :value.sync="quotation.project_name" label="工程名稱"></bs-input>
@@ -76,6 +82,7 @@ import view_quotation from '../api/view_quotation'
 import QuotationJob from './QuotationJob'
 import BuildingSetting from './BuildingSetting'
 import VueStrapTable from './extend/vue-strap-table'
+import PropertyManagementCoSetting from './PropertyManagementCoSetting'
 
 import {
 	datepicker,
@@ -90,6 +97,7 @@ export default {
 		ProjectManagerSetting,
 		ProjectTypeSetting,
 		ProjectItemSetting,
+		PropertyManagementCoSetting,
 		QuotationJob,
 		BuildingSetting,
 		VueStrapTable
@@ -121,6 +129,11 @@ export default {
 			project_manager_select_setting: {
 				selectable: true,
 				selectEvent: "project_manager_select",
+				show: false
+			},
+			property_management_co_setting: {
+				selectable: true,
+				selectEvent: "property_management_co_select",
 				show: false
 			},
 			project_type_setting: {
@@ -290,6 +303,10 @@ export default {
 		'project_type_select': function(row) {
 			this.project_item_setting.show = true
 			this.project_item_setting.type = row.name
+		},
+		'property_management_co_select': function(row) {
+			this.property_management_co_setting.show = false
+			this.quotation.property_management_co_name = row.name
 		},
 		'project_item_select': function(row) {
 			var that = this
