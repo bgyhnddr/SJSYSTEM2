@@ -28,8 +28,11 @@
 				</tr>
 			</thead>
 			<tr>
-				<td class="bold">
+				<td v-if="lang=='en'" class="bold">
 					To:
+				</td>
+				<td v-else class="ximingti">
+					至：
 				</td>
 				<td v-if="lang=='en'" colspan="3" class="tableleft">
 					{{project.quotation.property_management_co_name_en}}
@@ -37,15 +40,20 @@
 				<td v-else colspan="3" class="tableleft">
 					{{project.quotation.property_management_co_name}}
 				</td>
-				<td class="tableRight bold">
+				<td v-if="lang=='en'" class="tableRight bold">
 					Quotation No:
+				</td>
+				<td v-else class="tableRight ximingti">
+					報價單編號：
 				</td>
 				<td class="tableRight">
 					{{project.quotation_no}}
 				</td>
 			</tr>
 			<tr>
-				<td class="bold">Re:
+				<td v-if="lang=='en'" class="bold">Re:
+				</td>
+				<td v-else class="ximingti">盤：
 				</td>
 				<td v-if="lang=='en'" colspan="3" class="tableleft">
 					{{project.quotation.building.name_en}}
@@ -53,15 +61,19 @@
 				<td v-else colspan="3" class="tableleft">
 					{{project.quotation.building.name}}
 				</td>
-				<td class="tableRight bold">Date:
+				<td v-if="lang=='en'" class="tableRight bold">Date:
 				</td>
+				<td v-else class="tableRight ximingti">報價單日期：</td>
 				<td class="tableRight">
 					{{formatDate(project.quotation.quotation_date)}}
 				</td>
 			</tr>
 			<tr>
-				<td class="bold">
+				<td v-if="lang=='en'" class="bold">
 					Add:
+				</td>
+				<td v-else class="ximingti">
+					工作地點：
 				</td>
 				<td v-if="lang=='en'" colspan="3" class="tableleft">
 					{{project.quotation.building.address_en}}
@@ -69,14 +81,20 @@
 				<td v-else colspan="3" class="tableleft">
 					{{project.quotation.building.address}}
 				</td>
-				<td class="tableRight bold">In Charge:
+				<td v-if="lang=='en'" class="tableRight bold">In Charge:
+				</td>
+				<td v-else class="tableRight ximingti">
+					負責人：
 				</td>
 				<td class="tableRight">
 					{{project.quotation.manager}}
 				</td>
 			</tr>
 			<tr>
-				<td class="bold">Attn:
+				<td v-if="lang=='en'" class="bold">Attn:
+				</td>
+				<td v-else class="ximingti">
+					收件人：
 				</td>
 				<td v-if="lang=='en'" colspan="3" class="tableleft">
 					{{project.quotation.building.attn_en}}
@@ -84,27 +102,35 @@
 				<td v-else colspan="3" class="tableleft">
 					{{project.quotation.building.attn}}
 				</td>
-				<td class="tableRight bold">Prepared By:
+				<td v-if="lang=='en'" class="tableRight bold">Prepared By:
+				</td>
+				<td v-else class="tableRight ximingti">
+					草擬人：
 				</td>
 				<td class="tableRight">
 					{{prepared_by}}
 				</td>
 			</tr>
 			<tr>
-				<td class="bold">Tel:
+				<td v-if="lang=='en'" class="bold">Tel:
+				</td>
+				<td v-else class="ximingti">
+					電話：
 				</td>
 				<td class="tableleft">
 					{{project.quotation.building.tel}}
 				</td>
-				<td class="bold">Fax:
+				<td v-if="lang=='en'" class="bold">Fax:
 				</td>
+				<td v-else></td>
 				<td class="tableleft">
 					{{project.quotation.building.fax}}
 				</td>
 			</tr>
 			<tr>
-				<td class="bold">Mgt:
+				<td v-if="lang=='en'" class="bold">Mgt:
 				</td>
+				<td v-else>管理處：</td>
 				<td class="tableleft">
 					{{project.quotation.building.mgt_tel}}
 				</td>
@@ -115,8 +141,9 @@
 				</td>
 			</tr>
 			<tr>
-				<td class="bold">Email:
+				<td v-if="lang=='en'" class="bold">Email:
 				</td>
+				<td v-else>電郵：</td>
 				<td colspan="3" class="tableleft">
 					{{project.quotation.building.email}}
 				</td>
@@ -127,20 +154,25 @@
 				<table class="table">
 					<thead>
 						<tr class="bold underline tableCenter">
-							<th>Item No</th>
-							<th>Descrption</th>
-							<th>
+							<th v-if="lang=='en'">Item No</th>
+							<th v-else>項目</th>
+							<th v-if="lang=='en'">Descrption</th>
+							<th v-else>内容</th>
+							<th v-if="lang=='en'">
 								<div>Qty</div>
 								<div>Pcs</div>
 							</th>
-							<th>
+							<th v-else></th>
+							<th v-if="lang=='en'">
 								<div>Unit</div>
 								<div>Price</div>
 							</th>
-							<th>
+							<th v-else></th>
+							<th v-if="lang=='en'">
 								<div>Amount</div>
 								<div>HK$</div>
 							</th>
+							<th style="width:200px" v-else>金額（港幣 HK$）</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -148,7 +180,7 @@
 							<td></td>
 							<td colspan="4" class="bold underline">{{project.quotation.project_name}}</td>
 						</tr>
-						<tr v-for="item in project.quotation.quotation_jobs">
+						<tr v-for="item in project.quotation.quotation_jobs | orderBy 'index'">
 							<td class="tableCenter">{{item.index}}</td>
 							<td>
 								<label>{{item.content}}</label>
@@ -157,10 +189,10 @@
 								<label>{{item.count?item.count:""}}</label>
 							</td>
 							<td class="tableCenter">
-								<label>{{item.count?item.retail:""}}</label>
+								<label>{{item.count?formatCurrency(item.retail):""}}</label>
 							</td>
 							<td class="tableCenter">
-								<label>{{item.count?item.count*item.retail:""}}</label>
+								<label>{{item.count?formatCurrency(item.count*item.retail):""}}</label>
 							</td>
 						</tr>
 						<tr>
@@ -172,7 +204,7 @@
 							</td>
 							<td class="tableCenter">
 								<div class=" total" style="margin-top:20px">
-									{{total}}
+									{{formatCurrency(total)}}
 								</div>
 							</td>
 						</tr>
@@ -209,8 +241,9 @@
 				<table id="signTable">
 					<tbody>
 						<tr>
-							<td style="width: 50%">Confirmed By :
+							<td v-if="lang=='en'" style="width: 50%">Confirmed By :
 							</td>
+							<td v-else>確認：</td>
 							<td style="width: 50%">
 								<div class="bold">順基工程有限公司</div>
 								<div class="bold">Smooth Prospect Engineering Limited</div>
@@ -224,7 +257,7 @@
 								<div style="border-bottom: 1px dotted black; width: 70%; margin: auto; height: 15mm;"></div>
 							</td>
 						</tr>
-						<tr>
+						<tr v-if="lang=='en'">
 							<td class="bold">Please sign with Co. chop & return copy
 							</td class="bold">
 							<td>Signature & Co. Chop
@@ -352,6 +385,21 @@ export default {
 					window.alert(err)
 				})
 			}
+		},
+		formatCurrency(num) {
+			num = num.toString().replace(/\$|\,/g, '');
+			if (isNaN(num))
+				num = "0";
+			var sign = (num == (num = Math.abs(num)));
+			num = Math.floor(num * 100 + 0.50000000001);
+			var cents = num % 100;
+			num = Math.floor(num / 100).toString();
+			if (cents < 10)
+				cents = "0" + cents;
+			for (var i = 0; i < Math.floor((num.length - (1 + i)) / 3); i++)
+				num = num.substring(0, num.length - (4 * i + 3)) + ',' +
+				num.substring(num.length - (4 * i + 3));
+			return (((sign) ? '' : '-') + num + '.' + cents);
 		}
 	},
 	watch: {
@@ -517,6 +565,10 @@ img.headlogo {
 
 .hide {
 	display: none;
+}
+
+.ximingti {
+	font-family: MingLiU
 }
 
 @media print {
