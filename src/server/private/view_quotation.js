@@ -89,19 +89,36 @@ var exec = {
       var quotation = require('../../db/models/quotation')
       var quotation_job = require('../../db/models/quotation_job')
       var building = require('../../db/models/building')
+
+      var project = require('../../db/models/project')
+      var project_state = require('../../db/models/project_state')
+      var quotation = require('../../db/models/quotation')
+      var quotation_job = require('../../db/models/quotation_job')
+      var building = require('../../db/models/building')
+      var project_setting = require('../../db/models/project_setting')
+      var project_invoice = require('../../db/models/project_invoice')
+      var project_invoice_detail = require('../../db/models/project_invoice_detail')
+
       project.hasOne(project_state)
       project.belongsTo(quotation)
       quotation.belongsTo(building)
+      project.hasMany(project_invoice)
       quotation.hasMany(quotation_job)
+
+      quotation_job.hasMany(project_invoice_detail)
+      project_invoice_detail.belongsTo(quotation_job)
 
       return project.findOne({
         include: [project_state, {
           model: quotation,
-          include: [
-            building,
-            quotation_job
-          ]
-        }],
+          include: [{
+            model: quotation_job,
+            include: {
+              model: project_invoice_detail,
+              include: quotation_job
+            }
+          }, building]
+        }, project_invoice],
         where: {
           id: id
         }
@@ -109,8 +126,28 @@ var exec = {
         if (result == null) {
           return Promise.reject("沒有找到工程")
         } else {
-          return result
+          return result.toJSON()
         }
+      }).then((result) => {
+        var total = result.quotation.quotation_jobs.reduce((sum, j) => {
+          return sum + j.retail * j.count
+        }, 0)
+
+        var invoice_total = result.quotation.quotation_jobs.reduce((sum, j) => {
+          var sumInvoicePer = j.project_invoice_details.reduce((sumi, vo) => {
+            return sumi + vo.quotation_job.retail * vo.quotation_job.count
+          }, 0)
+          return sum + sumInvoicePer
+        }, 0)
+
+        var check_total = result.project_invoices.reduce((sum, inv) => {
+          return sum + (inv.check_money ? inv.check_money : 0)
+        }, 0)
+
+        result.total = total
+        result.invoice_total = invoice_total
+        result.check_total = check_total
+        return result
       })
     } else {
       return Promise.reject("沒有找到工程")
@@ -284,13 +321,16 @@ var exec = {
       var file = require('../../db/models/file')
       var attachment = require('../../db/models/attachment')
       attachment.belongsTo(file)
-      attachment.findOne({
+      return attachment.findOne({
         include: file,
         where: {
           id: id
         }
       }).then((result) => {
         if (result != null) {
+          if (!fs.existsSync("upload/files/" + result.file_hash)) {
+            return Promise.reject("no file record")
+          }
           var localFile = fs.readFileSync("upload/files/" + result.file_hash, 'binary')
           res.setHeader('Content-disposition', 'inline; filename=' + encodeURIComponent(result.name))
           res.setHeader('Content-Type', result.file.type)
@@ -610,7 +650,7 @@ var exec = {
               }, project_invoice],
               where: where,
               order: order
-            }).then((result)=>{
+            }).then((result) => {
               return result.slice(page * count, page * count + count)
             }),
             project.count({
@@ -645,7 +685,7 @@ var exec = {
               }, project_invoice],
               where: where,
               order: order
-            }).then((result)=>{
+            }).then((result) => {
               return result.slice(page * count, page * count + count)
             }),
             project.count({
@@ -732,7 +772,7 @@ var exec = {
               }, project_invoice],
               where: where,
               order: order
-            }).then((result)=>{
+            }).then((result) => {
               return result.slice(page * count, page * count + count)
             }), project.count({
               distinct: 'id',
@@ -765,7 +805,7 @@ var exec = {
             }, project_invoice],
             where: where,
             order: order
-          }).then((result)=>{
+          }).then((result) => {
             return result.slice(page * count, page * count + count)
           }), project.count({
             include: [{
@@ -792,7 +832,7 @@ var exec = {
             }, project_invoice],
             where: where,
             order: order
-          }).then((result)=>{
+          }).then((result) => {
             return result.slice(page * count, page * count + count)
           }), project.count({
             include: [{
@@ -819,7 +859,7 @@ var exec = {
             }, project_invoice],
             where: where,
             order: order
-          }).then((result)=>{
+          }).then((result) => {
             return result.slice(page * count, page * count + count)
           }), project.count({
             include: [{

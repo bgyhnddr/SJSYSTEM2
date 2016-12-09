@@ -477,6 +477,16 @@ var exec = {
       return Promise.reject("not found")
     }
   },
+  deleteProject(req, res, next) {
+    var project = require('../../db/models/project')
+    project.destroy({
+      where: {
+        id: req.body.id
+      }
+    }).then(()=>{
+      return "OK"
+    })
+  },
   saveContract(req, res, next) {
     var projectId = req.body.project_id
     if (projectId) {

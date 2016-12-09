@@ -66,9 +66,10 @@
 		<div class="col-sm-12">
 			<quotation-job :retail.sync="retail" :quotation-no="quotation.no"></quotation-job>
 		</div>
-		<button v-if="vaild()" :disabled="finishing" @click="finish" class="btn btn-primary fixed-save">{{finishing?'loading':'完成報價'}}</button>
+		<button v-if="vaild()" :disabled="finishing" @click="finish" class="btn btn-primary">{{finishing?'loading':'完成報價'}}</button>
 		<label v-if="!vaild()">完成填寫報價信息后才能完成報價</label>
-		<button @click="save" v-if="state.quotation_change" class="btn btn-primary fixed-save">保存報價</button>
+		<button @click="save" v-if="state.quotation_change" class="btn btn-primary">保存報價</button>
+		<button @click="deleteProject" class="btn btn-danger">捨棄報價</button>
 	</div>
 </div>
 </template>
@@ -230,6 +231,16 @@ export default {
 				console.log(err)
 				window.alert(err)
 			})
+		},
+		deleteProject() {
+			var that = this
+			if (confirm("是否確認捨棄當前報價草稿？")) {
+				return create_quotation.deleteProject({
+					id: this.quotation.project_id
+				}).then(() => {
+					that.$router.go("/index/ProjectManagement/ProjectList/all")
+				})
+			}
 		},
 		finish() {
 			var that = this

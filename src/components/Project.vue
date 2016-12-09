@@ -7,6 +7,7 @@
 		<div v-if="project.id">
 			<h4>報價單：{{project.quotation_no}}</h4>
 			<h4>工程名稱：{{project.quotation.project_name}}</h4>
+			<h4>工程狀態：{{projectState}}</h4>
 			<div class="panel-group">
 				<div v-if="showprojectInvoice" class="panel panel-default">
 					<div @click="toggerShow" class="panel-heading">
@@ -101,6 +102,39 @@ export default {
 			var state = this.project.project_state ? this.project.project_state.state : ""
 			return !['quotation_save', 'draft', 'quotation_contract', 'working', 'counting'].some(o => o == state) &&
 				this.checkPermission(['boss', 'invoice'])
+		},
+		projectState() {
+			var projectState = this.project.project_state ? this.project.project_state : {}
+			var state = projectState.state
+			var approved = projectState.manager_approve
+			switch (state) {
+				case "draft":
+					return "草稿"
+				case "quotation_save":
+					if (approved) {
+						return "等待合同"
+					} else {
+						if (this.projectInfo.overtotalprofit || this.projectInfo.belowprofitability) {
+							return "等待BOSS核准"
+						} else {
+							return "待核准"
+						}
+					}
+				case "quotation_contract":
+					return "已確認"
+				case "working":
+					return "施工中"
+				case "counting":
+					return "已完成"
+				case "paying":
+					if (this.project.total > this.project.invoice_total) {
+						return "待開發票"
+					} else if (this.project.total > this.project.check_total) {
+						return "待收款"
+					} else {
+						return "已收款"
+					}
+			}
 		}
 	},
 	components: {

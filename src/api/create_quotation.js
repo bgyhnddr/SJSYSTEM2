@@ -72,5 +72,8 @@ export default {
     },
     saveInvoiceSnapshot(params) {
         return request.post(path + 'saveInvoiceSnapshot', params)
+    },
+    deleteProject(params) {
+        return request.post(path + 'deleteProject', params)
     }
 }
