@@ -46,8 +46,11 @@ export default {
 			"bind": "sum",
 			"sortable": false
 		}, {
-			"header": "發票單號",
+			"header": "發票-日期",
 			"bind": "invoices",
+			"format": function(val) {
+				return val.split(',').join('<br/>')
+			},
 			"sortable": true
 		}, {
 			"header": "工程狀態",

@@ -1123,7 +1123,7 @@ var exec = {
           project_type: o.quotation.project_type,
           state: getState(o.project_state.state),
           manager: o.quotation.manager,
-          invoices: o.project_invoices.map(o => o.no).join(','),
+          invoices: o.project_invoices.map(o => o.no + "-" + o.create_date).join(','),
           sum: o.quotation.quotation_jobs.reduce((sum, q) => {
             return sum + q.count * q.retail
           }, 0)
