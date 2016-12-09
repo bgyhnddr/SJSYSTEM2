@@ -1,4 +1,4 @@
-var checkProjectPaying = (id) => {
+var checkProjectConfirm = (id) => {
   return Promise.resolve().then(function() {
     var project = require('../../db/models/project')
     var project_state = require('../../db/models/project_state')
@@ -14,7 +14,7 @@ var checkProjectPaying = (id) => {
       if (result == null) {
         return Promise.reject("project not found")
       } else {
-        if (result.project_state.state == "paying") {
+        if (result.project_state.manager_approve == true) {
           return "OK"
         } else {
           return Promise.reject("not allow")
@@ -44,7 +44,7 @@ var exec = {
 
 
 
-    return checkProjectPaying(req.body.project_id).then(() => {
+    return checkProjectConfirm(req.body.project_id).then(() => {
       return project.findOne({
         include: [{
           model: quotation,

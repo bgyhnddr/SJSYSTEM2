@@ -136,7 +136,9 @@ export default {
 				this.po.date = new Date().Format("yyyy-MM-dd")
 			}
 		}
-		window.document.getElementsByClassName("v-link-active")[1].className = ""
+		if (window.document.getElementsByClassName("v-link-active").length > 1) {
+			window.document.getElementsByClassName("v-link-active")[1].className = ""
+		}
 	}
 }
 </script>

@@ -9,7 +9,7 @@
 			<h4>工程名稱：{{project.quotation.project_name}}</h4>
 			<h4>工程狀態：{{projectState}}</h4>
 			<div class="panel-group">
-				<div v-if="showprojectInvoice" class="panel panel-default">
+				<div v-if="showProjectInvoice" class="panel panel-default">
 					<div @click="toggerShow" class="panel-heading">
 						<h4 class="panel-title">
 							<a v-link="{ path: '/index/ProjectManagement/Project/'+$route.params.id + '/invoice' }">發票</a>
@@ -98,10 +98,9 @@ export default {
 			var state = this.project.project_state ? this.project.project_state.state : ""
 			return !['quotation_save', 'draft'].some(o => o == state)
 		},
-		showprojectInvoice() {
-			var state = this.project.project_state ? this.project.project_state.state : ""
-			return !['quotation_save', 'draft', 'quotation_contract', 'working', 'counting'].some(o => o == state) &&
-				this.checkPermission(['boss', 'invoice'])
+		showProjectInvoice() {
+			var approve = this.project.project_state ? this.project.project_state.manager_approve : false
+			return approve && this.checkPermission(['boss', 'invoice'])
 		},
 		projectState() {
 			var projectState = this.project.project_state ? this.project.project_state : {}
@@ -179,7 +178,9 @@ export default {
 		var that = this
 		that.getProject(that.$route.params.id)
 		that.getProjectConfirmInfo(that.$route.params.id)
-		window.document.getElementsByClassName("v-link-active")[1].className = ""
+		if (window.document.getElementsByClassName("v-link-active").length > 1) {
+			window.document.getElementsByClassName("v-link-active")[1].className = ""
+		}
 	},
 	events: {
 		'refreshProject': function() {
