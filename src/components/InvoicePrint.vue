@@ -19,8 +19,8 @@
     <table style="width: 100%">
       <thead>
         <tr>
-          <th style="width: 10%"></th>
-          <th style="width: 22%"></th>
+          <th style="width: 12%"></th>
+          <th style="width: 20%"></th>
           <th style="width: 5%"></th>
           <th style="width: 22%"></th>
           <th style="width: 16%"></th>
@@ -28,36 +28,51 @@
         </tr>
       </thead>
       <tr>
-        <td class="bold">
+        <td v-if="lang=='en'" class="bold">
           Send:
+        </td>
+        <td v-else class="bold ximingti">
+          致：
         </td>
         <td colspan="3" class="tableleft">
           <span class="printShow hide">{{project.project_invoice.send}}</span>
           <input class="printHide" v-model="project.project_invoice.send" />
         </td>
-        <td class="tableRight bold">
+        <td v-if="lang=='en'" class="tableRight bold">
           Invoice No:
+        </td>
+        <td v-else class="bold tableRight ximingti">
+          發票編號：
         </td>
         <td class="tableRight">
           {{project.project_invoice.no}}
         </td>
       </tr>
       <tr>
-        <td class="bold">Bill To:
+        <td v-if="lang=='en'" class="bold">
+          Bill To:
+        </td>
+        <td v-else class="bold ximingti">
+          發票致：
         </td>
         <td colspan="3" class="tableleft">
           <span class="printShow hide">{{project.project_invoice.billTo}}</span>
           <input class="printHide" v-model="project.project_invoice.billTo" />
         </td>
-        <td class="tableRight bold">Invoice Date:
+        <td v-if="lang=='en'" class="tableRight bold">
+          Invoice Date:
+        </td>
+        <td v-else class="bold tableRight ximingti">
+          發票日期：
         </td>
         <td class="tableRight">
           {{project.project_invoice.create_date}}
         </td>
       </tr>
       <tr>
-        <td class="bold">
-          Re:
+        <td v-if="lang=='en'" class="bold">Re:
+        </td>
+        <td v-else class="bold ximingti">工程地點：
         </td>
         <td v-if="lang=='en'" colspan="3" class="tableleft">
           {{project.quotation.building.name_en}}
@@ -65,7 +80,11 @@
         <td v-else colspan="3" class="tableleft">
           {{project.quotation.building.name}}
         </td>
-        <td class="tableRight bold">Works Order:
+        <td v-if="lang=='en'" class="tableRight bold">
+          Works Order:
+        </td>
+        <td v-else class="bold tableRight ximingti">
+          工程單編號：
         </td>
         <td class="tableRight">
           <span class="printShow hide">{{project.project_invoice.worksOrder}}</span>
@@ -73,7 +92,9 @@
         </td>
       </tr>
       <tr>
-        <td class="bold">Add:
+        <td v-if="lang=='en'" class="bold">Add:
+        </td>
+        <td v-else class="bold ximingti">工程地址：
         </td>
         <td v-if="lang=='en'" colspan="3" class="tableleft">
           <span class="printShow hide">{{project.quotation.building.address_en}}</span>
@@ -83,14 +104,20 @@
           <span class="printShow hide">{{project.quotation.building.address}}</span>
           <input class="printHide" v-model="project.quotation.building.address" />
         </td>
-        <td class="tableRight bold">Quotation No:
+        <td v-if="lang=='en'" class="tableRight bold">
+          Quotation No:
+        </td>
+        <td v-else class="bold tableRight ximingti">
+          報價單編號：
         </td>
         <td class="tableRight">
           {{project.quotation_no}}
         </td>
       </tr>
       <tr>
-        <td class="bold">Attn:
+        <td v-if="lang=='en'" class="bold">Attn:
+        </td>
+        <td v-else class="bold ximingti">收件人
         </td>
         <td v-if="lang=='en'" colspan="3" class="tableleft">
           {{project.quotation.building.attn_en}}
@@ -98,7 +125,11 @@
         <td v-else colspan="3" class="tableleft">
           {{project.quotation.building.attn}}
         </td>
-        <td class="tableRight bold">Completed Date:
+        <td v-if="lang=='en'" class="tableRight bold">
+          Completed Date:
+        </td>
+        <td v-else class="bold tableRight ximingti">
+          完工日期：
         </td>
         <td class="tableRight">
           <span class="printShow hide">{{project.project_invoice.completedDate}}</span>
@@ -106,17 +137,25 @@
         </td>
       </tr>
       <tr>
-        <td class="bold">Tel:
+        <td v-if="lang=='en'" class="bold">Tel:
+        </td>
+        <td v-else class="bold ximingti">電話：
         </td>
         <td class="tableleft">
           {{project.quotation.building.tel}}
         </td>
-        <td class="bold">Fax:
+        <td v-if="lang=='en'" class="bold">Fax:
+        </td>
+        <td v-else class="bold ximingti">傳真
         </td>
         <td class="tableleft">
           {{project.quotation.building.fax}}
         </td>
-        <td class="tableRight bold">Completed No:
+        <td v-if="lang=='en'" class="tableRight bold">
+          Completed No:
+        </td>
+        <td v-else class="bold tableRight ximingti">
+          完工單編號：
         </td>
         <td class="tableRight">
           <span class="printShow hide">{{project.project_invoice.completedNo}}</span>
@@ -124,7 +163,9 @@
         </td>
       </tr>
       <tr>
-        <td class="bold">Mgt:
+        <td v-if="lang=='en'" class="bold">Mgt:
+        </td>
+        <td v-else class="bold ximingti">管理處
         </td>
         <td class="tableleft">
           {{project.quotation.building.mgt_tel}}
@@ -134,14 +175,20 @@
         <td class="tableleft">
           {{project.quotation.building.mgt_fax}}
         </td>
-        <td class="tableRight bold">In Charge:
+        <td v-if="lang=='en'" class="tableRight bold">
+          In Charge:
+        </td>
+        <td v-else class="bold tableRight ximingti">
+          負責人
         </td>
         <td class="tableRight">
           {{project.quotation.manager}}
         </td>
       </tr>
       <tr>
-        <td class="bold">Email:
+        <td v-if="lang=='en'" class="bold">Email:
+        </td>
+        <td v-else class="bold ximingti">電郵地址：
         </td>
         <td colspan="3" class="tableleft">
           {{project.quotation.building.email}}
@@ -153,20 +200,25 @@
         <table class="table">
           <thead>
             <tr class="bold underline tableCenter">
-              <th>Item No</th>
-              <th>Descrption</th>
-              <th>
+              <th v-if="lang=='en'">Item No</th>
+              <th v-else>項目</th>
+              <th v-if="lang=='en'">Descrption</th>
+              <th v-else>内容</th>
+              <th v-if="lang=='en'">
                 <div>Qty</div>
                 <div>Pcs</div>
               </th>
-              <th>
+              <th v-else>數量</th>
+              <th v-if="lang=='en'">
                 <div>Unit</div>
                 <div>Price</div>
               </th>
-              <th>
+              <th v-else>單價</th>
+              <th v-if="lang=='en'">
                 <div>Amount</div>
                 <div>HK$</div>
               </th>
+              <th style="width:200px" v-else>金額（港幣 HK$）</th>
             </tr>
           </thead>
           <tbody>
@@ -178,25 +230,28 @@
               <td class="tableCenter">{{$index+1}}</td>
               <td>
                 <span class="printShow hide">{{item.quotation_job.content}}</span>
-                <input style="width:50px" class="printHide" v-model="item.quotation_job.content" />
+                <input class="printHide" v-model="item.quotation_job.content" />
               </td>
               <td class="tableCenter">
                 <span class="printShow hide">{{(item.quotation_job.count&&item.quotation_job.count!='0')?item.quotation_job.count:""}}</span>
                 <input style="width:50px" type="number" class="printHide" v-model="item.quotation_job.count" />
               </td>
               <td class="tableCenter">
-                <span class="printShow hide">{{(item.quotation_job.count&&item.quotation_job.count!='0')?item.quotation_job.retail:""}}</span>
+                <span class="printShow hide">{{(item.quotation_job.count&&item.quotation_job.count!='0')?formatCurrency(item.quotation_job.retail):""}}</span>
                 <input style="width:50px" type="number" class="printHide" v-model="item.quotation_job.retail" />
               </td>
               <td class="tableCenter">
-                <label>{{(item.quotation_job.count&&item.quotation_job.count!='0')?item.quotation_job.count*item.quotation_job.retail:""}}</label>
+                <label>{{(item.quotation_job.count&&item.quotation_job.count!='0')?formatCurrency(item.quotation_job.count*item.quotation_job.retail):""}}</label>
               </td>
             </tr>
             <tr>
               <td colspan="3"></td>
               <td class="tableCenter">
-                <div style="margin-top:20px">
+                <div v-if="lang=='en'" style="margin-top:20px">
                   TOTAL:
+                </div>
+                <div v-else style="margin-top:20px">
+                  總額:
                 </div>
               </td>
               <td class="tableCenter">
@@ -287,9 +342,9 @@ export default {
       })
     },
     countTotal() {
-      return this.project.project_invoice.project_invoice_details.reduce((sum, o) => {
+      return this.formatCurrency(this.project.project_invoice.project_invoice_details.reduce((sum, o) => {
         return sum += o.quotation_job.retail * o.quotation_job.count
-      }, 0)
+      }, 0))
     },
     getPreparedBy(quotation_no) {
       var that = this
@@ -310,6 +365,21 @@ export default {
       }
 
       return day + "-" + months[date.getMonth()] + "-" + date.getFullYear()
+    },
+    formatCurrency(num) {
+      num = num.toString().replace(/\$|\,/g, '');
+      if (isNaN(num))
+        num = "0";
+      var sign = (num == (num = Math.abs(num)));
+      num = Math.floor(num * 100 + 0.50000000001);
+      var cents = num % 100;
+      num = Math.floor(num / 100).toString();
+      if (cents < 10)
+        cents = "0" + cents;
+      for (var i = 0; i < Math.floor((num.length - (1 + i)) / 3); i++)
+        num = num.substring(0, num.length - (4 * i + 3)) + ',' +
+        num.substring(num.length - (4 * i + 3));
+      return (((sign) ? '' : '-') + num + '.' + cents);
     },
     getComments() {
       var that = this
@@ -511,6 +581,10 @@ img.headlogo {
 
 .footer {
   margin-top: 10mm;
+}
+
+.ximingti {
+  font-family: MingLiU
 }
 
 #projectName {

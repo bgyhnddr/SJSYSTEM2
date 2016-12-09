@@ -31,8 +31,8 @@
 				<td v-if="lang=='en'" class="bold">
 					To:
 				</td>
-				<td v-else class="ximingti">
-					至：
+				<td v-else class="bold ximingti">
+					致：
 				</td>
 				<td v-if="lang=='en'" colspan="3" class="tableleft">
 					{{project.quotation.property_management_co_name_en}}
@@ -43,7 +43,7 @@
 				<td v-if="lang=='en'" class="tableRight bold">
 					Quotation No:
 				</td>
-				<td v-else class="tableRight ximingti">
+				<td v-else class="bold tableRight ximingti">
 					報價單編號：
 				</td>
 				<td class="tableRight">
@@ -53,7 +53,7 @@
 			<tr>
 				<td v-if="lang=='en'" class="bold">Re:
 				</td>
-				<td v-else class="ximingti">盤：
+				<td v-else class="bold ximingti">工程地點：
 				</td>
 				<td v-if="lang=='en'" colspan="3" class="tableleft">
 					{{project.quotation.building.name_en}}
@@ -72,8 +72,8 @@
 				<td v-if="lang=='en'" class="bold">
 					Add:
 				</td>
-				<td v-else class="ximingti">
-					工作地點：
+				<td v-else class="bold ximingti">
+					工作地址：
 				</td>
 				<td v-if="lang=='en'" colspan="3" class="tableleft">
 					{{project.quotation.building.address_en}}
@@ -83,7 +83,7 @@
 				</td>
 				<td v-if="lang=='en'" class="tableRight bold">In Charge:
 				</td>
-				<td v-else class="tableRight ximingti">
+				<td v-else class="bold tableRight ximingti">
 					負責人：
 				</td>
 				<td class="tableRight">
@@ -93,7 +93,7 @@
 			<tr>
 				<td v-if="lang=='en'" class="bold">Attn:
 				</td>
-				<td v-else class="ximingti">
+				<td v-else class="bold ximingti">
 					收件人：
 				</td>
 				<td v-if="lang=='en'" colspan="3" class="tableleft">
@@ -104,7 +104,7 @@
 				</td>
 				<td v-if="lang=='en'" class="tableRight bold">Prepared By:
 				</td>
-				<td v-else class="tableRight ximingti">
+				<td v-else class="bold tableRight ximingti">
 					草擬人：
 				</td>
 				<td class="tableRight">
@@ -114,7 +114,7 @@
 			<tr>
 				<td v-if="lang=='en'" class="bold">Tel:
 				</td>
-				<td v-else class="ximingti">
+				<td v-else class="bold ximingti">
 					電話：
 				</td>
 				<td class="tableleft">
@@ -198,8 +198,11 @@
 						<tr>
 							<td colspan="3"></td>
 							<td class="tableCenter">
-								<div style="margin-top:20px">
+								<div v-if="lang=='en'" style="margin-top:20px">
 									TOTAL:
+								</div>
+								<div v-else style="margin-top:20px">
+									總額:
 								</div>
 							</td>
 							<td class="tableCenter">
