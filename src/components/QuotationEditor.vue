@@ -59,7 +59,7 @@
 					<project-type-setting :breadcrumb="project_type_setting.breadcrumb" :selectable="project_type_setting.selectable" :select-event="project_type_setting.selectEvent"></project-type-setting>
 				</div>
 				<div v-if="project_item_setting.show" class="col-sm-6">
-					<project-item-setting :breadcrumb="project_item_setting.breadcrumb" :project-type="project_item_setting.type" :selectable="project_item_setting.selectable" :select-event="project_item_setting.selectEvent"></project-item-setting>
+					<project-item-setting :breadcrumb="project_item_setting.breadcrumb" :project-type.sync="project_item_setting.type" :selectable="project_item_setting.selectable" :select-event="project_item_setting.selectEvent"></project-item-setting>
 				</div>
 			</div>
 		</div>
