@@ -609,9 +609,9 @@ var exec = {
                 include: [building, quotation_job]
               }, project_invoice],
               where: where,
-              offset: page * count,
-              limit: count,
               order: order
+            }).then((result)=>{
+              return result.slice(page * count, page * count + count)
             }),
             project.count({
               include: [{
@@ -644,9 +644,9 @@ var exec = {
                 include: [building, quotation_job]
               }, project_invoice],
               where: where,
-              offset: page * count,
-              limit: count,
               order: order
+            }).then((result)=>{
+              return result.slice(page * count, page * count + count)
             }),
             project.count({
               include: [{
@@ -731,9 +731,9 @@ var exec = {
                 include: [building, quotation_job]
               }, project_invoice],
               where: where,
-              offset: page * count,
-              limit: count,
-              order: 'project.id DESC'
+              order: order
+            }).then((result)=>{
+              return result.slice(page * count, page * count + count)
             }), project.count({
               distinct: 'id',
               include: [{
@@ -764,9 +764,9 @@ var exec = {
               include: [building, quotation_job]
             }, project_invoice],
             where: where,
-            offset: page * count,
-            limit: count,
             order: order
+          }).then((result)=>{
+            return result.slice(page * count, page * count + count)
           }), project.count({
             include: [{
               model: project_state,
@@ -777,9 +777,7 @@ var exec = {
               model: quotation,
               include: building
             }],
-            where: where,
-            offset: page * count,
-            limit: count
+            where: where
           })])
         case "working":
           return Promise.all([project.findAll({
@@ -793,9 +791,9 @@ var exec = {
               include: [building, quotation_job]
             }, project_invoice],
             where: where,
-            offset: page * count,
-            limit: count,
             order: order
+          }).then((result)=>{
+            return result.slice(page * count, page * count + count)
           }), project.count({
             include: [{
               model: project_state,
@@ -806,9 +804,7 @@ var exec = {
               model: quotation,
               include: building
             }],
-            where: where,
-            offset: page * count,
-            limit: count
+            where: where
           })])
         case "counting":
           return Promise.all([project.findAll({
@@ -822,9 +818,9 @@ var exec = {
               include: [building, quotation_job]
             }, project_invoice],
             where: where,
-            offset: page * count,
-            limit: count,
             order: order
+          }).then((result)=>{
+            return result.slice(page * count, page * count + count)
           }), project.count({
             include: [{
               model: project_state,
@@ -835,9 +831,7 @@ var exec = {
               model: quotation,
               include: [building, quotation_job]
             }],
-            where: where,
-            offset: page * count,
-            limit: count
+            where: where
           })]).then((result) => {
             result[0].map(o => o.project_state.state = "counting")
             return result
