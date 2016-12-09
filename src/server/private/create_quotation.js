@@ -704,7 +704,7 @@ var exec = {
   },
   saveInvoiceSnapshot(req) {
     var invoice_snapshot = require('../../db/models/invoice_snapshot')
-    invoice_snapshot.upsert({
+    return invoice_snapshot.upsert({
       project_invoice_id: req.body.id,
       content: req.body.content
     })

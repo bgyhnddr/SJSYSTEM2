@@ -245,18 +245,57 @@
               </td>
             </tr>
             <tr>
-              <td colspan="3"></td>
-              <td class="tableCenter">
+              <td colspan="2"></td>
+              <td colspan="2" class="tableCenter">
                 <div v-if="lang=='en'" style="margin-top:20px">
                   TOTAL:
                 </div>
                 <div v-else style="margin-top:20px">
-                  總額:
+                  總額：
                 </div>
               </td>
               <td class="tableCenter">
-                <div class=" total" style="margin-top:20px">
+                <div class="total" style="margin-top:20px">
                   {{countTotal()}}
+                </div>
+              </td>
+            </tr>
+            <tr v-for="item in project.customList">
+              <td colspan="2" class="tableRight">
+                <button class="printHide" @click="deleteCount(item)">刪除</button>
+              </td>
+              <td colspan="2" class="tableCenter">
+                <div>
+                  <input class="printHide" v-model="item.name" />
+                  <span class="printShow hide">{{item.name}}</span>
+                </div>
+              </td>
+              <td class="tableCenter">
+                <div>
+                  <input class="printHide" type="number" v-model="item.value" />
+                  <span class="printShow hide">{{formatCurrency(item.value)}}</span>
+                </div>
+              </td>
+            </tr>
+            <tr class="printHide">
+              <td colspan="4"></td>
+              <td class="tableCenter">
+                <button @click="addCount">添加内容</button>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2"></td>
+              <td colspan="2" class="tableCenter">
+                <div v-if="lang=='en'" style="margin-top:20px">
+                  Balance due:
+                </div>
+                <div v-else style="margin-top:20px">
+                  發票總額：
+                </div>
+              </td>
+              <td class="tableCenter">
+                <div class="due" style="margin-top:20px">
+                  {{countBalanceDue()}}
                 </div>
               </td>
             </tr>
@@ -316,7 +355,8 @@ export default {
         },
         project_invoice: {
           project_invoice_details: []
-        }
+        },
+        customList: []
       },
       isEn: false,
       lang: "zh",
@@ -333,8 +373,9 @@ export default {
       return view_quotation.getInvoice({
         id: id
       }).then((result) => {
-        console.log(result)
-        that.project = result
+        for (var k in result) {
+          that.project[k] = result[k]
+        }
         that.alertText = ""
         that.getPreparedBy(that.project.quotation_no)
       }).catch((err) => {
@@ -431,7 +472,28 @@ export default {
       create_quotation.saveInvoiceSnapshot({
         id: this.project.project_invoice.id,
         content: JSON.stringify(this.project)
+      }).then(() => {
+        window.alert("saved")
       })
+    },
+    addCount() {
+      var list = this.project.customList
+      list.push({
+        name: "",
+        value: ""
+      })
+      this.project.customList = list
+    },
+    deleteCount(item) {
+      this.project.customList.$remove(item)
+    },
+    countBalanceDue() {
+      var total = this.project.project_invoice.project_invoice_details.reduce((sum, o) => {
+        return sum += o.quotation_job.retail * o.quotation_job.count
+      }, 0)
+      return this.formatCurrency(this.project.customList.reduce((sum, o) => {
+        return sum + (parseFloat(o.value) ? parseFloat(o.value) : 0)
+      }, total))
     }
   },
   watch: {
@@ -490,6 +552,11 @@ img.headlogo {
 }
 
 .total {
+  border-top: 1px solid black;
+  border-bottom: 1px solid black;
+}
+
+.due {
   border-top: 1px solid black;
   border-bottom-style: double;
 }
