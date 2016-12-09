@@ -1,6 +1,12 @@
 <template>
 <div>
 	<div class="panel panel-default">
+		<div class="panel-heading">選擇報價單</div>
+		<div class="panel-body">
+			<project-list-selector @select="addQuotationByList"></project-list-selector>
+		</div>
+	</div>
+	<div class="panel panel-default">
 		<div class="panel-heading">PO明細</div>
 		<div class="panel-body">
 			<typeahead v-if="po.state=='draft'" class="col-sm-2" :value.sync="submitQuotationNo" :data="quotations" placeholder="請輸入">
@@ -112,6 +118,7 @@ import confirm_po from '../api/confirm_po'
 import boss from '../api/boss'
 import check from '../api/check'
 import VueStrapUpload from './extend/vue-strap-upload'
+import ProjectListSelector from './ProjectListSelector'
 import checkPermission from '../extend/check-permission'
 
 export default {
@@ -119,7 +126,8 @@ export default {
 		bsInput,
 		typeahead,
 		modal,
-		VueStrapUpload
+		VueStrapUpload,
+		ProjectListSelector
 	},
 	props: {
 		detail: {
@@ -178,6 +186,18 @@ export default {
 				this.submitData.content &&
 				this.submitData.price &&
 				this.submitData.count
+		},
+		addQuotationByList(row){
+			var that = this
+			create_po.addQuotation({
+				po_id: that.po.id,
+				quotation_no: row.quotation_no
+			}).then(() => {
+				that.submitQuotationNo = ""
+				that.getPODetail(that.po.id)
+			}).catch((err) => {
+				window.alert(err)
+			})
 		},
 		addQuotation() {
 			var that = this

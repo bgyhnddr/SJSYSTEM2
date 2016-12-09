@@ -48,7 +48,7 @@
 		<div v-if="!(data.end&&pageNum==0)">
 		<button type="button" v-if="pageNum!==0" class="btn btn-default" @click="prev">上一页</button>
 		<span>第{{pageNum+1}}页</span>
-		<span>{{pageNum*countPerPage+1}}~{{pageNum*countPerPage+data.list?data.list.length:""}}</span>
+		<span>{{pageNum*countPerPage+1}}~{{pageNum*countPerPage+(data.list?data.list.length:0)}}</span>
 		<button type="button" v-if="data.end===false" class="btn btn-default" @click="next">下一页</button>
 		</div>
 		<div v-if="errMsg">

@@ -56,6 +56,9 @@ export default {
   getProjects(params) {
     return request.get(path + 'getProjects', params)
   },
+  getPoProjects(params) {
+    return request.get(path + 'getPoProjects', params)
+  },
   getPreparedBy(params) {
     return request.get(path + 'getPreparedBy', params)
   },

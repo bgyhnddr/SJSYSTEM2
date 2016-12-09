@@ -1176,6 +1176,254 @@ var exec = {
       }
     })
   },
+  getPoProjects(req, res, next) {
+    var sequelize = require('sequelize')
+    var filterKey = req.query.filterKey == undefined ? "" : req.query.filterKey
+    var count = req.query.count == undefined ? 5 : parseInt(req.query.count)
+    var page = req.query.page == undefined ? 0 : parseInt(req.query.page)
+    var sort = req.query.sort == undefined ? {} : req.query.sort
+
+    var project = require('../../db/models/project')
+    var project_state = require('../../db/models/project_state')
+    var quotation = require('../../db/models/quotation')
+    var quotation_job = require('../../db/models/quotation_job')
+    var building = require('../../db/models/building')
+    var project_setting = require('../../db/models/project_setting')
+    var project_invoice = require('../../db/models/project_invoice')
+    var project_invoice_detail = require('../../db/models/project_invoice_detail')
+
+    project.hasOne(project_state)
+    project.belongsTo(quotation)
+    quotation.belongsTo(building)
+    project.hasMany(project_invoice)
+    quotation.hasMany(quotation_job)
+
+    quotation_job.hasMany(project_invoice_detail)
+    project_invoice_detail.belongsTo(quotation_job)
+
+    var where = undefined
+    if (filterKey) {
+      where = {
+        $or: [{
+          quotation_no: {
+            $like: "%" + filterKey + "%"
+          }
+        }, {
+          '$quotation.project_name$': {
+            $like: "%" + filterKey + "%"
+          }
+        }, {
+          '$`quotation.building`.`name`$': {
+            $like: "%" + filterKey + "%"
+          }
+        }, {
+          '$quotation.property_management_co_name$': {
+            $like: "%" + filterKey + "%"
+          }
+        }, {
+          '$quotation.manager$': {
+            $like: "%" + filterKey + "%"
+          }
+        }, {
+          '$quotation.project_type$': {
+            $like: "%" + filterKey + "%"
+          }
+        }, {
+          '$quotation.quotation_date$': {
+            $like: "%" + filterKey + "%"
+          }
+        }]
+      }
+    }
+
+    var order = 'project.id DESC'
+
+    if (sort.sortCol) {
+      switch (sort.sortCol) {
+        case "quotation_no":
+        case "property_management_co_name":
+        case "manager":
+        case "project_type":
+        case "project_name":
+        case "quotation_date":
+          order = sort.sortCol
+          if (sort.asc != 'true') {
+            order += " DESC"
+          }
+          break
+        case "building_name":
+          order = "`quotation.building`.`name`"
+          if (sort.asc != 'true') {
+            order += " DESC"
+          }
+          break
+        case "invoices":
+          order = "project_invoices.no"
+          if (sort.asc != 'true') {
+            order += " DESC"
+          }
+          break
+      }
+    }
+
+    return Promise.resolve().then(() => {
+      var quotationWhere = undefined,
+        buildingWhere = undefined
+      return project.findAll({
+        include: [{
+          model: project_state,
+          where: {
+            $and: [{
+              state: {
+                $ne: "draft"
+              }
+            }, {
+              state: {
+                $ne: "quotation_save"
+              }
+            }]
+          }
+        }, {
+          model: quotation,
+          include: [{
+            model: quotation_job,
+            include: {
+              model: project_invoice_detail,
+              include: quotation_job
+            }
+          }, building]
+        }, project_invoice],
+        order: order
+      }).then((result) => {
+        return getProjectSetting().then((settingObj) => {
+          var list = result.map((o) => {
+            var pj = o.toJSON()
+            if (pj.project_state.state == "quotation_save") {
+              var totalRetail = pj.quotation.quotation_jobs.reduce((sum, o) => {
+                return sum + o.retail * o.count
+              }, 0)
+              var totalCost = pj.quotation.quotation_jobs.reduce((sum, o) => {
+                return sum + o.cost * o.count
+              }, 0)
+              var belowprofitability = settingObj.profitability > ((totalRetail - totalCost) / totalCost) * 100
+              var overtotalprofit = settingObj.totalprofit < totalCost
+              var needboss = belowprofitability || overtotalprofit
+              if (pj.project_state.boss_approve) {
+                pj.project_state.state = "wait_contract"
+              } else {
+                if (needboss) {
+                  pj.project_state.state = "wait_approve_boss"
+                } else {
+                  pj.project_state.state = pj.project_state.manager_approve ? "wait_contract" : "wait_approve"
+                }
+              }
+            } else if (pj.project_state.state == "paying") {
+              var total = pj.quotation.quotation_jobs.reduce((sum, j) => {
+                return sum + j.retail * j.count
+              }, 0)
+
+              var invoice_total = pj.quotation.quotation_jobs.reduce((sum, j) => {
+                var sumInvoicePer = j.project_invoice_details.reduce((sumi, vo) => {
+                  return sumi + vo.quotation_job.retail * vo.quotation_job.count
+                }, 0)
+                return sum + sumInvoicePer
+              }, 0)
+
+              var check_total = pj.project_invoices.reduce((sum, inv) => {
+                return sum + (inv.check_money ? inv.check_money : 0)
+              }, 0)
+
+              if (invoice_total < total) {
+                pj.project_state.state = "wait_invoice"
+              } else {
+                if (check_total < total) {
+                  pj.project_state.state = "wait_pay"
+                } else {
+                  pj.project_state.state = "paid"
+                }
+              }
+            }
+            return pj
+          })
+          if (filterKey) {
+            list = list.filter((pj) => {
+              return pj.quotation_no.indexOf(filterKey) >= 0 ||
+                (pj.quotation.project_name ? (pj.quotation.project_name.indexOf(filterKey) >= 0) : false) ||
+                (pj.quotation.building ? (pj.quotation.building.name.indexOf(filterKey) >= 0) : false) ||
+                (pj.quotation.property_management_co_name ? (pj.quotation.property_management_co_name.indexOf(filterKey) >= 0) : false) ||
+                (pj.quotation.manager ? (pj.quotation.manager.indexOf(filterKey) >= 0) : false) ||
+                (pj.quotation.project_type ? (pj.quotation.project_type.indexOf(filterKey) >= 0) : false) ||
+                (pj.quotation.quotation_date ? (pj.quotation.quotation_date.indexOf(filterKey) >= 0) : false)
+            })
+          }
+
+
+          if (sort.sortCol == "state") {
+            var countSort = (s) => {
+              switch (s) {
+                case 'draft':
+                  return 1
+                case "wait_approve":
+                  return 2
+                case "wait_approve_boss":
+                  return 3
+                case "wait_contract":
+                  return 4
+                case "quotation_contract":
+                  return 5
+                case "working":
+                  return 6
+                case "counting":
+                  return 7
+                case "wait_invoice":
+                  return 8
+                case "wait_pay":
+                  return 9
+                case "paid":
+                  return 10
+                default:
+                  return 11
+              }
+            }
+            if (sort.asc == "true") {
+              list = list.sort((a, b) => {
+                return countSort(a.project_state.state) - countSort(b.project_state.state)
+              })
+            } else {
+              list = list.sort((a, b) => {
+                return countSort(a.project_state.state) - countSort(b.project_state.state)
+              }).reverse()
+            }
+          }
+
+          return [list.slice(page * count, page * count + count), list.length]
+        })
+      })
+    }).then((result) => {
+      var list = result[0].map((o) => {
+        return {
+          id: o.id,
+          quotation_no: o.quotation_no,
+          quotation_date: o.quotation.quotation_date,
+          property_management_co_name: o.quotation.property_management_co_name,
+          building_name: o.quotation.building == null ? "" : o.quotation.building.name,
+          project_name: o.quotation.project_name,
+          project_type: o.quotation.project_type,
+          state: getState(o.project_state.state),
+          manager: o.quotation.manager,
+          invoices: o.project_invoices.map(o => o.no + "-" + o.create_date).join(','),
+          sum: o.quotation.quotation_jobs.reduce((sum, q) => {
+            return sum + q.count * q.retail
+          }, 0)
+        }
+      })
+      var rowCount = result[1]
+      return {
+        end: (list.length + page * count) >= rowCount,
+        list: list
+      }
+    })
+  },
   getPreparedBy(req) {
     var project_record = require('../../db/models/project_record')
 
