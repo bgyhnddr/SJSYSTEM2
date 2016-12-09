@@ -444,68 +444,34 @@ var exec = {
 
 
       return quotation.findOne({
-        include: [{
+        include: {
           model: project,
-          include: [{
+          include: {
             model: project_state,
-          }]
-        }, {
-          model: quotation_job,
-        }],
+            where: {
+              state: "quotation_save",
+              manager_approve: {
+                $or: [{
+                  $eq: false
+                }, {
+                  $eq: null
+                }]
+              }
+            }
+          }
+        },
         where: {
           no: no
         }
-      }).then(function(result) {
-        if (result) {
-          if (result.project.project_state.state != "quotation_save") {
-            return Promise.reject("not allow")
-          } else {
-            return result
-          }
+      }).then((result) => {
+        if (result == null) {
+          return Promise.reject("not allow")
         } else {
-          return Promise.reject("not found")
+          return result
         }
-      }).then(function(result) {
+      }).then((result) => {
         result.project.project_state.state = "draft"
-        result.project.project_state.manager_approve = false
-        result.project.project_state.boss_approve = false
-        result.project.project_state.boss_edit = false
-        return common.get_next_quotation_no(result.project.ori_quotation_no).then(function(qno) {
-          var newQuotation = {}
-          result.project.quotation_no = qno
-          newQuotation.no = qno
-          newQuotation.project_id = result.project_id
-          newQuotation.project_item = result.project_item
-          newQuotation.project_type = result.project_type
-          newQuotation.property_management_co_name = result.property_management_co_name
-          newQuotation.property_management_co_name_en = result.property_management_co_name_en
-          newQuotation.project_name = result.project_name
-          newQuotation.manager = result.manager
-          newQuotation.quotation_date = result.quotation_date
-          newQuotation.building_id = result.building_id
-
-          var newJobs = result.quotation_jobs.map((o) => {
-            return {
-              content: o.content,
-              cost: o.cost,
-              retail: o.retail,
-              count: o.count,
-              quotation_no: qno,
-              index: o.index
-            }
-          })
-          return Promise.all([
-            quotation_job.bulkCreate(newJobs),
-            quotation.create(newQuotation),
-            result.project.save(),
-            result.project.project_state.save()
-          ]).then(function() {
-            return qno
-          })
-        })
-      }).then(function(result) {
-        common.log_project_record("create_quotation/editQuotation", result, req.session.userInfo.name)
-        return 'success'
+        return result.project.project_state.save()
       })
     } else {
       return Promise.reject("not found")

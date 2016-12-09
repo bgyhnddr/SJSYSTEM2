@@ -45,10 +45,12 @@
 			</tbody>
 		</table>
 		<!-- <button type="button" v-if="data.end===false" class="btn btn-default" @click="addData">更多...</button> -->
+		<div v-if="!(data.end&&pageNum==0)">
 		<button type="button" v-if="pageNum!==0" class="btn btn-default" @click="prev">上一页</button>
 		<span>第{{pageNum+1}}页</span>
-		<span>{{pageNum*countPerPage+1}}~{{pageNum*countPerPage+data.list.length}}</span>
+		<span>{{pageNum*countPerPage+1}}~{{pageNum*countPerPage+data.list?data.list.length:""}}</span>
 		<button type="button" v-if="data.end===false" class="btn btn-default" @click="next">下一页</button>
+		</div>
 		<div v-if="errMsg">
 			{{errMsg}}
 		</div>
@@ -96,16 +98,14 @@ export default {
 		},
 		getDataEvent: {
 			type: String,
-			default: 'getData',
-			require: true
+			default: 'getData'
 		},
 		data: {
 			type: Object,
 			default: {
 				end: true,
 				list: []
-			},
-			towWay: true
+			}
 		},
 		errMsg: {
 			type: String,

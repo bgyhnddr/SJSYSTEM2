@@ -4,8 +4,9 @@
 		<div class="panel panel-default">
 			<div class="panel-heading">報價單確認</div>
 			<div class="panel-body">
+				<button :disabled="editing" v-if="allowDraft" @click="draftQuotation" class="btn btn-default">{{editing?'loading':'修改報價'}}</button>
 				<button v-if="showConfirm" @click="confirmQuotation" class="btn btn-default">確認報價</button>
-				<button :disabled="editing" v-if="allowEdit" @click="editQuotation" class="btn btn-default">{{editing?'loading':'修改報價'}}</button>
+				<button :disabled="editing" v-if="allowEdit" @click="editQuotation" class="btn btn-default">{{editing?'loading':'批准修改'}}</button>
 				<p>報價單確認狀態：{{confirmText}}</p>
 				<p v-if="projectInfo.belowprofitability">利潤率不達標</p>
 				<p v-if="projectInfo.overtotalprofit">工程總額過高</p>
@@ -42,10 +43,13 @@ export default {
 		allowEdit() {
 			if (this.project.project_state) {
 				if (this.project.project_state.state == "quotation_save") {
-					return this.checkPermission(["edit_quotation"])
+					return this.checkPermission(["boss"]) || (this.state.userInfo.name == this.projectInfo.manager)
 				}
 			}
 			return false
+		},
+		allowDraft() {
+			return this.checkPermission(["create_quotation"]) && this.project.project_state.state == "quotation_save" && !this.project.project_state.manager_approve
 		},
 		confirmText() {
 			if (this.project.project_state) {
@@ -92,27 +96,28 @@ export default {
 		editQuotation() {
 			var that = this
 			that.editing = true
-			if (!that.project.project_state.manager_approve && !that.project.project_state.boss_approve) {
-				create_quotation.editQuotation({
-					no: that.projectInfo.quotation_no
-				}).then(function() {
-					that.$dispatch("refreshProject")
-					that.editing = false
-				}).catch((err) => {
-					window.alert(err)
-					that.editing = false
-				})
-			} else {
-				edit_quotation.editQuotation({
-					no: that.projectInfo.quotation_no
-				}).then(function() {
-					that.$dispatch("refreshProject")
-					that.editing = false
-				}).catch((err) => {
-					window.alert(err)
-					that.editing = false
-				})
-			}
+			edit_quotation.editQuotation({
+				no: that.projectInfo.quotation_no
+			}).then(function() {
+				that.$dispatch("refreshProject")
+				that.editing = false
+			}).catch((err) => {
+				window.alert(err)
+				that.editing = false
+			})
+		},
+		draftQuotation() {
+			var that = this
+			that.editing = true
+			create_quotation.editQuotation({
+				no: that.projectInfo.quotation_no
+			}).then(function() {
+				that.editing = false
+				window.location.reload()
+			}).catch((err) => {
+				window.alert(err)
+				that.editing = false
+			})
 		},
 		confirmQuotation() {
 			var that = this

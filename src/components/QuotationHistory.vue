@@ -119,25 +119,14 @@ export default {
 	events: {
 		'change': function(row) {
 			var that = this
-			if (!that.quotation.project.project_state.manager_approve && !that.quotation.project.project_state.boss_approve) {
-				create_quotation.editQuotation({
-					no: row.no
-				}).then(function() {
-					that.$dispatch("refreshProject")
-					that.editing = false
-				}).catch((err) => {
-					that.editing = false
-				})
-			} else {
-				edit_quotation.editQuotation({
-					no: row.no
-				}).then(function() {
-					that.$dispatch("refreshProject")
-					that.editing = false
-				}).catch((err) => {
-					that.editing = false
-				})
-			}
+			edit_quotation.editQuotation({
+				no: row.no
+			}).then(function() {
+				that.$dispatch("refreshProject")
+				that.editing = false
+			}).catch((err) => {
+				that.editing = false
+			})
 		},
 		'view': function(row) {
 			var that = this
