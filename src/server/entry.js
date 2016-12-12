@@ -4,10 +4,6 @@ var bodyParser = require('body-parser')
 
 
 module.exports = (app) => {
-  app.use('/init', function(req, res, next) {
-    var init = require('../db/init')
-    init(req, res, next)
-  })
 
   // parse application/x-www-form-urlencoded
   app.use(bodyParser.urlencoded({
