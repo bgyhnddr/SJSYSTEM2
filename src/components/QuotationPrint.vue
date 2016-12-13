@@ -15,7 +15,8 @@
 		<img class="headlogo" src="../assets/img/logo.png" />
 	</div>
 	<div id="mainContent" class="mainTable">
-		<div class="QTitle">Quotation</div>
+		<div v-if="lang=='en'" class="QTitle">Quotation</div>
+		<div v-else class="QTitle">報價單</div>
 		<table style="width: 100%">
 			<thead>
 				<tr>

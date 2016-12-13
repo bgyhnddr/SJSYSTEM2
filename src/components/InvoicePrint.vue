@@ -15,7 +15,8 @@
     <img class="headlogo" src="../assets/img/logo.png" />
   </div>
   <div id="mainContent" class="mainTable">
-    <div class="QTitle">Invoice</div>
+    <div v-if="lang=='en'" class="QTitle">Invoice</div>
+    <div v-else class="QTitle">發票</div>
     <table style="width: 100%">
       <thead>
         <tr>
