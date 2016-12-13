@@ -19,7 +19,7 @@
       <v-option value="down">下旬</v-option>
     </v-select>
   </p>
-  <a v-if="vaild()" target="_blank" :href="'/report/hours'+getQuery()" class="btn btn-default">查看報表</a>
+  <a v-if="vaild()" target="_blank" :href="'/#!/report/hours'+getQuery()" class="btn btn-default">查看報表</a>
 </div>
 </template>
 <script>

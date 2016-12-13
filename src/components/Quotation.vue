@@ -4,7 +4,7 @@
 		<alert v-if="alertText" type="success">
 			{{alertText}}
 		</alert>
-		<a target="_blank" :href="'/quotation/'+quotation.project.id" class="btn btn-default">下載(預覽)報價單</a>
+		<a target="_blank" :href="'/#!/quotation/'+quotation.project.id" class="btn btn-default">下載(預覽)報價單</a>
 		<div v-if="editable">
 			<quotation-editor :quotation.sync="quotation"></quotation-editor>
 		</div>
