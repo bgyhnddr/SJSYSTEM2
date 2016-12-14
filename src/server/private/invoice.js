@@ -60,43 +60,6 @@ var exec = {
           id: req.body.project_id
         }
       })
-    }).then((result) => {
-      if (result != null) {
-        return result
-      } else {
-        return Promise.reject("not found")
-      }
-    }).then((result) => {
-      var ecost = result.quotation.quotation_jobs.reduce((sum, o) => {
-        return sum + o.count * o.cost
-      }, 0)
-
-      var icost = result.project_invoices.reduce((sum, pi) => {
-        return sum + pi.project_invoice_details.reduce((isum, d) => {
-          return isum + d.quotation_job.count * d.quotation_job.cost
-        }, 0)
-      }, 0)
-      if (ecost > icost) {
-        return ecost - icost
-      } else {
-        return Promise.reject("超过预算")
-      }
-    }).then((result) => {
-      return quotation_job.findAll({
-        where: {
-          id: {
-            $in: req.body.project_invoce_details.map(o => o.quotation_job_id)
-          }
-        }
-      }).then((qj) => {
-        if (result < qj.reduce((sum, o) => {
-            return sum + o.cost * o.count
-          }, 0)) {
-          return Promise.reject("超过预算")
-        } else {
-          return "OK"
-        }
-      })
     }).then(() => {
       return common.generate_serial_no("I")
     }).then((no) => {
