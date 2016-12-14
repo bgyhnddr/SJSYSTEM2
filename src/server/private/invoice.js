@@ -115,6 +115,25 @@ var exec = {
     }).then(() => {
       return "success"
     })
+  },
+  submitInvoiceComments(req) {
+    var invoice_comments_text = require('../../db/models/invoice_comments_text')
+    invoice_comments_text.upsert(req.body)
+  },
+  deleteInvoiceComments(req) {
+    var invoice_comments_text = require('../../db/models/invoice_comments_text')
+    invoice_comments_text.destroy({
+      where: {
+        code: req.body.code
+      }
+    })
+  },
+  saveInvoiceSnapshot(req) {
+    var invoice_snapshot = require('../../db/models/invoice_snapshot')
+    return invoice_snapshot.upsert({
+      project_invoice_id: req.body.id,
+      content: req.body.content
+    })
   }
 }
 

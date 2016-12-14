@@ -346,7 +346,7 @@
 
 <script>
 import view_quotation from '../api/view_quotation'
-import create_quotation from '../api/create_quotation'
+import invoice from '../api/invoice'
 export default {
   data() {
     return {
@@ -446,7 +446,7 @@ export default {
           that.currentComments = code
         }
       }
-      create_quotation.submitInvoiceComments({
+      invoice.submitInvoiceComments({
         code: that.currentComments,
         content: that.submitCommentsText
       }).then(() => {
@@ -459,7 +459,7 @@ export default {
     deleteComments() {
       if (confirm("是否確認刪除備注?")) {
         var that = this
-        create_quotation.deleteInvoiceComments({
+        invoice.deleteInvoiceComments({
           code: that.currentComments
         }).then(() => {
           that.currentComments = ""
@@ -470,7 +470,7 @@ export default {
       }
     },
     saveSnap() {
-      create_quotation.saveInvoiceSnapshot({
+      invoice.saveInvoiceSnapshot({
         id: this.project.project_invoice.id,
         content: JSON.stringify(this.project)
       }).then(() => {
