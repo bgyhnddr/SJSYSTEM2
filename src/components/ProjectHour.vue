@@ -23,6 +23,7 @@
 						<v-option value="0.5">0.5</v-option>
 						<v-option value="0.75">0.75</v-option>
 						<v-option value="1">1</v-option>
+						<v-option value="2">2</v-option>
 					</v-select>
 					<bs-input type="textarea" :value.sync="submitData.comments" label="備注"></bs-input>
 				</div>
