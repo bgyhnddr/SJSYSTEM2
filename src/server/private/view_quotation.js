@@ -133,11 +133,8 @@ var exec = {
           return sum + j.retail * j.count
         }, 0)
 
-        var invoice_total = result.quotation.quotation_jobs.reduce((sum, j) => {
-          var sumInvoicePer = j.project_invoice_details.reduce((sumi, vo) => {
-            return sumi + vo.quotation_job.retail * vo.quotation_job.count
-          }, 0)
-          return sum + sumInvoicePer
+        var invoice_total = result.project_invoices.reduce((sum, o) => {
+          return sum + o.total
         }, 0)
 
         var check_total = result.project_invoices.reduce((sum, inv) => {
@@ -524,14 +521,7 @@ var exec = {
     }).then((result) => {
       return result.map((obj) => {
         var o = obj.toJSON()
-        o.invoice_money = o.project_invoice_details.reduce((sum, item) => {
-          if (item.quotation_job != null) {
-            var fnum = parseInt(item.quotation_job.retail * item.quotation_job.count)
-            return sum + (fnum ? fnum : 0)
-          } else {
-            return sum
-          }
-        }, 0)
+        o.invoice_money = o.total
 
         if (o.attachment == null) {
           o.attachment = {
@@ -558,16 +548,12 @@ var exec = {
     var building = require('../../db/models/building')
     var project_setting = require('../../db/models/project_setting')
     var project_invoice = require('../../db/models/project_invoice')
-    var project_invoice_detail = require('../../db/models/project_invoice_detail')
 
     project.hasOne(project_state)
     project.belongsTo(quotation)
     quotation.belongsTo(building)
     project.hasMany(project_invoice)
     quotation.hasMany(quotation_job)
-
-    quotation_job.hasMany(project_invoice_detail)
-    project_invoice_detail.belongsTo(quotation_job)
 
     var where = undefined
     if (filterKey) {
@@ -885,13 +871,7 @@ var exec = {
               }
             }, {
               model: quotation,
-              include: [{
-                model: quotation_job,
-                include: {
-                  model: project_invoice_detail,
-                  include: quotation_job
-                }
-              }, building]
+              include: [quotation_job, building]
             }, project_invoice],
             order: order
           }).then((result) => {
@@ -900,11 +880,8 @@ var exec = {
                 return sum + j.retail * j.count
               }, 0)
 
-              var invoice_total = p.quotation.quotation_jobs.reduce((sum, j) => {
-                var sumInvoicePer = j.project_invoice_details.reduce((sumi, vo) => {
-                  return sumi + vo.quotation_job.retail * vo.quotation_job.count
-                }, 0)
-                return sum + sumInvoicePer
+              var invoice_total = p.project_invoices.reduce((sum, o) => {
+                return sum + o.total
               }, 0)
 
               return invoice_total < total
@@ -940,13 +917,7 @@ var exec = {
               }
             }, {
               model: quotation,
-              include: [{
-                model: quotation_job,
-                include: {
-                  model: project_invoice_detail,
-                  include: quotation_job
-                }
-              }, building]
+              include: [quotation_job, building]
             }, project_invoice],
             order: order
           }).then((result) => {
@@ -955,11 +926,8 @@ var exec = {
                 return sum + j.retail * j.count
               }, 0)
 
-              var invoice_total = p.quotation.quotation_jobs.reduce((sum, j) => {
-                var sumInvoicePer = j.project_invoice_details.reduce((sumi, vo) => {
-                  return sumi + vo.quotation_job.retail * vo.quotation_job.count
-                }, 0)
-                return sum + sumInvoicePer
+              var invoice_total = p.project_invoices.reduce((sum, o) => {
+                return sum + o.total
               }, 0)
 
               return invoice_total >= total
@@ -1073,11 +1041,8 @@ var exec = {
                     return sum + j.retail * j.count
                   }, 0)
 
-                  var invoice_total = pj.quotation.quotation_jobs.reduce((sum, j) => {
-                    var sumInvoicePer = j.project_invoice_details.reduce((sumi, vo) => {
-                      return sumi + vo.quotation_job.retail * vo.quotation_job.count
-                    }, 0)
-                    return sum + sumInvoicePer
+                  var invoice_total = pj.project_invoices.reduce((sum, o) => {
+                    return sum + o.total
                   }, 0)
 
                   var check_total = pj.project_invoices.reduce((sum, inv) => {
@@ -1322,11 +1287,8 @@ var exec = {
                 return sum + j.retail * j.count
               }, 0)
 
-              var invoice_total = pj.quotation.quotation_jobs.reduce((sum, j) => {
-                var sumInvoicePer = j.project_invoice_details.reduce((sumi, vo) => {
-                  return sumi + vo.quotation_job.retail * vo.quotation_job.count
-                }, 0)
-                return sum + sumInvoicePer
+              var invoice_total = pj.project_invoices.reduce((sum, o) => {
+                return sum + o.total
               }, 0)
 
               var check_total = pj.project_invoices.reduce((sum, inv) => {

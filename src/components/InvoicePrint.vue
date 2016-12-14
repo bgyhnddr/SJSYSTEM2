@@ -296,7 +296,7 @@
               </td>
               <td class="tableCenter">
                 <div class="due" style="margin-top:20px">
-                  {{countBalanceDue()}}
+                  {{formatCurrency(countBalanceDue())}}
                 </div>
               </td>
             </tr>
@@ -472,7 +472,8 @@ export default {
     saveSnap() {
       invoice.saveInvoiceSnapshot({
         id: this.project.project_invoice.id,
-        content: JSON.stringify(this.project)
+        content: JSON.stringify(this.project),
+        total: this.countBalanceDue()
       }).then(() => {
         window.alert("saved")
       })
@@ -492,9 +493,9 @@ export default {
       var total = this.project.project_invoice.project_invoice_details.reduce((sum, o) => {
         return sum += o.quotation_job.retail * o.quotation_job.count
       }, 0)
-      return this.formatCurrency(this.project.customList.reduce((sum, o) => {
+      return this.project.customList.reduce((sum, o) => {
         return sum + (parseFloat(o.value) ? parseFloat(o.value) : 0)
-      }, total))
+      }, total)
     }
   },
   watch: {

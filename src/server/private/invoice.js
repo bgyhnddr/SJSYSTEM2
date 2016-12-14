@@ -63,10 +63,23 @@ var exec = {
     }).then(() => {
       return common.generate_serial_no("I")
     }).then((no) => {
-      return project_invoice.create({
-        no: no,
-        create_date: moment().format("YYYY-MM-DD"),
-        project_id: req.body.project_id
+      return quotation_job.findAll({
+        where: {
+          id: {
+            $in: req.body.project_invoce_details.map(o => o.quotation_job_id)
+          }
+        }
+      }).then((qj) => {
+        return qj.reduce((sum, o) => {
+          return sum + o.cost * o.count
+        }, 0)
+      }).then((total) => {
+        return project_invoice.create({
+          no: no,
+          create_date: moment().format("YYYY-MM-DD"),
+          project_id: req.body.project_id,
+          total: total
+        })
       })
     }).then((result) => {
       return project_invoice_detail.bulkCreate(req.body.project_invoce_details.map((o) => {
@@ -92,10 +105,19 @@ var exec = {
     })
   },
   saveInvoiceSnapshot(req) {
+    var project_invoice = require("../../db/models/project_invoice")
     var invoice_snapshot = require('../../db/models/invoice_snapshot')
     return invoice_snapshot.upsert({
       project_invoice_id: req.body.id,
       content: req.body.content
+    }).then(() => {
+      return project_invoice.update({
+        total: req.body.total
+      }, {
+        where: {
+          id: req.body.id
+        }
+      })
     })
   }
 }
