@@ -112,7 +112,7 @@
           報價單編號：
         </td>
         <td class="tableRight">
-          {{project.quotation_no}}
+          {{project.quotation.no}}
         </td>
       </tr>
       <tr>
