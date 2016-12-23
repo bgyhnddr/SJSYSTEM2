@@ -199,7 +199,7 @@ export default {
 			}
 		},
 		profitPercent() {
-			return Math.round((this.totalRetail - this.totalCost) / this.totalCost * 100)
+			return Math.round((this.totalRetail - this.totalCost) / this.totalRetail * 100)
 		}
 	},
 	methods: {

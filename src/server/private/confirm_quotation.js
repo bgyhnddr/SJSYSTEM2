@@ -80,7 +80,7 @@ var exec = {
                 var totalCost = result[1].quotation.quotation_jobs.reduce((sum, o) => {
                     return sum + o.cost
                 }, 0)
-                var belowprofitability = settingObj.profitability > ((totalRetail - totalCost) / totalCost) * 100
+                var belowprofitability = settingObj.profitability > ((totalRetail - totalCost) / totalRetail) * 100
 
                 var checkData = {
                     settingObj,

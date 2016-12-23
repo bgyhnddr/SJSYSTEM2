@@ -282,7 +282,7 @@ var exec = {
         var totalCost = result[1].quotation.quotation_jobs.reduce((sum, o) => {
           return sum + o.cost * o.count
         }, 0)
-        var belowprofitability = settingObj.profitability > ((totalRetail - totalCost) / totalCost) * 100
+        var belowprofitability = settingObj.profitability > ((totalRetail - totalCost) / totalRetail) * 100
 
         return {
           settingObj,
@@ -721,7 +721,7 @@ var exec = {
                 var totalCost = pj.quotation.quotation_jobs.reduce((sum, o) => {
                   return sum + o.cost * o.count
                 }, 0)
-                var belowprofitability = settingObj.profitability > ((totalRetail - totalCost) / totalCost) * 100
+                var belowprofitability = settingObj.profitability > ((totalRetail - totalCost) / totalRetail) * 100
                 var overtotalprofit = settingObj.totalprofit < totalCost
                 var needboss = belowprofitability || overtotalprofit
                 return !pj.project_state.boss_approve && needboss
@@ -1004,13 +1004,7 @@ var exec = {
               model: project_state
             }, {
               model: quotation,
-              include: [{
-                model: quotation_job,
-                include: {
-                  model: project_invoice_detail,
-                  include: quotation_job
-                }
-              }, building]
+              include: [quotation_job, building]
             }, project_invoice],
             order: order
           }).then((result) => {
@@ -1024,7 +1018,7 @@ var exec = {
                   var totalCost = pj.quotation.quotation_jobs.reduce((sum, o) => {
                     return sum + o.cost * o.count
                   }, 0)
-                  var belowprofitability = settingObj.profitability > ((totalRetail - totalCost) / totalCost) * 100
+                  var belowprofitability = settingObj.profitability > ((totalRetail - totalCost) / totalRetail) * 100
                   var overtotalprofit = settingObj.totalprofit < totalCost
                   var needboss = belowprofitability || overtotalprofit
                   if (pj.project_state.boss_approve) {
@@ -1270,7 +1264,7 @@ var exec = {
               var totalCost = pj.quotation.quotation_jobs.reduce((sum, o) => {
                 return sum + o.cost * o.count
               }, 0)
-              var belowprofitability = settingObj.profitability > ((totalRetail - totalCost) / totalCost) * 100
+              var belowprofitability = settingObj.profitability > ((totalRetail - totalCost) / totalRetail) * 100
               var overtotalprofit = settingObj.totalprofit < totalCost
               var needboss = belowprofitability || overtotalprofit
               if (pj.project_state.boss_approve) {
