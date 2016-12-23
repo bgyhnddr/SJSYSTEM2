@@ -147,14 +147,14 @@ export default {
 	},
 	computed: {
 		alertType() {
-			return this.valid() ? "success" : "warning"
+			return this.vaild() ? "success" : "warning"
 		},
 		alertText() {
 			if (this.serverMsg) {
 				return this.serverMsg;
 			}
 			let returnText = "請輸入";
-			if (!this.valid()) {
+			if (!this.vaild()) {
 				returnText = "請輸入"
 			}
 			return returnText
@@ -162,7 +162,7 @@ export default {
 	},
 	methods: {
 		checkPermission,
-		valid() {
+		vaild() {
 			return this.submitData.name && this.submitData.name_en
 		},
 		addBuilding() {
@@ -172,7 +172,7 @@ export default {
 			this.showBuildingModel = true
 		},
 		submitBuilding() {
-			if (this.valid()) {
+			if (this.vaild()) {
 				var that = this
 				that.submitting = true
 				datasource.submitBuilding(that.submitData).then(function(result) {

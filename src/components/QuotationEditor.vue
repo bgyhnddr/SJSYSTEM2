@@ -45,6 +45,31 @@
 				</div>
 				<div v-if="!building_setting.show">
 					<vue-strap-table :has-filter="false" :data.sync="building_setting.data" :columns.sync="building_setting.columns"></vue-strap-table>
+					<modal :show.sync="showBuildingModel" effect="fade" :large="true">
+						<div slot="modal-header" class="modal-header">
+							<h4 class="modal-title">
+								盤
+							</h4>
+						</div>
+						<div slot="modal-body" class="modal-body">
+							<bs-input v-show="false" :value.sync="building.id"></bs-input>
+							<bs-input :value.sync="building.name" label="名稱"></bs-input>
+							<bs-input :value.sync="building.name_en" label="名稱(英文)"></bs-input>
+							<bs-input :value.sync="building.address" label="地址" pattern=""></bs-input>
+							<bs-input :value.sync="building.address_en" label="地址（英文）" pattern=""></bs-input>
+							<bs-input :value.sync="building.attn" label="聯繫人" pattern=""></bs-input>
+							<bs-input :value.sync="building.attn_en" label="聯繫人（英文）" pattern=""></bs-input>
+							<bs-input :value.sync="building.tel" label="電話" pattern=""></bs-input>
+							<bs-input :value.sync="building.fax" label="傳真" pattern=""></bs-input>
+							<bs-input :value.sync="building.mgt_tel" label="管理處電話" pattern=""></bs-input>
+							<bs-input :value.sync="building.mgt_fax" label="管理處傳真" pattern=""></bs-input>
+							<bs-input :value.sync="building.email" label="電郵" pattern=""></bs-input>
+						</div>
+						<div slot="modal-footer" class="modal-footer">
+							<button type="button" class="btn btn-default" @click="showBuildingModel=false">关闭</button>
+							<button :disabled="submitting" type="button" class="btn btn-success" @click="submitBuilding">確認</button>
+						</div>
+					</modal>
 				</div>
 			</p>
 		</div>
@@ -84,8 +109,10 @@ import QuotationJob from './QuotationJob'
 import BuildingSetting from './BuildingSetting'
 import VueStrapTable from './extend/vue-strap-table'
 import PropertyManagementCoSetting from './PropertyManagementCoSetting'
+import datasource from '../api/datasource'
 
 import {
+	modal,
 	datepicker,
 	alert,
 	input as bsInput
@@ -101,7 +128,8 @@ export default {
 		PropertyManagementCoSetting,
 		QuotationJob,
 		BuildingSetting,
-		VueStrapTable
+		VueStrapTable,
+		modal
 	},
 	props: {
 		quotation: {
@@ -122,6 +150,22 @@ export default {
 	data() {
 		var dateNow = new Date()
 		return {
+			showBuildingModel: false,
+			building: {
+				id: "",
+				name: "",
+				name_en: "",
+				address: "",
+				address_en: "",
+				attn: "",
+				attn_en: "",
+				tel: "",
+				fax: "",
+				mgt_tel: "",
+				mgt_fax: "",
+				email: ""
+			},
+			submitting: false,
 			state: window.state,
 			datepickerSetting: {
 				value: dateNow.Format("yyyy-MM-dd"),
@@ -158,6 +202,7 @@ export default {
 				data: {
 					end: true,
 					list: [{
+						id: "",
 						name: "",
 						name_en: "",
 						address: "",
@@ -204,6 +249,15 @@ export default {
 				}, {
 					"header": "電郵",
 					"bind": "email"
+				}, {
+					"header": "操作",
+					"type": "action",
+					"items": [{
+						eventName: "editBuilding",
+						tag: "button",
+						class: "btn-xs",
+						text: "修改"
+					}]
 				}]
 			},
 			retail: 0,
@@ -222,6 +276,9 @@ export default {
 				}
 			}
 			return check && this.retail
+		},
+		vaildBuilding() {
+			return this.building.name && this.building.name_en
 		},
 		save() {
 			var that = this
@@ -285,6 +342,20 @@ export default {
 					window.alert(err)
 				})
 			}
+		},
+		submitBuilding() {
+			if (this.vaildBuilding()) {
+				var that = this
+				that.submitting = true
+				datasource.submitBuilding(that.building).then(function(result) {
+					that.submitting = false
+					that.showBuildingModel = false
+					return that.getBuilding(that.building.id)
+				}).catch(function(err) {
+					that.submitting = false
+					that.serverMsg = err
+				})
+			}
 		}
 	},
 	watch: {
@@ -335,6 +406,12 @@ export default {
 		'building_select': function(row) {
 			this.quotation.building_id = row.id
 			this.building_setting.show = false
+		},
+		'editBuilding': function(obj) {
+			for (var i in this.building) {
+				this.building[i] = obj[i]
+			}
+			this.showBuildingModel = true
 		}
 	},
 	ready() {
