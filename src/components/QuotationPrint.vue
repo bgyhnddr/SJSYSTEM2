@@ -22,8 +22,8 @@
 				<tr>
 					<th style="width: 10%"></th>
 					<th style="width: 22%"></th>
-					<th style="width: 5%"></th>
-					<th style="width: 22%"></th>
+					<th style="width: 7%"></th>
+					<th style="width: 20%"></th>
 					<th style="width: 16%"></th>
 					<th style="width: 16%"></th>
 				</tr>
@@ -123,7 +123,7 @@
 				</td>
 				<td v-if="lang=='en'" class="bold">Fax:
 				</td>
-				<td v-else></td>
+				<td v-else class="bold">傳真：</td>
 				<td class="tableleft">
 					{{project.quotation.building.fax}}
 				</td>
@@ -163,12 +163,16 @@
 								<div>Qty</div>
 								<div>Pcs</div>
 							</th>
-							<th v-else></th>
+							<th v-else>
+								數量
+							</th>
 							<th v-if="lang=='en'">
 								<div>Unit</div>
 								<div>Price</div>
 							</th>
-							<th v-else></th>
+							<th v-else>
+								單價
+							</th>
 							<th v-if="lang=='en'">
 								<div>Amount</div>
 								<div>HK$</div>
