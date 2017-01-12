@@ -8,7 +8,7 @@ var exec = {
             var common = require('../common')
 
             project.hasOne(project_state)
-            project.hasOne(quotation)
+            project.belongsTo(quotation)
 
             return project.findOne({
                 include: [project_state, quotation],
