@@ -1384,8 +1384,10 @@ var exec = {
     var project_record = require('../../db/models/project_record')
 
     return project_record.findOne({
-      action: "create_quotation/createQuotation",
-      content: req.query.quotation_no
+      where: {
+        action: "create_quotation/createQuotation",
+        content: req.query.quotation_no
+      }
     }).then((result) => {
       return result.user_account
     })
