@@ -194,7 +194,7 @@
                 })
             },
             "editDetail": function(row) {
-                this.$router.go("/index/DataManagement/ProjectType/" + row.name)
+                this.$router.go("/index/DataManagement/ProjectType/" + encodeURIComponent(row.name))
             }
         },
         ready() {

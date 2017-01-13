@@ -3,8 +3,8 @@
 		<div v-if="checkPermission(['datasource'])">
 			<ol class="breadcrumb">
 				<li><a v-link="{ path: '/index/DataManagement/ProjectType' }">工程類別</a></li>
-				<li><a v-link="{ path: '/index/DataManagement/ProjectType/'+$route.params.type }">{{$route.params.type}}</a></li>
-				<li class="active">{{$route.params.item}}:工作内容模板</li>
+				<li><a v-link="{ path: '/index/DataManagement/ProjectType/'+$route.params.type }">{{decodeURIComponent($route.params.type)}}</a></li>
+				<li class="active">{{decodeURIComponent($route.params.item)}}:工作内容模板</li>
 			</ol>
 			<div>
 				<button @click="addJobTemplate" class="btn btn-default">添加工作内容</button>
@@ -155,7 +155,7 @@
                     datasource.submitJobTemplate({
                         id: that.submitData.id,
                         content: that.submitData.content,
-                        project_item_name: that.$route.params.item
+                        project_item_name: decodeURIComponent(that.$route.params.item)
                     }).then(function(result) {
                         that.submitting = false
                         that.$broadcast("refreshData")
@@ -215,7 +215,7 @@
             "getData": function(pageNum, countPerPage, filterKey, append) {
                 let that = this
                 that.$broadcast('show::spinner')
-                datasource.getJobTemplates(that.$route.params.item, filterKey).then(function(result) {
+                datasource.getJobTemplates(decodeURIComponent(that.$route.params.item), filterKey).then(function(result) {
                     that.$broadcast('hide::spinner')
                     that.data = result
                 }).catch(function(err) {

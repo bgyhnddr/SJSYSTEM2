@@ -140,7 +140,7 @@ export default {
 			return returnText
 		},
 		type() {
-			return this.projectType ? this.projectType : this.$route.params.type
+			return this.projectType ? this.projectType : decodeURIComponent(this.$route.params.type)
 		}
 	},
 	watch: {
@@ -218,10 +218,10 @@ export default {
 			})
 		},
 		"editUploadDetail": function(row) {
-			this.$router.go("/index/DataManagement/ProjectType/" + this.type + "/" + row.name + "/upload")
+			this.$router.go("/index/DataManagement/ProjectType/" + encodeURIComponent(this.type) + "/" + encodeURIComponent(row.name) + "/upload")
 		},
 		"editContentDetail": function(row) {
-			this.$router.go("/index/DataManagement/ProjectType/" + this.type + "/" + row.name + "/job")
+			this.$router.go("/index/DataManagement/ProjectType/" + encodeURIComponent(this.type) + "/" + encodeURIComponent(row.name) + "/job")
 		}
 	},
 	ready() {

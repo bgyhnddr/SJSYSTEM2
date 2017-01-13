@@ -6,9 +6,9 @@
 				<a v-link="{ path: '/index/DataManagement/ProjectType' }">工程類別</a>
 			</li>
 			<li>
-				<a v-link="{ path: '/index/DataManagement/ProjectType/'+$route.params.type }">{{$route.params.type}}</a>
+				<a v-link="{ path: '/index/DataManagement/ProjectType/'+$route.params.type }">{{decodeURIComponent($route.params.type)}}</a>
 			</li>
-			<li class="active">{{$route.params.item}}:上傳内容模板</li>
+			<li class="active">{{decodeURIComponent($route.params.item)}}:上傳内容模板</li>
 		</ol>
 		<div>
 			<button @click="addUploadTemplate" class="btn btn-default">添加上傳内容</button>
@@ -159,7 +159,7 @@ export default {
 				datasource.submitUploadTemplate({
 					id: that.submitData.id,
 					content: that.submitData.content,
-					project_item_name: that.$route.params.item
+					project_item_name: decodeURIComponent(that.$route.params.item)
 				}).then(function(result) {
 					that.submitting = false
 					that.$broadcast("refreshData")
@@ -219,7 +219,7 @@ export default {
 		"getData": function(pageNum, countPerPage, filterKey, append) {
 			let that = this
 			that.$broadcast('show::spinner')
-			datasource.getUploadTemplates(that.$route.params.item, filterKey).then(function(result) {
+			datasource.getUploadTemplates(decodeURIComponent(that.$route.params.item), filterKey).then(function(result) {
 				that.$broadcast('hide::spinner')
 				that.data = result
 			}).catch(function(err) {
